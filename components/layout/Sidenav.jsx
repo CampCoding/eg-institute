@@ -136,7 +136,7 @@ export default function SideNav({ isOpen, setIsOpen }) {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed z-[9999] inset-0  bg-black bg-opacity-50  md:hidden"
+          className="fixed z-[9999] inset-0  bg-black bg-opacity-50  lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

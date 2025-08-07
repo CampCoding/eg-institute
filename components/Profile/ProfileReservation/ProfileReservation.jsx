@@ -120,7 +120,7 @@ export default function ProfileReservation() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 p-6">
       {/* Header */}
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex justify-center items-center gap-3">
           <div className="inline-flex items-center px-4 py-2 text-sm font-bold tracking-wide text-teal-700 bg-gradient-to-r from-teal-100 to-teal-200 rounded-full shadow">
             <CalendarFold className="w-4 h-4 mr-2" />
             My Reservations
@@ -128,7 +128,7 @@ export default function ProfileReservation() {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap justify-center items-center gap-3">
           <div className="relative">
             <input
               value={query}

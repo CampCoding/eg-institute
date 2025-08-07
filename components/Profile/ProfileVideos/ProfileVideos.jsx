@@ -82,7 +82,7 @@ export default function ProfileVideos() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 p-6">
-      <div className="flex mb-3 justify-between items-center">
+      <div className="flex mb-3 flex-col md:flex-row justify-between items-center">
         <div className="text-center">
           <div className="inline-flex items-center px-6 py-3 mb-4 text-sm font-bold tracking-wider text-teal-700 uppercase transition-all duration-300 bg-gradient-to-r from-teal-100 to-teal-200 rounded-full shadow-lg hover:shadow-xl hover:scale-105">
             <Video className="w-4 h-4 mr-2" />
@@ -90,7 +90,7 @@ export default function ProfileVideos() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-center items-center mx-auto gap-2">
           {filters.map((f) => (
             <button
               key={f.key}

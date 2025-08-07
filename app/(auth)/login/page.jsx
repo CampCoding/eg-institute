@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
     password: "",
   });
   const [focusedField, setFocusedField] = useState("");
+  const router  = useRouter();
 
 
 
@@ -306,6 +308,12 @@ const Login = () => {
     }));
   };
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    localStorage.setItem("egy-user" , JSON.stringify(formData)) 
+    router.push("/profile/2")
+  } 
+
   return (
     <div className="relative py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50 overflow-hidden">
       {/* Background decorative elements */}
@@ -357,7 +365,9 @@ const Login = () => {
           </div>
 
           <div className="border  border-primary rounded-2xl p-4 flex flex-col gap-2">
-            <form className="flex flex-col !p-5 !gap-5">
+            <form  
+            onSubmit={handleSubmit}
+            className="flex flex-col !p-5 !gap-5">
               <div className="flex flex-col gap-2">
                 <label className="text-gray-800 font-semibold text-sm flex items-center gap-2">
                   <Mail className="w-4 h-4 text-[#02AAA0]" />
@@ -429,7 +439,9 @@ const Login = () => {
                     <span>Don't have an account ? <Link href="/register" className="underline font-medium text-primary">Register</Link></span>
                 </p>
 
-              <button className="group w-full relative overflow-hidden bg-gradient-to-r from-teal-600 to-cyan-600 text-sm md:text-base text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300">
+              <button 
+              onClick={handleSubmit}
+              className="group w-full relative overflow-hidden bg-gradient-to-r from-teal-600 to-cyan-600 text-sm md:text-base text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300">
           <span className="relative justify-center  z-10 flex items-center gap-2">
             <span className="hidden sm:inline">Login</span>
           </span>

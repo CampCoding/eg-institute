@@ -251,7 +251,7 @@ export default function ProfileOrders() {
 
         {/* Filters & Search */}
         <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+          <div className="flex flex-col lg:flex-row gap-6 items-center justify-center lg:justify-between">
             
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -266,7 +266,7 @@ export default function ProfileOrders() {
             </div>
 
             {/* Status Filters */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex justify-center items-center gap-3 flex-wrap">
               {['all', 'delivered', 'shipped', 'processing', 'cancelled'].map((status) => (
                 <button
                   key={status}
