@@ -1,0 +1,12 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:where(.css-dev-only-do-not-override-1vjf2v5).ant-modal-root .ant-modal-mask {
+  z-index: 9999 !important;
+}
+
+:where(.css-dev-only-do-not-override-1vjf2v5).ant-modal-root .ant-modal-wrap {
+  z-index: 9999 !important;
+}
