@@ -56,17 +56,17 @@ const Header = () => {
         </Link>
       ),
     },
-    {
-      key: "2",
-      label: (
-        <Link
-          href="/live-courses"
-          className="flex items-center py-2 px-1 hover:text-teal-600 transition-colors text-[13px]"
-        >
-          <span>Live Courses</span>
-        </Link>
-      ),
-    },
+    // {
+    //   key: "2",
+    //   label: (
+    //     <Link
+    //       href="/live-courses"
+    //       className="flex items-center py-2 px-1 hover:text-teal-600 transition-colors text-[13px]"
+    //     >
+    //       <span>Live Courses</span>
+    //     </Link>
+    //   ),
+    // },
   ];
 
   useEffect(() => {

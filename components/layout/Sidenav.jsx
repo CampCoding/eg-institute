@@ -96,12 +96,12 @@ export default function SideNav({ isOpen, setIsOpen }) {
           path: "/courses",
           icon: BookOpen,
         },
-        {
-          id: "LiveCourses",
-          label: "Live Courses",
-          path: "/live-courses",
-          icon: Video,
-        },
+        // {
+        //   id: "LiveCourses",
+        //   label: "Live Courses",
+        //   path: "/live-courses",
+        //   icon: Video,
+        // },
       ],
     },
     {
