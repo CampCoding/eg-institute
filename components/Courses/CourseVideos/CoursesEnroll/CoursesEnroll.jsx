@@ -32,32 +32,583 @@ import {
   AlertCircle,
   Mail,
   CheckSquare,
+  UserCheck,
+  Lightbulb,
+  Languages,
+  BookOpenCheck,
+  GraduationCap,
 } from "lucide-react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-// Email Notification Component
+// Pre-Placement Questions Modal
+// Pre-Placement Questions Modal
+const PrePlacementQuestionsModal = ({ isOpen, onClose, onComplete }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState({
+    learningGoal: null,
+    skills: [],
+    previousKnowledge: null,
+    selfAssessment: null,
+  });
+
+  const steps = [
+    {
+      id: "learningGoal",
+      question: "Why do you want to learn Egyptian Arabic?",
+      icon: "Lightbulb",
+      type: "single",
+      options: [
+        { value: "travel", label: "Travel to Egypt", icon: "Globe" },
+        { value: "work", label: "Work/Business", icon: "BookOpen" },
+        { value: "family", label: "Connect with Family", icon: "Users" },
+        { value: "culture", label: "Culture & Entertainment", icon: "Star" },
+        { value: "other", label: "Other", icon: "Target" },
+      ],
+    },
+    {
+      id: "skills",
+      question: "Which skills do you want to focus on?",
+      icon: "Languages",
+      type: "multiple",
+      options: [
+        { value: "speaking", label: "Speaking", icon: "MessageCircle" },
+        { value: "listening", label: "Listening", icon: "Headphones" },
+        { value: "reading", label: "Reading", icon: "BookOpen" },
+        { value: "writing", label: "Writing", icon: "PenTool" },
+      ],
+    },
+    {
+      id: "previousKnowledge",
+      question: "Have you studied Egyptian Arabic before?",
+      icon: "BookOpenCheck",
+      type: "single",
+      options: [
+        { value: "no", label: "No, I'm completely new", icon: "X" },
+        { value: "little", label: "A little bit", icon: "CheckCircle" },
+        { value: "some", label: "Yes, I have some knowledge", icon: "Award" },
+      ],
+    },
+    {
+      id: "selfAssessment",
+      question: "How would you rate your current level?",
+      icon: "GraduationCap",
+      type: "single",
+      options: [
+        {
+          value: "absolute_beginner",
+          label: "Absolute Beginner",
+          description: "I know nothing about Egyptian Arabic",
+          icon: "BookOpen",
+        },
+        {
+          value: "beginner_knowledge",
+          label: "Beginner with Previous Knowledge",
+          description: "I know some basic words and phrases",
+          icon: "BookOpen",
+        },
+        {
+          value: "lower_intermediate",
+          label: "Lower Intermediate",
+          description: "I can have simple conversations",
+          icon: "MessageCircle",
+        },
+        {
+          value: "upper_intermediate",
+          label: "Upper Intermediate",
+          description: "I can discuss various topics",
+          icon: "Users",
+        },
+        {
+          value: "lower_advanced",
+          label: "Lower Advanced",
+          description: "I'm fluent in most situations",
+          icon: "Award",
+        },
+        {
+          value: "upper_advanced",
+          label: "Upper Advanced",
+          description: "I'm nearly native-level",
+          icon: "GraduationCap",
+        },
+      ],
+    },
+  ];
+
+  // Icon mapping
+  const getIcon = (iconName) => {
+    const iconMap = {
+      Lightbulb: Lightbulb,
+      Globe: Globe,
+      BookOpen: BookOpen,
+      Users: Users,
+      Star: Star,
+      Target: Target,
+      Languages: Languages,
+      MessageCircle: MessageCircle,
+      Headphones: Headphones,
+      PenTool: PenTool,
+      BookOpenCheck: BookOpenCheck,
+      X: X,
+      CheckCircle: CheckCircle,
+      Award: Award,
+      GraduationCap: GraduationCap,
+    };
+    return iconMap[iconName] || BookOpen;
+  };
+
+  const currentStepData = steps[currentStep];
+
+  const handleAnswer = (stepId, value) => {
+    if (currentStepData.type === "multiple") {
+      setAnswers((prev) => {
+        const currentSkills = prev.skills || [];
+        const newSkills = currentSkills.includes(value)
+          ? currentSkills.filter((s) => s !== value)
+          : [...currentSkills, value];
+        return { ...prev, skills: newSkills };
+      });
+    } else {
+      setAnswers((prev) => ({ ...prev, [stepId]: value }));
+    }
+  };
+
+  const canProceed = () => {
+    if (currentStepData.type === "multiple") {
+      return answers.skills && answers.skills.length > 0;
+    }
+    return answers[currentStepData.id] !== null;
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      onComplete(answers);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  const StepIcon = getIcon(currentStepData.icon);
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <StepIcon className="w-6 h-6 text-teal-600" />
+              <div>
+                <h2 className="text-xl font-bold text-[#023f4d]">
+                  Tell Us About Yourself
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Step {currentStep + 1} of {steps.length}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="px-6 pt-4">
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-gradient-to-r from-teal-600 to-cyan-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <h3 className="text-2xl font-bold text-[#023f4d] mb-8 text-center">
+            {currentStepData.question}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {currentStepData.options.map((option) => {
+              const OptionIcon = getIcon(option.icon);
+              const isSelected =
+                currentStepData.type === "multiple"
+                  ? answers.skills?.includes(option.value)
+                  : answers[currentStepData.id] === option.value;
+
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => handleAnswer(currentStepData.id, option.value)}
+                  className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
+                    isSelected
+                      ? "border-teal-500 bg-teal-50 shadow-lg"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        isSelected
+                          ? "bg-teal-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      <OptionIcon className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4
+                        className={`font-semibold mb-1 ${
+                          isSelected ? "text-teal-700" : "text-gray-800"
+                        }`}
+                      >
+                        {option.label}
+                      </h4>
+                      {option.description && (
+                        <p className="text-sm text-gray-600">
+                          {option.description}
+                        </p>
+                      )}
+                    </div>
+                    {currentStepData.type === "multiple" && (
+                      <div
+                        className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                          isSelected
+                            ? "border-teal-500 bg-teal-500"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        {isSelected && (
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-between">
+          <button
+            onClick={handleBack}
+            disabled={currentStep === 0}
+            className="flex items-center gap-2 px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+
+          <button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:from-teal-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          >
+            {currentStep === steps.length - 1 ? "Complete" : "Next"}
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Class Type Selection Modal (Group vs Private)
+const ClassTypeSelectionModal = ({
+  isOpen,
+  onClose,
+  onSelectType,
+  isAbsoluteBeginner,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
+      <div className="bg-white rounded-2xl max-w-4xl w-full overflow-hidden">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-[#023f4d]">
+                Choose Your Learning Path
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Select the type of classes that works best for you
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-8">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Group Classes */}
+            <button
+              onClick={() => onSelectType("group")}
+              className="group p-8 rounded-2xl border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 transition-all duration-300 text-left"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+
+              <h3 className="text-2xl font-bold text-[#023f4d] mb-3">
+                Group Classes
+              </h3>
+
+              <p className="text-gray-600 mb-6">
+                Learn with other students in an interactive and engaging
+                environment
+              </p>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-teal-600" />
+                  <span>4-8 students per class</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-teal-600" />
+                  <span>Fixed schedule</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-teal-600" />
+                  <span>Interactive activities</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-teal-600" />
+                  <span>More affordable</span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="text-3xl font-bold text-teal-600">$149</div>
+                <div className="text-sm text-gray-500">per month</div>
+              </div>
+            </button>
+
+            {/* Private Classes */}
+            <button
+              onClick={() => onSelectType("private")}
+              className="group p-8 rounded-2xl border-2 border-gray-200 hover:border-cyan-500 hover:bg-cyan-50 transition-all duration-300 text-left relative overflow-hidden"
+            >
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                POPULAR
+              </div>
+
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <UserCheck className="w-8 h-8 text-white" />
+              </div>
+
+              <h3 className="text-2xl font-bold text-[#023f4d] mb-3">
+                Private Classes
+              </h3>
+
+              <p className="text-gray-600 mb-6">
+                One-on-one personalized lessons tailored to your goals and pace
+              </p>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-cyan-600" />
+                  <span>Individual attention</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-cyan-600" />
+                  <span>Flexible schedule</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-cyan-600" />
+                  <span>Customized curriculum</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <CheckCircle className="w-5 h-5 text-cyan-600" />
+                  <span>Faster progress</span>
+                </div>
+                {!isAbsoluteBeginner && (
+                  <div className="flex items-center gap-3 text-sm text-gray-700">
+                    <CheckCircle className="w-5 h-5 text-cyan-600" />
+                    <span>Includes placement test & trial</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="text-3xl font-bold text-cyan-600">$299</div>
+                <div className="text-sm text-gray-500">per month</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Schedule Selection Modal
+const ScheduleSelectionModal = ({
+  isOpen,
+  onClose,
+  onSelectSchedule,
+  type,
+  needsTrial,
+}) => {
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+
+  // Sample schedules
+  const schedules = [
+    {
+      id: 1,
+      day: "Saturday & Monday",
+      time: "10:00 AM - 12:00 PM",
+      startDate: "Dec 15, 2024",
+      available: true,
+    },
+    {
+      id: 2,
+      day: "Sunday & Wednesday",
+      time: "2:00 PM - 4:00 PM",
+      startDate: "Dec 18, 2024",
+      available: true,
+    },
+    {
+      id: 3,
+      day: "Tuesday & Thursday",
+      time: "6:00 PM - 8:00 PM",
+      startDate: "Dec 20, 2024",
+      available: false,
+    },
+  ];
+
+  const handleConfirm = () => {
+    if (selectedSchedule) {
+      onSelectSchedule(selectedSchedule);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
+      <div className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden">
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-[#023f4d]">
+                {needsTrial
+                  ? "Select Schedule for Placement Test & Trial"
+                  : "Select Your Schedule"}
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Choose a schedule that works for you
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="space-y-3 mb-6">
+            {schedules.map((schedule) => (
+              <button
+                key={schedule.id}
+                onClick={() =>
+                  schedule.available && setSelectedSchedule(schedule)
+                }
+                disabled={!schedule.available}
+                className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                  selectedSchedule?.id === schedule.id
+                    ? "border-teal-500 bg-teal-50"
+                    : schedule.available
+                    ? "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    : "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Calendar
+                      className={`w-5 h-5 ${
+                        selectedSchedule?.id === schedule.id
+                          ? "text-teal-600"
+                          : "text-gray-400"
+                      }`}
+                    />
+                    <div>
+                      <div className="font-semibold text-gray-800">
+                        {schedule.day}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {schedule.time}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Starts: {schedule.startDate}
+                      </div>
+                    </div>
+                  </div>
+                  {!schedule.available && (
+                    <span className="text-sm text-red-600 font-medium">
+                      Fully Booked
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={handleConfirm}
+            disabled={!selectedSchedule}
+            className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          >
+            Confirm Schedule
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Email Notification Component (Updated)
 const EmailNotificationModal = ({
   isOpen,
   onClose,
   courseData,
-  placementScore,
+  userAnswers,
+  selectedClassType,
+  selectedSchedule,
 }) => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const getRecommendedLevel = (score) => {
-    if (score >= 80) return "Advanced";
-    if (score >= 60) return "Intermediate";
-    return "Beginner";
-  };
-
   const handleSubmitEmail = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate email submission
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     setIsSubmitting(false);
@@ -81,12 +632,14 @@ const EmailNotificationModal = ({
               <Mail className="w-6 h-6 text-teal-600" />
               <div>
                 <h2 className="text-xl font-bold text-[#023f4d]">
-                  {isSubmitted ? "Email Sent!" : "Get Enrollment Details"}
+                  {isSubmitted
+                    ? "Enrollment Confirmed!"
+                    : "Complete Enrollment"}
                 </h2>
                 <p className="text-gray-600 text-sm">
                   {isSubmitted
                     ? "Check your inbox for next steps"
-                    : "We'll send you enrollment information"}
+                    : "We'll send you enrollment details"}
                 </p>
               </div>
             </div>
@@ -102,30 +655,64 @@ const EmailNotificationModal = ({
         <div className="p-6">
           {!isSubmitted ? (
             <div>
-              {/* Test Results Summary */}
+              {/* Enrollment Summary */}
               <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-4 mb-6">
-                <h3 className="font-semibold text-[#023f4d] mb-2">
-                  Your Placement Test Results:
+                <h3 className="font-semibold text-[#023f4d] mb-3">
+                  Enrollment Summary:
                 </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Score:</span>
-                  <span className="font-bold text-[#023f4d]">
-                    {placementScore}%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Recommended Level:</span>
-                  <span className="font-bold text-teal-600">
-                    {getRecommendedLevel(placementScore)}
-                  </span>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Class Type:</span>
+                    <span className="font-bold text-[#023f4d]">
+                      {selectedClassType === "group"
+                        ? "Group Classes"
+                        : "Private Classes"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Level:</span>
+                    <span className="font-bold text-teal-600">
+                      {userAnswers?.selfAssessment
+                        ?.replace(/_/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </span>
+                  </div>
+                  {selectedSchedule && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Schedule:</span>
+                        <span className="font-medium text-gray-800">
+                          {selectedSchedule.day}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Time:</span>
+                        <span className="font-medium text-gray-800">
+                          {selectedSchedule.time}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
               <p className="text-gray-600 mb-4">
-                Enter your email address and we'll send you detailed enrollment
-                information, course access instructions, and your personalized
-                learning path based on your placement test results.
+                Enter your email address and we'll send you:
               </p>
+              <ul className="text-sm text-gray-600 mb-4 space-y-2">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-teal-600" />
+                  Payment link and instructions
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-teal-600" />
+                  Course access details
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-teal-600" />
+                  Welcome materials and resources
+                </li>
+              </ul>
 
               <form onSubmit={handleSubmitEmail}>
                 <div className="mb-4">
@@ -168,8 +755,7 @@ const EmailNotificationModal = ({
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                 <p className="text-xs text-gray-600">
                   By providing your email, you agree to receive course
-                  information and enrollment details. We respect your privacy
-                  and won't spam you.
+                  information and enrollment details.
                 </p>
               </div>
             </div>
@@ -180,7 +766,7 @@ const EmailNotificationModal = ({
               </div>
 
               <h3 className="text-xl font-bold text-[#023f4d] mb-2">
-                Email Sent Successfully!
+                Enrollment Email Sent!
               </h3>
 
               <p className="text-gray-600 mb-4">
@@ -195,16 +781,27 @@ const EmailNotificationModal = ({
                 <div className="text-sm text-gray-600 space-y-1">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-teal-600" />
-                    <span>Check your email for enrollment link</span>
+                    <span>Check your email for payment link</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-teal-600" />
-                    <span>Complete payment process</span>
+                    <span>Complete the payment within 48 hours</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-teal-600" />
-                    <span>Start learning at your recommended level</span>
+                    <span>
+                      You'll receive course access immediately after payment
+                    </span>
                   </div>
+                  {selectedClassType === "private" &&
+                    userAnswers?.selfAssessment !== "absolute_beginner" && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-teal-600" />
+                        <span>
+                          We'll confirm your placement test & trial schedule
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -222,37 +819,33 @@ const EmailNotificationModal = ({
   );
 };
 
-// Placement Test Component
+// Placement Test Component (Simplified - only for non-absolute beginners)
 const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(1200); // 20 minutes
+  const [timeLeft, setTimeLeft] = useState(1200);
   const [showResults, setShowResults] = useState(false);
   const [testScore, setTestScore] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sample placement test questions
   const questions = [
     {
       id: 1,
       question: "What does 'أهلاً وسهلاً' mean in English?",
       options: ["Good morning", "Welcome/Hello", "How are you?", "Goodbye"],
       correct: 1,
-      level: "beginner",
     },
     {
       id: 2,
       question: "How do you say 'My name is...' in Egyptian Arabic?",
       options: ["اسمي...", "أنا اسمي...", "اسمي هو...", "إسمي..."],
       correct: 0,
-      level: "beginner",
     },
     {
       id: 3,
       question: "What is the Egyptian Arabic word for 'water'?",
       options: ["ماية", "مويا", "مايه", "All of the above"],
       correct: 3,
-      level: "intermediate",
     },
     {
       id: 4,
@@ -264,18 +857,15 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
         "All are correct",
       ],
       correct: 3,
-      level: "intermediate",
     },
     {
       id: 5,
       question: "What does 'معلش' mean in Egyptian Arabic?",
       options: ["Thank you", "Never mind/It's okay", "Excuse me", "I'm sorry"],
       correct: 1,
-      level: "advanced",
     },
   ];
 
-  // Timer effect
   useEffect(() => {
     if (isOpen && !showResults && timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -316,7 +906,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
   const handleSubmitTest = async () => {
     setIsSubmitting(true);
 
-    // Calculate score
     let score = 0;
     questions.forEach((question) => {
       if (answers[question.id] === question.correct) {
@@ -327,36 +916,10 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
     const percentage = Math.round((score / questions.length) * 100);
     setTestScore(percentage);
 
-    // Simulate processing delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsSubmitting(false);
     setShowResults(true);
-  };
-
-  const getRecommendedLevel = (score) => {
-    if (score >= 80)
-      return {
-        level: "Advanced",
-        color: "text-emerald-600",
-        bg: "bg-emerald-50",
-      };
-    if (score >= 60)
-      return {
-        level: "Intermediate",
-        color: "text-teal-600",
-        bg: "bg-teal-50",
-      };
-    return { level: "Beginner", color: "text-cyan-600", bg: "bg-cyan-50" };
-  };
-
-  const resetTest = () => {
-    setCurrentQuestion(0);
-    setAnswers({});
-    setShowResults(false);
-    setTimeLeft(1200);
-    setTestScore(0);
-    setIsSubmitting(false);
   };
 
   if (!isOpen) return null;
@@ -364,7 +927,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-cyan-50">
           <div className="flex items-center justify-between">
             <div>
@@ -397,7 +959,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           {!showResults && !isSubmitting ? (
             <>
-              {/* Progress Bar */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">
@@ -422,7 +983,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
                 </div>
               </div>
 
-              {/* Current Question */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-[#023f4d] mb-6">
                   {questions[currentQuestion].question}
@@ -460,7 +1020,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
                 </div>
               </div>
 
-              {/* Navigation Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={handlePreviousQuestion}
@@ -496,7 +1055,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
               </p>
             </div>
           ) : (
-            // Results Screen
             <div className="text-center py-8">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -510,7 +1068,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
                 </p>
               </div>
 
-              {/* Score Display */}
               <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-6 mb-6">
                 <div className="text-4xl font-bold text-[#023f4d] mb-2">
                   {testScore}%
@@ -522,32 +1079,6 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
                 </p>
               </div>
 
-              {/* Recommended Level */}
-              {/* <div
-                className={`${
-                  getRecommendedLevel(testScore).bg
-                } rounded-xl p-6 mb-8`}
-              >
-                <h4 className="font-semibold text-[#023f4d] mb-2">
-                  Recommended Starting Level
-                </h4>
-                <div
-                  className={`text-2xl font-bold ${
-                    getRecommendedLevel(testScore).color
-                  } mb-2`}
-                >
-                  {getRecommendedLevel(testScore).level}
-                </div>
-                <p className="text-gray-600 text-sm">
-                  {testScore >= 80
-                    ? "You have a strong foundation in Egyptian Arabic. You can start with advanced topics."
-                    : testScore >= 60
-                    ? "You have some knowledge of Egyptian Arabic. Intermediate level would be perfect for you."
-                    : "You're new to Egyptian Arabic. Starting with beginner level will give you a solid foundation."}
-                </p>
-              </div> */}
-
-              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => {
@@ -556,14 +1087,8 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
                   }}
                   className="flex-1 bg-gradient-to-r from-[#023f4d] to-teal-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-[#023f4d] hover:to-teal-700 transition-all duration-200"
                 >
-                  Get Enrollment Information
+                  Continue Enrollment
                 </button>
-                {/* <button
-                  onClick={resetTest}
-                  className="flex-1 border border-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
-                >
-                  Retake Test
-                </button> */}
               </div>
             </div>
           )}
@@ -574,20 +1099,38 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
 };
 
 const CoursesEnroll = ({ params }) => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedUnits, setExpandedUnits] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [subject, setSubject] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // New states for enrollment flow
+  const [showPrePlacementQuestions, setShowPrePlacementQuestions] =
+    useState(false);
   const [showPlacementTest, setShowPlacementTest] = useState(false);
+  const [showClassTypeSelection, setShowClassTypeSelection] = useState(false);
+  const [showScheduleSelection, setShowScheduleSelection] = useState(false);
   const [showEmailNotification, setShowEmailNotification] = useState(false);
+
+  const [userAnswers, setUserAnswers] = useState(null);
   const [placementTestScore, setPlacementTestScore] = useState(null);
+  const [selectedClassType, setSelectedClassType] = useState(null);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+
   const unwrappedParams = params;
+
+  // Check if user is logged in
+  useEffect(() => {
+    const user = localStorage.getItem("egy-user");
+    setIsLoggedIn(!!user);
+  }, []);
 
   useEffect(() => {
     const fetchSubjectData = async () => {
       setIsLoading(true);
-
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const subjectData = {
@@ -596,7 +1139,7 @@ const CoursesEnroll = ({ params }) => {
         description:
           "Master Egyptian Arabic from beginner to advanced with comprehensive lessons covering daily conversations, cultural contexts, and practical communication skills.",
         longDescription:
-          "This comprehensive Egyptian Arabic course is designed for learners who want to communicate effectively in everyday Egyptian life. Through interactive lessons, real-life dialogues, and cultural insights, you'll learn to speak, understand, and interact confidently in Egyptian Arabic. Our course covers everything from basic greetings to complex conversations, including colloquial expressions and cultural nuances that textbooks often miss.",
+          "This comprehensive Egyptian Arabic course is designed for learners who want to communicate effectively in everyday Egyptian life. Through interactive lessons, real-life dialogues, and cultural insights, you'll learn to speak, understand, and interact confidently in Egyptian Arabic.",
         instructor: "Ahmed Hassan",
         duration: "12 weeks",
         students: 2847,
@@ -610,7 +1153,6 @@ const CoursesEnroll = ({ params }) => {
         advertisingVideoType: "url",
         advertisingVideoUrl:
           "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        advertisingVideoFile: null,
         publicExams: [
           {
             id: 1,
@@ -620,15 +1162,6 @@ const CoursesEnroll = ({ params }) => {
             type: "MCQ",
             isFree: true,
             description: "Test your basic Egyptian Arabic knowledge",
-          },
-          {
-            id: 2,
-            title: "Daily Conversations - Sample",
-            questions: 15,
-            duration: "20 min",
-            type: "MCQ",
-            isFree: true,
-            description: "Practice common daily conversations",
           },
         ],
         units: [
@@ -652,14 +1185,6 @@ const CoursesEnroll = ({ params }) => {
                     type: "MCQ",
                     isPreview: true,
                   },
-                  {
-                    id: 2,
-                    title: "Pronunciation Practice",
-                    questions: 25,
-                    duration: "30 min",
-                    type: "Audio",
-                    isPreview: false,
-                  },
                 ],
                 flashcardSets: [
                   {
@@ -669,132 +1194,6 @@ const CoursesEnroll = ({ params }) => {
                     isCompleted: false,
                     isPreview: true,
                     category: "Alphabet",
-                  },
-                  {
-                    id: 2,
-                    title: "Basic Sounds",
-                    cards: 20,
-                    isCompleted: false,
-                    isPreview: false,
-                    category: "Pronunciation",
-                  },
-                ],
-              },
-              {
-                id: 2,
-                title: "Essential Greetings & Introductions",
-                description:
-                  "Learn how to greet people and introduce yourself in Egyptian Arabic",
-                exams: [
-                  {
-                    id: 3,
-                    title: "Greetings Assessment",
-                    questions: 25,
-                    duration: "30 min",
-                    type: "Mixed",
-                    isPreview: false,
-                  },
-                ],
-                flashcardSets: [
-                  {
-                    id: 3,
-                    title: "Common Greetings",
-                    cards: 35,
-                    isCompleted: false,
-                    isPreview: false,
-                    category: "Conversation",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: 2,
-            title: "Unit 2: Daily Life Conversations",
-            description: "Navigate everyday situations in Egyptian Arabic",
-            topics: [
-              {
-                id: 3,
-                title: "Shopping & Bargaining",
-                description:
-                  "Essential vocabulary and phrases for shopping in Egyptian markets",
-                exams: [
-                  {
-                    id: 4,
-                    title: "Market Conversations",
-                    questions: 30,
-                    duration: "40 min",
-                    type: "Dialogue",
-                    isPreview: false,
-                  },
-                ],
-                flashcardSets: [
-                  {
-                    id: 4,
-                    title: "Shopping Vocabulary",
-                    cards: 50,
-                    isCompleted: false,
-                    isPreview: false,
-                    category: "Vocabulary",
-                  },
-                ],
-              },
-              {
-                id: 4,
-                title: "Food & Restaurant Arabic",
-                description: "Order food and discuss meals like a local",
-                exams: [
-                  {
-                    id: 5,
-                    title: "Restaurant Dialogues",
-                    questions: 35,
-                    duration: "45 min",
-                    type: "MCQ",
-                    isPreview: false,
-                  },
-                ],
-                flashcardSets: [
-                  {
-                    id: 5,
-                    title: "Egyptian Food Terms",
-                    cards: 45,
-                    isCompleted: false,
-                    isPreview: false,
-                    category: "Food",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: 3,
-            title: "Unit 3: Egyptian Culture & Expression",
-            description:
-              "Deep dive into Egyptian expressions, idioms, and cultural contexts",
-            topics: [
-              {
-                id: 5,
-                title: "Egyptian Idioms & Expressions",
-                description:
-                  "Master common Egyptian expressions and their cultural meanings",
-                exams: [
-                  {
-                    id: 6,
-                    title: "Idioms & Culture Test",
-                    questions: 40,
-                    duration: "50 min",
-                    type: "Mixed",
-                    isPreview: false,
-                  },
-                ],
-                flashcardSets: [
-                  {
-                    id: 6,
-                    title: "Popular Egyptian Expressions",
-                    cards: 60,
-                    isCompleted: false,
-                    isPreview: false,
-                    category: "Culture",
                   },
                 ],
               },
@@ -810,12 +1209,58 @@ const CoursesEnroll = ({ params }) => {
     fetchSubjectData();
   }, [unwrappedParams.id]);
 
-  const handleStartPlacementTest = () => {
-    setShowPlacementTest(true);
+  const handleStartEnrollment = () => {
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      // Redirect to login page
+      router.push("/login");
+      return;
+    }
+
+    // Start the enrollment flow
+    setShowPrePlacementQuestions(true);
+  };
+
+  const handlePrePlacementComplete = (answers) => {
+    setUserAnswers(answers);
+    setShowPrePlacementQuestions(false);
+
+    // If absolute beginner, skip placement test
+    if (answers.selfAssessment === "absolute_beginner") {
+      setShowClassTypeSelection(true);
+    } else {
+      // Show placement test for other levels
+      setShowPlacementTest(true);
+    }
   };
 
   const handlePlacementTestComplete = (score) => {
     setPlacementTestScore(score);
+    setShowPlacementTest(false);
+    setShowClassTypeSelection(true);
+  };
+
+  const handleClassTypeSelect = (type) => {
+    setSelectedClassType(type);
+    setShowClassTypeSelection(false);
+
+    // Determine if needs trial/placement scheduling
+    const needsScheduling =
+      type === "group" ||
+      (type === "private" &&
+        userAnswers?.selfAssessment !== "absolute_beginner");
+
+    if (needsScheduling) {
+      setShowScheduleSelection(true);
+    } else {
+      // For absolute beginner private classes, go straight to email
+      setShowEmailNotification(true);
+    }
+  };
+
+  const handleScheduleSelect = (schedule) => {
+    setSelectedSchedule(schedule);
+    setShowScheduleSelection(false);
     setShowEmailNotification(true);
   };
 
@@ -830,17 +1275,12 @@ const CoursesEnroll = ({ params }) => {
   };
 
   const renderAdvertisingVideo = () => {
-    if (!subject.advertisingVideoType) return null;
+    if (!subject?.advertisingVideoType) return null;
 
     let videoSrc = null;
 
     if (subject.advertisingVideoType === "url" && subject.advertisingVideoUrl) {
       videoSrc = subject.advertisingVideoUrl;
-    } else if (
-      subject.advertisingVideoType === "upload" &&
-      subject.advertisingVideoFile
-    ) {
-      videoSrc = URL.createObjectURL(subject.advertisingVideoFile);
     }
 
     if (!videoSrc) return null;
@@ -848,7 +1288,6 @@ const CoursesEnroll = ({ params }) => {
     return (
       <div className="mb-8">
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          {/* Video Header */}
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <Video className="w-6 h-6 text-[#023f4d]" />
@@ -863,7 +1302,6 @@ const CoursesEnroll = ({ params }) => {
             </div>
           </div>
 
-          {/* Video Player */}
           <div className="relative bg-black">
             <video
               className="w-full h-auto max-h-[500px] object-cover"
@@ -875,12 +1313,9 @@ const CoursesEnroll = ({ params }) => {
               onEnded={() => setIsVideoPlaying(false)}
             >
               <source src={videoSrc} type="video/mp4" />
-              <source src={videoSrc} type="video/webm" />
-              <source src={videoSrc} type="video/ogg" />
               Your browser does not support the video tag.
             </video>
 
-            {/* Video Overlay Info */}
             <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg backdrop-blur-sm">
               <div className="flex items-center gap-2 text-sm">
                 <Volume2 className="w-4 h-4" />
@@ -888,7 +1323,6 @@ const CoursesEnroll = ({ params }) => {
               </div>
             </div>
 
-            {/* Play Status Indicator */}
             {isVideoPlaying && (
               <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
                 <div className="flex items-center gap-1">
@@ -899,7 +1333,6 @@ const CoursesEnroll = ({ params }) => {
             )}
           </div>
 
-          {/* Video Info */}
           <div className="p-6 bg-gradient-to-r from-teal-50 to-cyan-50">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
@@ -948,7 +1381,6 @@ const CoursesEnroll = ({ params }) => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Advertising Video Section */}
               {renderAdvertisingVideo()}
 
               {/* Subject Header */}
@@ -992,18 +1424,6 @@ const CoursesEnroll = ({ params }) => {
                           {subject.rating} ({subject.reviews} reviews)
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <FileText className="w-5 h-5 text-cyan-600" />
-                        <span className="text-sm text-gray-600">
-                          {subject.totalExams} practice exams
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <CreditCard className="w-5 h-5 text-emerald-600" />
-                        <span className="text-sm text-gray-600">
-                          {subject.totalFlashcardSets} flashcard sets
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -1024,16 +1444,6 @@ const CoursesEnroll = ({ params }) => {
                       Overview
                     </button>
                     <button
-                      onClick={() => setActiveTab("public-exams")}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
-                        activeTab === "public-exams"
-                          ? "border-[#023f4d] text-[#023f4d]"
-                          : "border-transparent text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      Free Trials
-                    </button>
-                    <button
                       onClick={() => setActiveTab("units")}
                       className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
                         activeTab === "units"
@@ -1052,16 +1462,6 @@ const CoursesEnroll = ({ params }) => {
                       }`}
                     >
                       Instructor
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("reviews")}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
-                        activeTab === "reviews"
-                          ? "border-[#023f4d] text-[#023f4d]"
-                          : "border-transparent text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      Reviews
                     </button>
                   </nav>
                 </div>
@@ -1101,104 +1501,9 @@ const CoursesEnroll = ({ params }) => {
                         <div className="flex items-start space-x-3">
                           <CheckCircle className="w-5 h-5 text-teal-600 mt-1" />
                           <span className="text-gray-700">
-                            Navigate Egyptian markets and restaurants
-                          </span>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <CheckCircle className="w-5 h-5 text-teal-600 mt-1" />
-                          <span className="text-gray-700">
                             Master Egyptian expressions and idioms
                           </span>
                         </div>
-                        <div className="flex items-start space-x-3">
-                          <CheckCircle className="w-5 h-5 text-teal-600 mt-1" />
-                          <span className="text-gray-700">
-                            Build confidence in real-life situations
-                          </span>
-                        </div>
-                      </div>
-
-                      <h4 className="text-lg font-bold text-[#023f4d] mt-8 mb-4">
-                        Course Features:
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center space-x-3 p-4 bg-teal-50 rounded-lg">
-                          <MessageCircle className="w-8 h-8 text-teal-600" />
-                          <div>
-                            <h5 className="font-semibold text-[#023f4d]">
-                              Interactive Dialogues
-                            </h5>
-                            <p className="text-sm text-gray-600">
-                              Real-life conversations
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-4 bg-cyan-50 rounded-lg">
-                          <Headphones className="w-8 h-8 text-cyan-600" />
-                          <div>
-                            <h5 className="font-semibold text-[#023f4d]">
-                              Audio Lessons
-                            </h5>
-                            <p className="text-sm text-gray-600">
-                              Native pronunciation
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-4 bg-emerald-50 rounded-lg">
-                          <PenTool className="w-8 h-8 text-emerald-600" />
-                          <div>
-                            <h5 className="font-semibold text-[#023f4d]">
-                              Writing Practice
-                            </h5>
-                            <p className="text-sm text-gray-600">
-                              Script mastery
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === "public-exams" && (
-                    <div>
-                      <h3 className="text-xl font-bold text-[#023f4d] mb-6">
-                        Free Trial Lessons
-                      </h3>
-                      <p className="text-gray-600 mb-6">
-                        Try these free lessons to experience our teaching
-                        methodology and course quality.
-                      </p>
-                      <div className="space-y-4">
-                        {subject.publicExams.map((exam) => (
-                          <div
-                            key={exam.id}
-                            className="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-lg hover:shadow-md transition-shadow"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <Globe className="w-5 h-5 text-teal-600" />
-                              <div>
-                                <h4 className="font-medium text-[#023f4d]">
-                                  {exam.title}
-                                </h4>
-                                <p className="text-sm text-gray-600 mb-2">
-                                  {exam.description}
-                                </p>
-                                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                  <span>{exam.questions} questions</span>
-                                  <span>•</span>
-                                  <span>{exam.duration}</span>
-                                  <span>•</span>
-                                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs">
-                                    {exam.type}
-                                  </span>
-                                  <span className="bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full text-xs">
-                                    Free
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
                       </div>
                     </div>
                   )}
@@ -1208,10 +1513,6 @@ const CoursesEnroll = ({ params }) => {
                       <h3 className="text-xl font-bold text-[#023f4d] mb-6">
                         Course Content
                       </h3>
-                      <p className="text-gray-600 mb-6">
-                        Explore our comprehensive curriculum designed to take
-                        you from beginner to fluent speaker.
-                      </p>
                       <div className="space-y-4">
                         {subject.units.map((unit) => (
                           <div
@@ -1233,16 +1534,11 @@ const CoursesEnroll = ({ params }) => {
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-3">
-                                <div className="text-sm text-gray-500">
-                                  {unit.topics.length} topics
-                                </div>
-                                {expandedUnits.has(unit.id) ? (
-                                  <ChevronDown className="w-5 h-5 text-[#023f4d] transition-transform" />
-                                ) : (
-                                  <ChevronRight className="w-5 h-5 text-[#023f4d] transition-transform" />
-                                )}
-                              </div>
+                              {expandedUnits.has(unit.id) ? (
+                                <ChevronDown className="w-5 h-5 text-[#023f4d]" />
+                              ) : (
+                                <ChevronRight className="w-5 h-5 text-[#023f4d]" />
+                              )}
                             </button>
 
                             {expandedUnits.has(unit.id) && (
@@ -1256,87 +1552,9 @@ const CoursesEnroll = ({ params }) => {
                                       <h5 className="font-semibold text-[#023f4d] mb-2">
                                         {topic.title}
                                       </h5>
-                                      <p className="text-sm text-gray-600 mb-3">
+                                      <p className="text-sm text-gray-600">
                                         {topic.description}
                                       </p>
-
-                                      {topic.exams.length > 0 && (
-                                        <div className="mb-3">
-                                          <h6 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                                            <FileText className="w-4 h-4 mr-2 text-cyan-600" />
-                                            Practice Tests ({topic.exams.length}
-                                            )
-                                          </h6>
-                                          <div className="space-y-2">
-                                            {topic.exams.map((exam) => (
-                                              <div
-                                                key={exam.id}
-                                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                                              >
-                                                <div>
-                                                  <span className="font-medium text-sm">
-                                                    {exam.title}
-                                                  </span>
-                                                  <div className="flex items-center space-x-3 text-xs text-gray-500">
-                                                    <span>
-                                                      {exam.questions} questions
-                                                    </span>
-                                                    <span>•</span>
-                                                    <span>{exam.duration}</span>
-                                                    <span>•</span>
-                                                    <span className="bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">
-                                                      {exam.type}
-                                                    </span>
-                                                    {exam.isPreview && (
-                                                      <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
-                                                        Free Preview
-                                                      </span>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {topic.flashcardSets.length > 0 && (
-                                        <div>
-                                          <h6 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                                            <CreditCard className="w-4 h-4 mr-2 text-emerald-600" />
-                                            Flashcard Sets (
-                                            {topic.flashcardSets.length})
-                                          </h6>
-                                          <div className="space-y-2">
-                                            {topic.flashcardSets.map((set) => (
-                                              <div
-                                                key={set.id}
-                                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                                              >
-                                                <div>
-                                                  <span className="font-medium text-sm">
-                                                    {set.title}
-                                                  </span>
-                                                  <div className="flex items-center space-x-3 text-xs text-gray-500">
-                                                    <span>
-                                                      {set.cards} cards
-                                                    </span>
-                                                    <span>•</span>
-                                                    <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                                                      {set.category}
-                                                    </span>
-                                                    {set.isPreview && (
-                                                      <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
-                                                        Free Preview
-                                                      </span>
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -1368,69 +1586,7 @@ const CoursesEnroll = ({ params }) => {
                           </p>
                           <p className="text-gray-600">
                             Ahmed Hassan is a certified Arabic language
-                            instructor with over 10 years of experience teaching
-                            Egyptian Arabic to international students. Born and
-                            raised in Cairo, he brings authentic cultural
-                            insights and practical language skills to help
-                            students communicate naturally and confidently in
-                            Egyptian Arabic.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === "reviews" && (
-                    <div>
-                      <h3 className="text-xl font-bold text-[#023f4d] mb-4">
-                        Student Reviews
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="flex text-yellow-400">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className="w-4 h-4 fill-current"
-                                />
-                              ))}
-                            </div>
-                            <span className="text-sm text-gray-600">
-                              Best Egyptian Arabic course!
-                            </span>
-                          </div>
-                          <p className="text-gray-700">
-                            "This course transformed my ability to communicate
-                            in Egyptian Arabic. The lessons are practical,
-                            engaging, and culturally rich. I can now watch
-                            Egyptian movies without subtitles!"
-                          </p>
-                          <p className="text-sm text-gray-500 mt-2">
-                            - Sarah Thompson, USA
-                          </p>
-                        </div>
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="flex text-yellow-400">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className="w-4 h-4 fill-current"
-                                />
-                              ))}
-                            </div>
-                            <span className="text-sm text-gray-600">
-                              Highly recommended!
-                            </span>
-                          </div>
-                          <p className="text-gray-700">
-                            "Ahmed is an excellent teacher who makes learning
-                            fun and easy. The course structure is perfect for
-                            beginners and the cultural insights are invaluable."
-                          </p>
-                          <p className="text-sm text-gray-500 mt-2">
-                            - Michael Chen, Canada
+                            instructor with over 10 years of experience.
                           </p>
                         </div>
                       </div>
@@ -1457,27 +1613,37 @@ const CoursesEnroll = ({ params }) => {
                   </div>
 
                   <div className="space-y-4">
-                    {/* Placement Test Info */}
                     <div className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-200 mb-4">
                       <div className="flex items-center gap-3 mb-2">
                         <Target className="w-5 h-5 text-teal-600" />
                         <h4 className="font-semibold text-[#023f4d]">
-                          Placement Test Required
+                          Start Your Journey
                         </h4>
                       </div>
                       <p className="text-sm text-gray-600">
-                        Take a quick 5-minute test to determine your optimal
-                        starting level
+                        {isLoggedIn
+                          ? "Complete a quick assessment to find your perfect starting point"
+                          : "Sign in to start your enrollment process"}
                       </p>
                     </div>
 
                     <button
-                      onClick={handleStartPlacementTest}
+                      onClick={handleStartEnrollment}
                       className="w-full bg-gradient-to-r from-[#023f4d] to-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-[#023f4d] hover:to-teal-700 transition-all duration-300 flex items-center justify-center"
                     >
-                      <Target className="w-4 h-4 mr-2" />
-                      Take Placement Test & Get Info
+                      {isLoggedIn ? (
+                        <>
+                          <Target className="w-4 h-4 mr-2" />
+                          Start Enrollment
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4 mr-2" />
+                          Sign In to Enroll
+                        </>
+                      )}
                     </button>
+
                     <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
                       Add to Wishlist
                     </button>
@@ -1514,24 +1680,6 @@ const CoursesEnroll = ({ params }) => {
                           Certificate of Completion
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-teal-600" />
-                        <span className="text-sm text-gray-700">
-                          Mobile & Desktop Access
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-teal-600" />
-                        <span className="text-sm text-gray-700">
-                          Downloadable Resources
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-teal-600" />
-                        <span className="text-sm text-gray-700">
-                          24/7 Support
-                        </span>
-                      </div>
                     </div>
                   </div>
 
@@ -1548,7 +1696,13 @@ const CoursesEnroll = ({ params }) => {
         </div>
       </div>
 
-      {/* Placement Test Modal */}
+      {/* Modals */}
+      <PrePlacementQuestionsModal
+        isOpen={showPrePlacementQuestions}
+        onClose={() => setShowPrePlacementQuestions(false)}
+        onComplete={handlePrePlacementComplete}
+      />
+
       <PlacementTestModal
         isOpen={showPlacementTest}
         onClose={() => setShowPlacementTest(false)}
@@ -1556,12 +1710,31 @@ const CoursesEnroll = ({ params }) => {
         courseTitle={subject.title}
       />
 
-      {/* Email Notification Modal */}
+      <ClassTypeSelectionModal
+        isOpen={showClassTypeSelection}
+        onClose={() => setShowClassTypeSelection(false)}
+        onSelectType={handleClassTypeSelect}
+        isAbsoluteBeginner={userAnswers?.selfAssessment === "absolute_beginner"}
+      />
+
+      <ScheduleSelectionModal
+        isOpen={showScheduleSelection}
+        onClose={() => setShowScheduleSelection(false)}
+        onSelectSchedule={handleScheduleSelect}
+        type={selectedClassType}
+        needsTrial={
+          selectedClassType === "private" &&
+          userAnswers?.selfAssessment !== "absolute_beginner"
+        }
+      />
+
       <EmailNotificationModal
         isOpen={showEmailNotification}
         onClose={() => setShowEmailNotification(false)}
         courseData={subject}
-        placementScore={placementTestScore}
+        userAnswers={userAnswers}
+        selectedClassType={selectedClassType}
+        selectedSchedule={selectedSchedule}
       />
     </>
   );

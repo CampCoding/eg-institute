@@ -43,7 +43,6 @@ const ArabicProgramsSection = () => {
 
     return (
       <div
-      
         className={`
           flex items-center group cursor-pointer transform transition-all duration-700 ease-out
           ${isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}
@@ -292,10 +291,7 @@ const ArabicProgramsSection = () => {
   return (
     <div className="relative py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50 overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden"
-       
-        
-      >
+      <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-96 h-96 bg-teal-200 rounded-full opacity-5 blur-3xl animate-pulse"></div>
         <div
           className="absolute bottom-20 right-20 w-80 h-80 bg-blue-200 rounded-full opacity-5 blur-3xl animate-pulse"

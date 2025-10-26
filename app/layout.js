@@ -1,12 +1,7 @@
-
-
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "../components/layout/Header";
-import FloatingButton from "../components/ui/FloatingButton";
-import AnimatedFooter from "../components/layout/Footer";
-
+import ConditionalLayout from "../components/layout/ConditionalLayout";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +22,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`  min-h-screen bg-gradient-to-br from-slate-50 via-cyan-50 to-teal-100 relative  ${geistSans.variable} ${geistMono.variable}`}
+        className={`min-h-screen bg-[#F2F7FE] relative ${geistSans.variable} ${geistMono.variable}`}
       >
-        <Header />
-        {children}
-        <FloatingButton />
-        <AnimatedFooter />
+        <ConditionalLayout>{children}</ConditionalLayout>
+        <Toaster />
       </body>
     </html>
   );

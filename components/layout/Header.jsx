@@ -144,6 +144,8 @@ const Header = () => {
                 onClick={() => {
                   setIsLoggedIn(false);
                   setShowDropdown(false);
+                  localStorage.removeItem("egy-user");
+                  window.location.href = "/";
                 }}
                 className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
               >
