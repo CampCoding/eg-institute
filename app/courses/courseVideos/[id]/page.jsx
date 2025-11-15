@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Play,
   Pause,
@@ -39,16 +39,14 @@ import {
   FastForward,
   ArrowDownToLine,
   Lock,
-} from 'lucide-react';
+} from "lucide-react";
 
-import CourseVideosSidebar from '@/components/Courses/CourseVideos/CourseVideosSidebar/CourseVideosSidebar';
-import CourseVideosContent from '@/components/Courses/CourseVideos/CourseVideosContent/CourseVideosContent';
-import CoursesEnroll from '@/components/Courses/CourseVideos/CoursesEnroll/CoursesEnroll';
-import { useParams } from 'next/navigation';
+import CourseVideosSidebar from "@/components/Courses/CourseVideos/CourseVideosSidebar/CourseVideosSidebar";
+import CourseVideosContent from "@/components/Courses/CourseVideos/CourseVideosContent/CourseVideosContent";
+import CoursesEnroll from "@/components/Courses/CourseVideos/CoursesEnroll/CoursesEnroll";
+import { useParams } from "next/navigation";
 
-
-
- const courseContent = [
+const courseContent = [
   {
     title: "Modern Standard Arabic (Fusha)",
     duration: "1h 10min",
@@ -63,10 +61,11 @@ import { useParams } from 'next/navigation';
         completed: true,
         type: "video",
         videoUrl: "/videos/fusha-intro.mp4",
-        description: "An overview of the importance and use of Modern Standard Arabic.",
+        description:
+          "An overview of the importance and use of Modern Standard Arabic.",
         resources: [
           { label: "Slide Deck", url: "/resources/fusha-slides.pdf" },
-        ]
+        ],
       },
       {
         id: 2,
@@ -95,9 +94,10 @@ import { useParams } from 'next/navigation';
         durationInSec: 1500,
         completed: false,
         type: "quiz",
-        description: "A quiz to assess your understanding of classical Arabic texts.",
+        description:
+          "A quiz to assess your understanding of classical Arabic texts.",
       },
-    ]
+    ],
   },
   {
     title: "Colloquial Arabic (Ammiya)",
@@ -113,7 +113,8 @@ import { useParams } from 'next/navigation';
         completed: false,
         type: "video",
         videoUrl: "/videos/ammiya-intro.mp4",
-        description: "Key differences between Fusha and Ammiya, and the basics of Egyptian dialect.",
+        description:
+          "Key differences between Fusha and Ammiya, and the basics of Egyptian dialect.",
       },
       {
         id: 6,
@@ -123,10 +124,11 @@ import { useParams } from 'next/navigation';
         completed: false,
         type: "video",
         videoUrl: "/videos/ammiya-daily.mp4",
-        description: "Learn how to speak in daily life using common colloquial expressions.",
+        description:
+          "Learn how to speak in daily life using common colloquial expressions.",
         resources: [
-          { label: "Expression List", url: "/resources/ammiya-daily.pdf" }
-        ]
+          { label: "Expression List", url: "/resources/ammiya-daily.pdf" },
+        ],
       },
       {
         id: 7,
@@ -135,28 +137,27 @@ import { useParams } from 'next/navigation';
         durationInSec: 1200,
         completed: false,
         type: "quiz",
-        description: "Test your ability to understand and distinguish colloquial dialects.",
+        description:
+          "Test your ability to understand and distinguish colloquial dialects.",
       },
-    ]
-  }
+    ],
+  },
 ];
-
 
 const UdemyCourseInterface = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(420);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [openSections, setOpenSections] = useState({ 0: true, 1: true });
   const [notes, setNotes] = useState([]);
-const [isEnrolled, setIsEnrolled] = useState(false);
-const user = null;
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const user = null;
   const [bookmarks, setBookmarks] = useState([]);
   const videoRef = useRef(null);
   const params = useParams();
-
 
   useEffect(() => {
     let interval;
@@ -175,41 +176,41 @@ const user = null;
     }
   }, [selectedVideo]);
 
-
   const handleVideoSelect = (lesson) => {
     setSelectedVideo(lesson);
     setIsPlaying(false);
   };
 
-
-  const filteredContent = courseContent.map((section) => ({
-    ...section,
-    lessons: section.lessons.filter((lesson) =>
-      lesson.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ),
-  })).filter((section) => section.lessons.length > 0);
-
+  const filteredContent = courseContent
+    .map((section) => ({
+      ...section,
+      lessons: section.lessons.filter((lesson) =>
+        lesson.title.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    }))
+    .filter((section) => section.lessons.length > 0);
 
   // Set initial video if none selected
   useEffect(() => {
     if (!selectedVideo) {
       const currentLesson = courseContent
-        .flatMap(section => section.lessons)
-        .find(lesson => lesson.current);
+        .flatMap((section) => section.lessons)
+        .find((lesson) => lesson.current);
       if (currentLesson) {
         setSelectedVideo(currentLesson);
       }
     }
   }, []);
 
-
-
- if (!isEnrolled) {
-  return (
-   <CoursesEnroll isEnrolled={isEnrolled} setIsEnrolled={setIsEnrolled} params={params}/>
-  );
-}
-
+  if (!isEnrolled) {
+    return (
+      <CoursesEnroll
+        isEnrolled={isEnrolled}
+        setIsEnrolled={setIsEnrolled}
+        params={params}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -224,18 +225,24 @@ const user = null;
               <Menu className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Modern Standard Arabic (Fusha)</h1>
-              <p className="text-sm text-gray-600">by John Doe • 4.8 ⭐ (12,450 students)</p>
+              <h1 className="text-xl font-bold text-gray-900">
+                Modern Standard Arabic (Fusha)
+              </h1>
+              <p className="text-sm text-gray-600">
+                by John Doe • 4.8 ⭐ (12,450 students)
+              </p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <a download
-            href="/images/assets_pdfs_Student Handbook for ITI Programs.pdf"
-            className='flex bg-[#02aa9f25] text-primary items-center  px-3 py-1 rounded-full text-sm font-medium gap-2'>
-              <p className='cursor-pointer'>Pdf</p>
-              <FileText  className="w-4 h-4 mr-1"  />
+            <a
+              download
+              href="/images/assets_pdfs_Student Handbook for ITI Programs.pdf"
+              className="flex bg-[#02aa9f25] text-primary items-center  px-3 py-1 rounded-full text-sm font-medium gap-2"
+            >
+              <p className="cursor-pointer">Pdf</p>
+              <FileText className="w-4 h-4 mr-1" />
             </a>
-            
+
             <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
               <Trophy className="w-4 h-4 mr-1" />
               68% Complete
@@ -246,10 +253,23 @@ const user = null;
 
       <div className="grid grid-cols-12">
         {/* Main Content */}
-        <CourseVideosContent sidebarCollapsed={sidebarCollapsed} courseContent={courseContent} notes={notes} selectedVideo={selectedVideo}/>
+        <CourseVideosContent
+          sidebarCollapsed={sidebarCollapsed}
+          courseContent={courseContent}
+          notes={notes}
+          selectedVideo={selectedVideo}
+        />
 
         {/* Sidebar */}
-        <CourseVideosSidebar filteredContent={filteredContent} handleVideoSelect={handleVideoSelect} searchQuery={searchQuery} setSearchQuery={setSearchQuery} selectedVideo={selectedVideo} setSidebarCollapsed={setSidebarCollapsed} sidebarCollapsed={sidebarCollapsed}/>
+        <CourseVideosSidebar
+          filteredContent={filteredContent}
+          handleVideoSelect={handleVideoSelect}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedVideo={selectedVideo}
+          setSidebarCollapsed={setSidebarCollapsed}
+          sidebarCollapsed={sidebarCollapsed}
+        />
         {/* <div className={`h-full lg:col-span-3  w-full bg-white border-l border-gray-200 shadow-xl transition-all duration-300 overflow-hidden z-40`}>
           <div className=" bg-white p-6 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">

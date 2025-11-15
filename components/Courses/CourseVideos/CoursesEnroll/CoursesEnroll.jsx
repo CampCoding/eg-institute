@@ -1102,7 +1102,7 @@ const PlacementTestModal = ({ isOpen, onClose, onComplete, courseTitle }) => {
 
 const CoursesEnroll = ({ params }) => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("levels");
   const [expandedUnits, setExpandedUnits] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [subject, setSubject] = useState(null);
@@ -1376,6 +1376,27 @@ const CoursesEnroll = ({ params }) => {
     );
   }
 
+  const levels = [
+    {
+      id: 1,
+      level: "Level 1",
+      title: "Egyptian Arabic Conversation Course",
+      duration: "12 Weeks",
+      description:
+        "Start speaking Egyptian Arabic confidently — from zero to real-life conversations!",
+      points: [
+        "Attached & Detached Pronouns – use them naturally in daily conversations.",
+        "Verb conjugation in past, present, future, and imperative forms.",
+        "Essential grammar patterns for questions, negation, offers, and natural sentence building.",
+        "Speaking & listening practice with real-life dialogues and pronunciation exercises.",
+        "Common Egyptian expressions and phrases used in everyday life.",
+      ],
+      link: `/courses/courseContent/`,
+
+      button: "Enroll in Level 1",
+    },
+  ];
+
   return (
     <>
       <div className="py-16 bg-gray-50">
@@ -1606,9 +1627,10 @@ const CoursesEnroll = ({ params }) => {
                   )}
 
                   {activeTab === "levels" && (
-                    <div className="grid grid-cols-2 gap-5">
-                      <LevelCard />
-                      <LevelCard />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {levels.map((level) => (
+                        <LevelCard key={level?.id} item={level} />
+                      ))}
                     </div>
                   )}
                 </div>

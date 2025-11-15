@@ -20,7 +20,7 @@ const CoursesSection = () => {
       title: "Egyptian Arabic Courses",
       description:
         "Learn the vibrant dialect of Egypt and immerse yourself in the local culture and daily conversations.",
-      img: "https://img.freepik.com/free-photo/egyptian-sphinx-pyramids_181624-32469.jpg", // Egyptian culture / pyramids
+      img: "/images/EgyArabic.png", // Egyptian culture / pyramids
       bgColor: "bg-white",
       textColor: "text-gray-800",
       accent: "bg-teal-500",
@@ -31,7 +31,7 @@ const CoursesSection = () => {
       title: "Modern Standard Arabic Courses",
       description:
         "Master the universal Arabic language used in media, literature, and formal communication worldwide.",
-      img: "https://img.freepik.com/free-photo/open-arabic-book_181624-23210.jpg", // Arabic book / script
+      img: "/images/MSA.png", // Arabic book / script
       bgColor: "bg-white",
       textColor: "text-gray-800",
       accent: "bg-teal-500",
@@ -43,7 +43,7 @@ const CoursesSection = () => {
       title: "Kids Classes",
       description:
         "Fun, interactive, and engaging lessons designed to make learning Arabic enjoyable for young learners.",
-      img: "https://img.freepik.com/free-photo/school-children-having-fun-learning_23-2147869947.jpg", // kids learning
+      img: "/images/KidsClasses.png", // kids learning
       bgColor: "bg-white",
       textColor: "text-gray-800",
       accent: "bg-teal-500",
@@ -54,7 +54,7 @@ const CoursesSection = () => {
       title: "One-to-One Classes",
       description:
         "Personalized lessons tailored to fit your pace, goals, and learning preferences for maximum progress.",
-      img: "https://img.freepik.com/free-photo/teacher-student-online-class_23-2149044547.jpg", // one-to-one tutoring
+      img: "/images/OneToOne.png", // one-to-one tutoring
       bgColor: "bg-white",
       textColor: "text-gray-800",
       accent: "bg-teal-500",

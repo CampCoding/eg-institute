@@ -14,6 +14,9 @@ module.exports = {
         background: "#f3f4f6",
         text: "#111827",
       },
+      fontFamily: {
+        Montserrat: ["Montserrat", "sans - serif"],
+      },
       extend: {
         animation: {
           "spin-slow": "spin 3s linear infinite",
