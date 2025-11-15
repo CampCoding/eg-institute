@@ -23,43 +23,83 @@ const Banner = () => {
       id: 1,
       backgroundImage: "/images/10.png",
       badge: "WELCOME TO THE EGYPTIAN INSTITUTE OF ARABIC LANGUAGE",
-      title: "Upgrade your",
-      highlightedText: "skills",
-      subtitle: "and knowledge with",
-      subtitle2: "our",
-      highlightedText2: "online course.",
-      description:
-        "At our institute, we provide engaging and personalized learning experiences to help you unlock fluency, build confidence, and immerse yourself in the beauty of the Arabic language.",
-      primaryButton: "EXPLORE COURSES",
+      title: "Learn Arabic with professionals",
+      highlightedText: "",
+      subtitle: "",
+      subtitle2: "",
+      highlightedText2: "",
+      description: `Specialized & Native teachers with 15+ years of experience in
+teaching Arabic to non-native speakers — live, interactive, and fun!`,
+      primaryButton: "Start Your Journey",
       secondaryButton: "DISCOVER MORE",
     },
     {
       id: 2,
-      backgroundImage:"/images/3.png",
+      backgroundImage: "/images/3.png",
       badge: "LEARN ARABIC WITH NATIVE SPEAKERS",
-      title: "Master the",
-      highlightedText: "Arabic",
-      subtitle: "language with",
-      subtitle2: "expert",
-      highlightedText2: "instructors.",
-      description:
-        "Whether you're exploring the vibrant Egyptian dialect, mastering Modern Standard Arabic, or seeking fun and interactive kids' classes, we have something for everyone.",
-      primaryButton: "START LEARNING",
+      title: "More than language…  ",
+      highlightedText: "it’s lifestyle",
+      subtitle: "",
+      subtitle2: "",
+      highlightedText2: "",
+      description: `Break the “random books” cycle and join a full structured program
+that teaches real Egyptian Arabic + grammar in a fun, natural way.`,
+      primaryButton: "Learn Egyptian",
       secondaryButton: "VIEW PROGRAMS",
     },
     {
       id: 3,
-      backgroundImage:"/images/6.png",
+      backgroundImage: "/images/6.png",
       badge: "JOIN OUR COMMUNITY OF LEARNERS",
-      title: "Build your",
-      highlightedText: "confidence",
-      subtitle: "and achieve",
-      subtitle2: "language",
-      highlightedText2: "fluency.",
-      description:
-        "Join thousands of students worldwide who have transformed their Arabic language skills through our comprehensive and interactive learning platform.",
-      primaryButton: "JOIN NOW",
+      title: "Sound  ",
+      highlightedText: "smart  ",
+      subtitle: "Speak beautifully",
+      subtitle2: "",
+      highlightedText2: "",
+      description: `Not just grammar lessons — our method makes you live the rules
+through real use. Forget confusion — we make grammar click naturally.
+`,
+      primaryButton: " Explore MSA",
       secondaryButton: "SUCCESS STORIES",
+    },
+    {
+      id: 4,
+      backgroundImage: "/images/6.png",
+      badge: "JOIN OUR COMMUNITY OF LEARNERS",
+      title: "100%   ",
+      highlightedText: "Personal.",
+      subtitle: "",
+      subtitle2: "0% Boring.",
+      highlightedText2: "",
+      description: `Your time, your goals, your teacher — a private plan designed to
+make Arabic truly yours.`,
+      primaryButton: "Go Private",
+    },
+    {
+      id: 5,
+      backgroundImage: "/images/4.png", 
+      badge: "JOIN OUR COMMUNITY OF LEARNERS",
+      title: " Speak up. ",
+      highlightedText: "  ",
+      subtitle: "Laugh.",
+      subtitle2: "Connect.",
+      highlightedText2: "",
+      description: ` Join small, friendly groups and practice Arabic in real conversations
+— culture included.`,
+      primaryButton: "Join a Group",
+    },
+    {
+      id: 6,
+      backgroundImage: "/images/6.png",
+      badge: "Arabic Learning for Kids",
+      title: "Learn",
+      highlightedText: "  ",
+      subtitle: "Play",
+      subtitle2: "Speak Arabic",
+      highlightedText2: "",
+      description: `Fun live classes that spark curiosity and build confidence — kids
+learn through joy, not pressure.`,
+      primaryButton: "For Kids",
     },
   ];
 
@@ -79,11 +119,14 @@ const Banner = () => {
           bulletClass: "swiper-pagination-bullet-custom",
           bulletActiveClass: "swiper-pagination-bullet-active-custom",
         }}
-        autoplay={{
-          delay: 4000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
+        autoplay={
+          false
+          // {
+          //   delay: 4000,
+          //   disableOnInteraction: false,
+          //   pauseOnMouseEnter: true,
+          // }
+        }
         loop={true}
         className="hero-slider"
       >
@@ -103,19 +146,23 @@ const Banner = () => {
                   <div className="space-y-6 md:space-y-8">
                     <div className="inline-flex items-center space-x-2 bg-white/90 backdrop-blur-md rounded-full px-4 md:px-6 py-2 md:py-3 border border-white/50 shadow-lg">
                       <Star className="w-4 h-4 text-yellow-500" />
-                      <span className="text-xs md:text-sm font-semibold text-gray-700">
+                      <span className="text-xs uppercase tracking-widest transform md:text-sm font-semibold text-gray-700">
                         {slide.badge}
                       </span>
                     </div>
 
                     <div className="space-y-4 md:space-y-6">
-                      <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
+                      <h1 className="text-3xl  md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
                         {slide.title}{" "}
                         <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
                           {slide.highlightedText}
                         </span>
-                        <br />
-                        {slide.subtitle}
+                        {slide.subtitle && (
+                          <>
+                            <br />
+                            {slide.subtitle}
+                          </>
+                        )}
                         <br />
                         {slide.subtitle2}{" "}
                         <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
@@ -140,11 +187,13 @@ const Banner = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                       </button>
 
-                      <button className="border-2 border-white/90 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:bg-white/20 hover:border-white transition-all duration-300 backdrop-blur-md bg-white/10 shadow-lg">
-                        <span className="text-sm md:text-base">
-                          {slide.secondaryButton}
-                        </span>
-                      </button>
+                      {slide.secondaryButton && (
+                        <button className="border-2 border-white/90 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold hover:bg-white/20 hover:border-white transition-all duration-300 backdrop-blur-md bg-white/10 shadow-lg">
+                          <span className="text-sm md:text-base">
+                            {slide.secondaryButton}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
 

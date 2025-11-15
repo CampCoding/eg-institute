@@ -216,9 +216,9 @@ const CoursesSection = () => {
             Our Courses
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Explore a variety of Arabic language programs designed to suit
-            learners of all ages and levels, from beginners to advanced
-            speakers.
+            Our programs aren’t just lessons — they’re a real experience that
+            helps you speak and live Arabic every day, from your first word to
+            full fluency.
           </p>
         </div>
 
