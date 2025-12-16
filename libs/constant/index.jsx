@@ -1,0 +1,1 @@
+export const base_url= "https://camp-coding.tech/eg_Institute/user";
