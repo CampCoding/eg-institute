@@ -183,7 +183,7 @@ const CoursesContentSection = ({data}) => {
                 style={{ animationDelay: "1s" }}
               >
                 <button
-                  onClick={() => router.push(`/courses/courseVideos/${data[0]?.course_id}`)}
+                  onClick={() => router.push(`/courses/courseVideos/${data[0]?.course_id}?groupPrice=${data[0]?.group_price}&private=${data[0]?.private_price}`)}
                   className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
                 >
                   <span className="relative z-10 flex items-center space-x-2">

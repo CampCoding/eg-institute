@@ -5,6 +5,7 @@ import ProfileContent from "@/components/Profile/ProfileContent/ProfileContent";
 import {
   AlignJustify,
   Bell,
+  Calendar,
   CalendarFold,
   LibraryBig,
   LogOut,
@@ -19,6 +20,7 @@ export const items = [
   { id: 1, title: "Profile Settings", icon: <User />, route: "/profile-settings" },
   { id: 2, title: "Notifications", icon: <Bell />, route: "/notifications" },
   { id: 3, title: "My Courses", icon: <LibraryBig />, route: "/user-courses" },
+  { id: 3, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
   { id: 4, title: "Videos", icon: <Video />, route: "/videos" },
   { id: 5, title: "Lives", icon: <PictureInPicture />, route: "/lives" },
   { id: 6, title: "Reservations", icon: <CalendarFold />, route: "/my-reservation" },

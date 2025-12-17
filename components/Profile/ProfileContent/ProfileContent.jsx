@@ -9,6 +9,7 @@ import ProfileLives from '../ProfileLives/ProfileLives';
 import ProfileReservation from '../ProfileReservation/ProfileReservation';
 import ProfileOrders from '../ProfileOrders/ProfileOrders';
 import ProfilePurchases from '../ProfilePurchases/ProfilePurchases';
+import Schedule from '../Schedule/Schedule';
 
 export default function ProfileContent({ route, title }) {
   return (
@@ -17,6 +18,7 @@ export default function ProfileContent({ route, title }) {
         {route === "/profile-settings" && <ProfileSettingForm/>}
         {route == "/notifications" && <Notification />}
         {route == "/user-courses" && <ProfileCourses />}
+        {route == "/schedule" && <Schedule />}
         {route == "/videos" && <ProfileVideos />}
         {route == "/lives" && <ProfileLives />}
         {route == "/my-reservation" && <ProfileReservation />}

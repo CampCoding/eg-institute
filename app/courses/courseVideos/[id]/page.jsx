@@ -44,7 +44,7 @@ import {
 import CourseVideosSidebar from "@/components/Courses/CourseVideos/CourseVideosSidebar/CourseVideosSidebar";
 import CourseVideosContent from "@/components/Courses/CourseVideos/CourseVideosContent/CourseVideosContent";
 import CoursesEnroll from "@/components/Courses/CourseVideos/CoursesEnroll/CoursesEnroll";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 const courseContent = [
   {
@@ -158,6 +158,11 @@ const UdemyCourseInterface = () => {
   const [bookmarks, setBookmarks] = useState([]);
   const videoRef = useRef(null);
   const params = useParams();
+  const searchParams = useSearchParams();
+  const groupPrice = searchParams.get("groupPrice");
+  const privatePrice = searchParams.get("private")
+
+  
 
   useEffect(() => {
     let interval;

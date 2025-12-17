@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  ArrowRight,
-  BookOpen,
-  Users,
-  Award,
-  Globe,
-} from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ArrowRight, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -19,18 +9,25 @@ import { handleLogin } from "../../../libs/features/authSlice";
 import toast from "react-hot-toast";
 import { configs } from "../../../libs/configs";
 import Cookies from "js-cookie";
+import { useTimeZoneFromLocation } from "../../../hooks/useTimeZoneFromLocation";
 
 const Login = () => {
   const dispatch = useDispatch();
   const { login_loading } = useSelector((state) => state?.auth);
+
   const [isVisible, setIsVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [focusedField, setFocusedField] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+    const { timeZone, coords, error } = useTimeZoneFromLocation();
+
+    useEffect(() =>{
+      console.log("timeZone" , timeZone)
+    } ,[timeZone])
+
+
   const router = useRouter();
 
   useEffect(() => {
@@ -48,34 +45,42 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data_send = {
       email: formData.email,
       password: formData.password,
       notification_token: "notification_token",
+      time_zone : timeZone
     };
 
     dispatch(handleLogin({ data: data_send }))
       .unwrap()
       .then((res) => {
-        console.log(res);
-        if (res?.data?.status == "success") {
+        if (res?.data?.status === "success") {
           toast.success("User Login Successfully");
-          setFormData({
-            email: "",
-            password: "",
-          });
-          localStorage.setItem(
-            configs.localstorageEgyIntstituteTokenName,
-            res?.data?.message?.access_token
-          );
-          localStorage.setItem(
-            "eg_user_data",
-            JSON.stringify(res?.data?.message)
-          );
-          Cookies.set(
-            configs.localstorageEgyIntstituteRefreshTokenName,
-            res?.data?.message?.refresh_token
-          );
+
+          setFormData({ email: "", password: "" });
+
+          const accessToken = res?.data?.message?.access_token;
+          const refreshToken = res?.data?.message?.refresh_token;
+
+          const storage = rememberMe ? localStorage : sessionStorage;
+          const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+          otherStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
+          otherStorage.removeItem("eg_user_data");
+
+          storage.setItem(configs.localstorageEgyIntstituteTokenName, accessToken);
+          storage.setItem("eg_user_data", JSON.stringify(res?.data?.message));
+
+          if (rememberMe) {
+            Cookies.set(configs.localstorageEgyIntstituteRefreshTokenName, refreshToken, {
+              expires: 30, // days
+            });
+          } else {
+            Cookies.set(configs.localstorageEgyIntstituteRefreshTokenName, refreshToken); // session cookie
+          }
+
           router.push("/");
         } else {
           toast.error(res?.data?.message);
@@ -97,61 +102,29 @@ const Login = () => {
       description: "Native Arabic speakers",
       color: "from-teal-500 to-green-500",
     },
-    // {
-    //   icon: Award,
-    //   title: "Certificates",
-    //   description: "Recognized worldwide",
-    //   color: "from-purple-500 to-pink-500",
-    // },
-    // {
-    //   icon: Globe,
-    //   title: "50+ Countries",
-    //   description: "Global community",
-    //   color: "from-orange-500 to-red-500",
-    // },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-cyan-50 to-teal-100 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -left-20 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute top-40 -right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-20 left-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
-      </div> */}
-
-      {/* Main Container */}
       <div
         className={`
           relative z-10 w-full max-w-md lg:max-w-6xl bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden
           transform transition-all duration-1000
-          ${
-            isVisible
-              ? "translate-y-0 opacity-100 scale-100"
-              : "translate-y-12 opacity-0 scale-95"
-          }
+          ${isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-12 opacity-0 scale-95"}
         `}
       >
         <div className="grid lg:grid-cols-2 min-h-[600px]">
-          {/* Left Side - Branding & Features */}
           <div className="relative bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 p-8 lg:p-12 hidden lg:flex flex-col justify-between overflow-hidden">
-            {/* Decorative Elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full translate-y-48 -translate-x-48"></div>
             </div>
 
-            {/* Content */}
             <div className="relative z-10">
-              {/* Logo */}
               <div
                 className={`
                   transform transition-all duration-700 delay-200
-                  ${
-                    isVisible
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-12 opacity-0"
-                  }
+                  ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}
                 `}
               >
                 <img
@@ -161,42 +134,31 @@ const Login = () => {
                 />
               </div>
 
-              {/* Welcome Text */}
               <div
                 className={`
                   space-y-4 mb-12
                   transform transition-all duration-700 delay-300
-                  ${
-                    isVisible
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-12 opacity-0"
-                  }
+                  ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}
                 `}
               >
                 <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
                   Welcome Back!
                 </h1>
                 <p className="text-lg text-white/90 leading-relaxed max-w-md">
-                  Continue your Arabic learning journey. Sign in to access your
-                  personalized dashboard and lessons.
+                  Continue your Arabic learning journey. Sign in to access your personalized dashboard and lessons.
                 </p>
               </div>
 
-              {/* Features Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   return (
                     <div
-                      key={index}
+                      key={feature.title}
                       className={`
                         bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20
                         transform transition-all duration-700 hover:scale-105 hover:bg-white/20
-                        ${
-                          isVisible
-                            ? "translate-y-0 opacity-100"
-                            : "translate-y-8 opacity-0"
-                        }
+                        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                       `}
                       style={{ transitionDelay: `${400 + index * 100}ms` }}
                     >
@@ -205,50 +167,34 @@ const Login = () => {
                       >
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="text-white font-bold text-sm mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-white/70 text-xs">
-                        {feature.description}
-                      </p>
+                      <h3 className="text-white font-bold text-sm mb-1">{feature.title}</h3>
+                      <p className="text-white/70 text-xs">{feature.description}</p>
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Bottom Quote */}
             <div
               className={`
                 relative z-10 mt-8 pt-8 border-t border-white/20
                 transform transition-all duration-700 delay-800
-                ${
-                  isVisible
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-8 opacity-0"
-                }
+                ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
               `}
             >
               <p className="text-white/80 italic text-sm">
-                "Learning Arabic opens doors to rich cultures and endless
-                opportunities."
+                "Learning Arabic opens doors to rich cultures and endless opportunities."
               </p>
             </div>
           </div>
 
-          {/* Right Side - Login Form */}
           <div className="p-8 lg:p-12 flex items-center justify-center">
             <div className="w-full max-w-md">
-              {/* Form Header */}
               <div
                 className={`
                   text-center mb-8
                   transform transition-all duration-700 delay-400
-                  ${
-                    isVisible
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-8 opacity-0"
-                  }
+                  ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                 `}
               >
                 <div className="inline-block mb-4">
@@ -256,25 +202,15 @@ const Login = () => {
                     <Lock className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                  Sign In
-                </h2>
-                <p className="text-gray-600">
-                  Enter your credentials to continue
-                </p>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign In</h2>
+                <p className="text-gray-600">Enter your credentials to continue</p>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email Field */}
                 <div
                   className={`
                     transform transition-all duration-700 delay-500
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
+                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                   `}
                 >
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -284,9 +220,7 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Mail
                         className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "email"
-                            ? "text-teal-500"
-                            : "text-gray-400"
+                          focusedField === "email" ? "text-teal-500" : "text-gray-400"
                         }`}
                       />
                     </div>
@@ -313,15 +247,10 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Password Field */}
                 <div
                   className={`
                     transform transition-all duration-700 delay-600
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
+                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                   `}
                 >
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -331,9 +260,7 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Lock
                         className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "password"
-                            ? "text-teal-500"
-                            : "text-gray-400"
+                          focusedField === "password" ? "text-teal-500" : "text-gray-400"
                         }`}
                       />
                     </div>
@@ -362,36 +289,30 @@ const Login = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-teal-500 transition-colors duration-300"
                     >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Remember & Forgot */}
                 <div
                   className={`
                     flex items-center justify-between
                     transform transition-all duration-700 delay-700
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
+                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                   `}
                 >
                   <label className="flex items-center cursor-pointer group">
                     <input
                       type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
                     />
                     <span className="ml-2 text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
                       Remember me
                     </span>
                   </label>
+
                   <Link
                     href="/forgot-password"
                     className="text-sm text-teal-600 hover:text-teal-700 font-semibold transition-colors"
@@ -400,7 +321,6 @@ const Login = () => {
                   </Link>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={login_loading}
@@ -412,11 +332,7 @@ const Login = () => {
                     disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
                     overflow-hidden
                     transform transition-all duration-700 delay-800
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
+                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                   `}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
@@ -452,23 +368,15 @@ const Login = () => {
                     )}
                   </span>
 
-                  {/* Animated gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 </button>
 
-                {/* Register Link */}
                 <div
                   className={`
                     text-center
                     transform transition-all duration-700 delay-900
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
+                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
                   `}
                 >
                   <p className="text-gray-600">
@@ -482,27 +390,6 @@ const Login = () => {
                   </p>
                 </div>
               </form>
-
-              {/* Social Login (Optional) */}
-              {/* <div 
-                className={`
-                  mt-8 pt-8 border-t border-gray-200
-                  transform transition-all duration-700 delay-1000
-                  ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
-                `}
-              >
-                <p className="text-center text-sm text-gray-500 mb-4">Or continue with</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <button className="flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                    <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
-                    <span className="font-semibold text-gray-700">Google</span>
-                  </button>
-                  <button className="flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                    <img src="/facebook-icon.svg" alt="Facebook" className="w-5 h-5" />
-                    <span className="font-semibold text-gray-700">Facebook</span>
-                  </button>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

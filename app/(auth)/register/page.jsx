@@ -20,11 +20,13 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { handleRegister } from "../../../libs/features/authSlice";
 import { useRouter } from "next/navigation";
+import { useTimeZoneFromLocation } from "../../../hooks/useTimeZoneFromLocation";
 
 const Register = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const {register_loading , register_data} = useSelector(state => state?.auth);
+    const { timeZone, coords, error } = useTimeZoneFromLocation();
 
   const [isVisible, setIsVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -105,7 +107,8 @@ const Register = () => {
       email: formData.email,
       password : formData.password,
       phone : formData.phone,
-      notification_token:'fcm_test_999'
+      notification_token:'fcm_test_999',
+      time_zone : timeZone
     }
     dispatch(handleRegister({data : data_send}))
     .unwrap()

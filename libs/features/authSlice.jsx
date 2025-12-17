@@ -7,7 +7,10 @@ const initialState  = {
   register_loading : false,
 
   login_data: [],
-  register_data : []
+  register_data : [],
+
+  refresh_token_loading : false,
+  refresh_token_data :[],
 }
 
 export const handleRegister = createAsyncThunk("authSlice/handleRegister",async({data}) => {
@@ -26,6 +29,14 @@ export const handleLogin = createAsyncThunk("authSlice/handleLogin",async({data}
   }catch(err) {
     return err;
   }
+})
+
+export const handleRefreshToken = createAsyncThunk("authSlice/handleRefreshToken",async({data}) =>{
+  console.log("data" , data);
+  const response = await _post('ask_refresh_tokens_data.php', data ,{
+    baseURL :"https://camp-coding.tech/eg_Institute/"
+  } );
+  return response
 })
 
 export const authSlice = createSlice({
@@ -53,6 +64,18 @@ export const authSlice = createSlice({
     })
     .addCase(handleLogin.rejected , (state) => {
       state.login_loading = false;
+    })
+
+
+     .addCase(handleRefreshToken.pending ,(state) => {
+      state.refresh_token_loading = true;
+    })
+    .addCase(handleRefreshToken.fulfilled, (state , action) => {
+      state.refresh_token_data = action.payload; 
+      state.refresh_token_loading = false;
+    })
+    .addCase(handleRefreshToken.rejected , (state) => {
+      state.refresh_token_loading = false;
     })
   }
 })

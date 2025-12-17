@@ -33,6 +33,7 @@
     "react-redux": "^9.2.0",
     "swiper": "^11.2.10",
     "tailwindcss": "^3.3.5",
+    "tz-lookup": "^6.1.25",
     "zod": "^4.1.13"
   },
   "devDependencies": {

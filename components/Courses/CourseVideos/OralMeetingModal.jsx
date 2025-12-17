@@ -195,28 +195,16 @@ export default function OralMeetingModal({
       student_id: String(studentId),
     };
 
-    const res = await dispatch(handleReserveMeeting({ data: payload }));
+    const res = await dispatch(handleReserveMeeting({ data: payload }))
+    .unwrap();
 
-    const ok =
-      res?.payload?.data?.status === "success" ||
-      res?.payload?.status === "success" ||
-      res?.meta?.requestStatus === "fulfilled";
-
-    if (!ok) {
-      toast.error("Failed to reserve the meeting. Please try again.");
-      return;
-    }
-
-    dispatch(handleGetAllReservedMeeting());
+    if(res?.data?.status == "success") {
+      dispatch(handleGetAllReservedMeeting());
     setSuccess(true);
     toast.success(res?.data?.message || "Meeting reserved successfully!");
-    // if (onSubmit) {
-    //   try {
-    //     await onSubmit(payload);
-    //   } catch {
-    //     // ignore callback errors
-    //   }
-    // }
+    }else {
+      toast.error(res?.data?.message);
+    }
   }
 
   if (!open) return null;

@@ -20,6 +20,8 @@ import SideNav from "./Sidenav";
 import ShoppingCartDrawer from "../cart/Cart";
 import { useRouter } from "next/navigation";
 import { Dropdown, Space } from "antd";
+import { configs } from "../../libs/configs";
+import Cookies from "js-cookie";
 
 const Header = () => {
   const router = useRouter();
@@ -146,7 +148,9 @@ const Header = () => {
                 onClick={() => {
                   setIsLoggedIn(false);
                   setShowDropdown(false);
-                  localStorage.removeItem("EGYPTIANINTITUTETOKENNAME");
+                  localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
+                  localStorage.removeItem("eg_user_data");
+                  Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName)
                   window.location.href = "/";
                 }}
                 className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
