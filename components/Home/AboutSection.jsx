@@ -144,23 +144,48 @@ export default function AboutSection() {
             {/* Description */}
             <div className="space-y-6 text-gray-600 leading-relaxed">
               <p className="text-lg">
-                We are the{" "}
+                We are{" "}
                 <span className="font-semibold text-teal-600">
-                  Egyptian Institute of Arabic Language
-                </span>
-                , dedicated to empowering learners worldwide to master Arabic.
+                  a team of certified native Egyptian instructors
+                </span>{" "}
+                specializing in teaching Arabic — both Modern Standard Arabic
+                (MSA) and Egyptian Colloquial Arabic (ECA) — to non-native
+                speakers from all over the world.
               </p>
+
               <p>
-                Our mission is to provide engaging and tailored learning
-                experiences, making Arabic accessible to everyone.
+                With over 15 years of hands-on experience, we have developed a
+                proven methodology and a unique teaching approach that make
+                learning Arabic clear, practical, and genuinely enjoyable.
               </p>
+
               <p>
-                With expert instructors and a passion for teaching, we help
-                students connect with the language and culture.
+                At EIAL Academy, we combine academic expertise with an engaging,
+                interactive learning experience across all our programs.
               </p>
+
+              <p>
+                Our dedicated team uses the most effective teaching methods to
+                create a supportive, motivating, and productive environment
+                where every learner can grow confidently.
+              </p>
+
+              <p>
+                Each program is designed to feel personalized and adaptive, as
+                we tailor learning to your level, pace, and individual goals.
+              </p>
+
               <p className="text-lg font-medium text-gray-700">
-                Join us on a journey to fluency, confidence, and a deeper
-                understanding of the Arabic-speaking world.
+                Whether you are a complete beginner or an advanced learner, we
+                make sure your journey is structured, enjoyable, and
+                consistently rewarding.
+              </p>
+
+              <p>
+                With us, you’re not just joining a language course — you’re
+                entering the world of Arabic, experiencing its sounds, culture,
+                and traditions, and connecting with millions of people in a
+                meaningful way.
               </p>
             </div>
 

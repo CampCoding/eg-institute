@@ -84,7 +84,7 @@ const LearningJourney = () => {
       {/* Background with animated overlay */}
       <div
         style={{
-          backgroundImage: "url('/images/online-course-of-study.jpg')",
+          backgroundImage: "url('/banner1.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

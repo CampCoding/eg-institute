@@ -92,38 +92,29 @@ export default function OurStory() {
 
               <div className="space-y-4 sm:space-y-5 md:space-y-6 text-base sm:text-lg leading-relaxed text-gray-100">
                 <p>
+                  At the Egyptian Institute of Arabic Language, we envision a
+                  world where Arabic becomes a{" "}
                   <span className="text-teal-200 font-semibold">
-                    Founded in 2019
+                    bridge — connecting cultures
                   </span>
-                  , our institute began with a passionate mission to make Arabic
-                  language accessible and enjoyable for learners worldwide.
+                  , strengthening communication, and inspiring understanding.
                 </p>
 
                 <p>
-                  What started as a small team of dedicated educators has
-                  transformed into a global community of over{" "}
-                  <span className="text-cyan-200 font-semibold">
-                    10,000 students
-                  </span>{" "}
-                  across
-                  <span className="text-blue-200 font-semibold">
-                    {" "}
-                    50+ countries
-                  </span>
-                  .
+                  Our vision is to make Arabic a truly global and accessible
+                  language for everyone, everywhere.
                 </p>
 
                 <p className="hidden sm:block">
-                  Today, we continue to pioneer innovative teaching methods that
-                  blend traditional Arabic pedagogy with cutting-edge
-                  technology, helping students connect with the rich culture and
-                  heritage of the Arabic language.
+                  We aim to lead this movement by combining cultural immersion
+                  with innovative teaching methods, empowering learners to
+                  embrace Arabic with confidence, pride, and joy.
                 </p>
 
                 {/* Shortened version for mobile */}
                 <p className="sm:hidden">
-                  Today, we pioneer innovative teaching methods, helping
-                  students connect with Arabic culture and heritage.
+                  We combine cultural immersion with innovative methods,
+                  empowering learners to embrace Arabic with confidence and joy.
                 </p>
               </div>
             </div>

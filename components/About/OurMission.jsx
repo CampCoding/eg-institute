@@ -34,21 +34,21 @@ export default function OurMission() {
   const missionPoints = [
     {
       icon: BookOpen,
-      title: "Modern Teaching Methods",
+      title: "Modern Technology",
       description:
-        "Innovative approaches that make learning Arabic engaging and effective",
+        "Using smart tools and digital learning to make progress faster and clearer",
     },
     {
       icon: Users,
-      title: "Personalized Experience",
+      title: "Personalized Learning",
       description:
-        "Tailored learning paths that adapt to your goals and lifestyle",
+        "A learning experience tailored to your lifestyle, level, pace, and goals",
     },
     {
       icon: Globe,
-      title: "Cultural Bridge",
+      title: "MSA & Egyptian Dialect",
       description:
-        "Connecting learners with authentic Arabic culture and traditions",
+        "Step-by-step guidance in Modern Standard Arabic or Egyptian Colloquial Arabic with cultural insight",
     },
   ];
 
@@ -82,9 +82,14 @@ export default function OurMission() {
             </h2>
 
             <p className="text-xl text-gray-600 leading-relaxed mb-8">
-              Our mission is to revolutionize how Arabic is taught and learned
-              through modern technology, interactive methods, and cultural
-              insights for a personalized learning experience.
+              Our mission is to redefine how Arabic is taught and learned. We
+              use modern technology, interactive techniques, and cultural
+              insights to create a personalized learning experience that fits
+              each student’s lifestyle and goals. Whether you want to explore
+              the depth of Modern Standard Arabic or dive into the vibrant world
+              of the Egyptian dialect, we guide you step by step — making your
+              journey to mastering Arabic smooth, flexible, and highly
+              effective.
             </p>
 
             <div className="space-y-6 mb-10">
