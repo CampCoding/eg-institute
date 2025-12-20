@@ -28,7 +28,9 @@ export default function ProfileCourses() {
   );
 
   useEffect(() => {
-    const UserData = JSON.parse(localStorage.getItem("eg_user_data"));
+    const UserData =
+      JSON.parse(localStorage.getItem("eg_user_data")) ??
+      JSON.parse(sessionStorage.getItem("eg_user_data"));
     if (UserData?.student_id) {
       dispatch(
         handleGetMyCourses({ data: { student_id: UserData?.student_id } })
@@ -38,7 +40,7 @@ export default function ProfileCourses() {
 
   // Handle data safely
   const courses = Array.isArray(my_courses_data) ? my_courses_data : [];
-  
+
   // Calculate statistics based on actual data
   const calculateStats = () => {
     let totalCourses = 0;
@@ -48,21 +50,21 @@ export default function ProfileCourses() {
 
     if (courses.length > 0) {
       totalCourses = courses.length;
-      
-      courses.forEach(course => {
+
+      courses.forEach((course) => {
         // Extract progress from the data - you might need to adjust based on actual API
         const progress = course.progress || course.completedLessons || 0;
         const totalLessons = course.lessons || 1;
-        
+
         // Calculate percentage
         const progressPercentage = (progress / totalLessons) * 100;
-        
+
         if (progressPercentage === 100) {
           completedCourses++;
         } else if (progressPercentage > 0 && progressPercentage < 100) {
           inProgressCourses++;
         }
-        
+
         totalProgress += progressPercentage;
       });
     }
@@ -73,7 +75,7 @@ export default function ProfileCourses() {
       totalCourses,
       completedCourses,
       inProgressCourses,
-      averageProgress: Math.round(averageProgress)
+      averageProgress: Math.round(averageProgress),
     };
   };
 
@@ -87,29 +89,39 @@ export default function ProfileCourses() {
 
     // Determine level color
     const getLevelColor = (level) => {
-      switch(level?.toLowerCase()) {
-        case 'beginner': return 'from-green-400 to-green-600';
-        case 'intermediate': return 'from-blue-400 to-blue-600';
-        case 'advanced': return 'from-purple-400 to-purple-600';
-        default: return 'from-teal-400 to-teal-600';
+      switch (level?.toLowerCase()) {
+        case "beginner":
+          return "from-green-400 to-green-600";
+        case "intermediate":
+          return "from-blue-400 to-blue-600";
+        case "advanced":
+          return "from-purple-400 to-purple-600";
+        default:
+          return "from-teal-400 to-teal-600";
       }
     };
 
     // Determine status color
     const getStatusColor = (status) => {
-      switch(status?.toLowerCase()) {
-        case 'accepted': return 'bg-green-100 text-green-800';
-        case 'pending': return 'bg-yellow-100 text-yellow-800';
-        case 'rejected': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+      switch (status?.toLowerCase()) {
+        case "accepted":
+          return "bg-green-100 text-green-800";
+        case "pending":
+          return "bg-yellow-100 text-yellow-800";
+        case "rejected":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-gray-100 text-gray-800";
       }
     };
 
     // Format subscription type
     const formatSubscriptionType = (type) => {
-      return type === 'private' ? 'Private Course' : 
-             type === 'group' ? 'Group Course' : 
-             'Online Course';
+      return type === "private"
+        ? "Private Course"
+        : type === "group"
+        ? "Group Course"
+        : "Online Course";
     };
 
     return (
@@ -128,7 +140,7 @@ export default function ProfileCourses() {
 
           {/* Play Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button 
+            <button
               onClick={() => router.push(`/profile/2/${course?.course_id}`)}
               className="bg-white/20 backdrop-blur-md rounded-full p-4 hover:bg-white/30 transition-all duration-200 transform hover:scale-110"
             >
@@ -138,14 +150,20 @@ export default function ProfileCourses() {
 
           {/* Course Level Badge */}
           <div className="absolute top-4 left-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getLevelColor(course.level)}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getLevelColor(
+                course.level
+              )}`}
+            >
               {course.level || "All Levels"}
             </span>
           </div>
 
           {/* Course Type Badge */}
           <div className="absolute top-4 right-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600`}>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600`}
+            >
               {formatSubscriptionType(course.subscription_type)}
             </span>
           </div>
@@ -166,13 +184,19 @@ export default function ProfileCourses() {
               {course.course_name}
             </h3>
             <p className="text-sm text-gray-600 line-clamp-2">
-              {course.course_descreption || course.overview || "No description available"}
+              {course.course_descreption ||
+                course.overview ||
+                "No description available"}
             </p>
           </div>
 
           {/* Status Badge */}
           <div className="mb-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(course.status)}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                course.status
+              )}`}
+            >
               {course.status?.toUpperCase() || "ACTIVE"}
             </span>
           </div>
@@ -212,14 +236,14 @@ export default function ProfileCourses() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
               <Award className="w-4 h-4 text-gray-500" />
               <div className="text-xs">
                 <div className="text-gray-500">Price</div>
                 <div className="font-semibold text-gray-800">
-                  {course.subscription_type === 'private' 
-                    ? `$${course.private_price}` 
+                  {course.subscription_type === "private"
+                    ? `$${course.private_price}`
                     : `$${course.group_price}`}
                 </div>
               </div>
@@ -294,12 +318,12 @@ export default function ProfileCourses() {
   );
 
   // Filter courses based on active tab
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses.filter((course) => {
     const totalLessons = parseInt(course.lessons) || 1;
     const completedLessons = parseInt(course.completedLessons) || 0;
     const progressPercentage = (completedLessons / totalLessons) * 100;
 
-    switch(activeTab) {
+    switch (activeTab) {
       case "in-progress":
         return progressPercentage > 0 && progressPercentage < 100;
       case "completed":
@@ -309,7 +333,7 @@ export default function ProfileCourses() {
     }
   });
 
-  if(my_courses_loading) {
+  if (my_courses_loading) {
     return (
       <div className="h-screen flex justify-center items-center">
         <Spin size="large" spinning />
@@ -394,18 +418,22 @@ export default function ProfileCourses() {
         {filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.course_id || course.subscription_id} course={course} />
+              <CourseCard
+                key={course.course_id || course.subscription_id}
+                course={course}
+              />
             ))}
           </div>
         ) : (
           <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              No {activeTab !== "all" ? activeTab.replace("-", " ") : ""} Courses Found
+              No {activeTab !== "all" ? activeTab.replace("-", " ") : ""}{" "}
+              Courses Found
             </h3>
             <p className="text-gray-500 mb-6">
-              {activeTab === "all" 
-                ? "You haven't enrolled in any courses yet." 
+              {activeTab === "all"
+                ? "You haven't enrolled in any courses yet."
                 : `You don't have any ${activeTab.replace("-", " ")} courses.`}
             </p>
             <button
@@ -420,8 +448,11 @@ export default function ProfileCourses() {
         {/* Footer Stats */}
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="text-center text-sm text-gray-500">
-            <p className="mb-2">Showing {filteredCourses.length} of {stats.totalCourses} courses • 
-              <span className="text-teal-600 font-medium mx-2">{stats.averageProgress}%</span>
+            <p className="mb-2">
+              Showing {filteredCourses.length} of {stats.totalCourses} courses •
+              <span className="text-teal-600 font-medium mx-2">
+                {stats.averageProgress}%
+              </span>
               average completion rate
             </p>
             <p>Last updated: {new Date().toLocaleDateString()}</p>

@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function AnimatedFooter() {
   const [isVisible, setIsVisible] = useState(false);
@@ -47,6 +48,20 @@ export default function AnimatedFooter() {
     "Careers",
     "Article & News",
     "Legal Notice",
+  ];
+  const footerLinks = [
+    {
+      label: "Term of Service",
+      href: "/terms-of-service",
+    },
+    {
+      label: "Privacy Policy",
+      href: "/privacy",
+    },
+    {
+      label: "Cookie Policy",
+      href: "/cookie",
+    },
   ];
 
   return (
@@ -274,18 +289,16 @@ export default function AnimatedFooter() {
             </p>
 
             <div className="flex flex-wrap justify-center md:justify-end space-x-6 text-sm">
-              {["Term of use", "Privacy Policy", "Cookie Policy"].map(
-                (item, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="text-gray-600 hover:text-teal-600 transition-all duration-300 relative group"
-                  >
-                    {item}
-                    <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-teal-500 group-hover:w-full transition-all duration-300"></div>
-                  </a>
-                )
-              )}
+              {footerLinks.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="text-gray-600 hover:text-teal-600 transition-all duration-300 relative group"
+                >
+                  {item.label}
+                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-teal-500 group-hover:w-full transition-all duration-300"></div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>

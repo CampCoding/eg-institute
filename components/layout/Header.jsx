@@ -34,7 +34,11 @@ const Header = () => {
 
   const ticking = useRef(false);
 
-  const userData = JSON.parse(localStorage.getItem("eg_user_data"));
+  const userData =
+    JSON.parse(localStorage.getItem("eg_user_data")) ??
+    JSON.parse(sessionStorage.getItem("eg_user_data"));
+
+  console.log(userData);
 
   const navigations = [
     { name: "Home", path: "/" },
@@ -45,6 +49,7 @@ const Header = () => {
     { name: "Store", path: "/store" },
     { name: "Courses", path: "/courses", hasDropdown: true },
     { name: "Exams", path: "/exams" },
+    { name: "Terms", path: "/terms-of-service" },
   ];
 
   // Courses dropdown menu items
@@ -73,12 +78,36 @@ const Header = () => {
     // },
   ];
 
+  const logout = () => {
+    // اقفل الـdropdown فورًا
+    setShowDropdown(false);
+
+    // امسح من الاثنين (لأن login ممكن يكون اختار واحد فيهم)
+    localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
+    sessionStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
+
+    localStorage.removeItem("eg_user_data");
+    sessionStorage.removeItem("eg_user_data");
+
+    // امسح refresh token cookie
+    Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName, {
+      path: "/",
+    });
+
+    // لو عندك state محلي ممكن تخليه false، بس الأفضل تعتمد على token existence
+    setIsLoggedIn(false);
+
+    // Next navigation أفضل من window.location
+    router.replace("/login"); // أو "/"
+    router.refresh(); // يحدث server components لو بتستخدمها
+  };
+
+  const getAccessToken = () =>
+    localStorage.getItem(configs.localstorageEgyIntstituteTokenName) ||
+    sessionStorage.getItem(configs.localstorageEgyIntstituteTokenName);
+
   useEffect(() => {
-    setIsLoggedIn(
-      localStorage.getItem("EGYPTIANINTITUTETOKENNAME")
-        ? localStorage.getItem("EGYPTIANINTITUTETOKENNAME")
-        : null
-    );
+    setIsLoggedIn(!!getAccessToken());
   }, []);
 
   // Scroll handler for 100px trigger
@@ -145,14 +174,7 @@ const Header = () => {
               </Link>
               <hr className="my-2" />
               <button
-                onClick={() => {
-                  setIsLoggedIn(false);
-                  setShowDropdown(false);
-                  localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
-                  localStorage.removeItem("eg_user_data");
-                  Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName)
-                  window.location.href = "/";
-                }}
+                // onClick={logout}
                 className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
               >
                 <LogIn className="w-4 h-4 rotate-180" />
@@ -244,6 +266,7 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showDropdown && !event.target.closest(".relative")) {
+        log;
         setShowDropdown(false);
       }
     };

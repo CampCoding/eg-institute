@@ -6,4 +6,5 @@ export const apiRoutes = {
   //courses
   get_courses: "courses/select_courses.php",
   get_Mycourses: "courses/select_my_courses.php",
+  get_blogs: "blogs/select_blogs.php",
 };

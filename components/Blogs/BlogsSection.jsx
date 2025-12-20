@@ -18,13 +18,51 @@ import {
   TrendingUp,
   Award,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllBlogs } from "@/libs/features/blogsSlice";
+import { Spin } from "antd";
+import { formatToLongEnglish } from "../../libs/shared/ParseDate";
 
 export default function BlogsSection() {
   const [likedCards, setLikedCards] = useState(new Set());
   const [bookmarkedCards, setBookmarkedCards] = useState(new Set());
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  const blogPosts = [
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(handleGetAllBlogs());
+  }, []);
+
+  const { all_blogs_loading, all_blogs_data } = useSelector(
+    (state) => state.blogs
+  );
+  console.log(all_blogs_data);
+
+  const blogPosts = all_blogs_data?.data?.message?.map((post) => {
+    return {
+      id: 1,
+      title: post.title,
+      titleArabic: post.arabic_title,
+      excerpt:
+        post.content ??
+        "Master these fundamental phrases and start your Arabic journey with confidence. Perfect for absolute beginners.",
+      author: "Dr. Amina Hassan",
+      authorArabic: "د. أمينة حسن",
+      date: formatToLongEnglish(post.created_at),
+      readTime: "5 min read",
+      views: "2.3k",
+      likes: 89,
+      comments: 23,
+      category: post.category,
+      level: post.level,
+      categoryColor: "from-green-400 to-emerald-500",
+      image:
+        post.image ??
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
+      gradient: "from-emerald-400 via-teal-500 to-cyan-600",
+      icon: BookOpen,
+    };
+  }) || [
     {
       id: 1,
       title: "10 Essential Arabic Phrases Every Beginner Should Know",
@@ -176,6 +214,13 @@ export default function BlogsSection() {
       return newSet;
     });
   };
+  if (all_blogs_loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" spinning />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
@@ -286,6 +331,14 @@ export default function BlogsSection() {
                     <span className="text-sm font-semibold">
                       {post.category}
                     </span>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 right-4">
+                  <div
+                    className={`flex items-center space-x-2 bg-gradient-to-r ${post.categoryColor} text-white px-4 py-2 rounded-full shadow-lg`}
+                  >
+                    <post.icon className="w-4 h-4" />
+                    <span className="text-sm font-semibold">{post.level}</span>
                   </div>
                 </div>
               </div>

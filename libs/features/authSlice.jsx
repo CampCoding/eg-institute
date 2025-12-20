@@ -25,6 +25,7 @@ export const handleRegister = createAsyncThunk("authSlice/handleRegister",async(
 export const handleLogin = createAsyncThunk("authSlice/handleLogin",async({data}) => {
   try{    
     const response = await _post(apiRoutes.login ,data);
+    
     return response;
   }catch(err) {
     return err;

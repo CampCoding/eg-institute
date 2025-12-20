@@ -1,6 +1,10 @@
 "use client";
 import { X } from "lucide-react";
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { configs } from "../../../libs/configs";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 const PRIMARY = "#02AAA0";
 
@@ -12,6 +16,7 @@ export default function SideBar({
   open = false,
   onClose,
 }) {
+  const dispatch = useDispatch();
   const sidebarClasses = isMobile
     ? `fixed top-0 left-0 h-full w-64 bg-gradient-to-br from-teal-50 via-white to-blue-50 z-[9999] transform transition-transform duration-300 overflow-y-auto ${
         open ? "translate-x-0" : "-translate-x-full"
@@ -40,12 +45,26 @@ export default function SideBar({
         <ul className="divide-y divide-gray-100 pt-4 pb-6">
           {items.map((item) => {
             const isActive = activeRoute === item.route;
+            if (isActive && item.title === "Logout") {
+              localStorage.removeItem(
+                configs.localstorageEgyIntstituteTokenName
+              );
+              localStorage.removeItem("eg_user_data");
+              sessionStorage.removeItem(
+                configs.localstorageEgyIntstituteTokenName
+              );
+              sessionStorage.removeItem("eg_user_data");
+              Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName);
+              toast.success("Logout Successfully");
+              window.location.href = "/";
+            }
             return (
               <li key={item.id}>
                 <p
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate?.(item.route);
+                    localStorage.setItem("tab", item.route);
 
                     if (isMobile) onClose?.();
                   }}

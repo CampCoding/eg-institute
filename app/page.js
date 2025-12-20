@@ -21,14 +21,18 @@ import toast from "react-hot-toast";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { refresh_token_loading, refresh_token_data } = useSelector(state => state?.auth);
+  const { refresh_token_loading, refresh_token_data } = useSelector(
+    (state) => state?.auth
+  );
   const tokenInterval = useRef();
 
-
   useEffect(() => {
-    const refreshToken = Cookies.get(configs.localstorageEgyIntstituteRefreshTokenName);
+    const refreshToken = Cookies.get(
+      configs.localstorageEgyIntstituteRefreshTokenName
+    );
     const rawUser =
-      localStorage.getItem("eg_user_data") || sessionStorage.getItem("eg_user_data");
+      localStorage.getItem("eg_user_data") ||
+      sessionStorage.getItem("eg_user_data");
     const userData = rawUser ? JSON.parse(rawUser) : null;
 
     const token =
@@ -63,7 +67,7 @@ export default function Home() {
             );
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     };
 
     // run once immediately
