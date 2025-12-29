@@ -13,7 +13,6 @@ import {
   Lock,
   Video,
   FileText,
-  PenTool,
   Download,
   Eye,
   PlayCircle,
@@ -30,26 +29,39 @@ import {
   Share2,
   Bookmark,
   ArrowRight,
+  Clock3,
+  LibraryBig,
 } from "lucide-react";
-import ProfileCourseLessons from "../../../../../components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCourseLessons/ProfileCourseLessons";
-import ProfileCoursesLives from "../../../../../components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesLives/ProfileCoursesLives";
-import ProfileCoursesBooks from "../../../../../components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesBooks/ProfileCoursesBooks";
-import ProfileCoursesExams from "../../../../../components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesExams/ProfileCoursesExams";
+import ProfileCourseLessons from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCourseLessons/ProfileCourseLessons";
+import ProfileCourseUnits from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCourseUnits/ProfileCourseUnits";
+import ProfileCoursesLives from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesLives/ProfileCoursesLives";
+import ProfileCoursesBooks from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesBooks/ProfileCoursesBooks";
+import { useParams } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllUnitsData } from "../../../../../libs/features/coursesSlice";
 
 export default function EnhancedCourseDetailPage() {
-  const [activeTab, setActiveTab] = useState("lessons");
+  const [activeTab, setActiveTab] = useState("Video");
   const [currentLesson, setCurrentLesson] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [animateProgress, setAnimateProgress] = useState(false);
+  const dispatch = useDispatch();
+  const { units_data, units_loading } = useSelector((state) => state.courses);
+  const { id, course_id } = useParams();
+  console.log(id, course_id);
+  console.log(units_data);
 
   useEffect(() => {
     setAnimateProgress(true);
+    dispatch(
+      handleGetAllUnitsData({ data: { course_id: course_id, user_id: id } })
+    );
   }, []);
 
   // Mock course data
   const course = {
-    id: 1,
-    title: "Egyptian Arabic Courses",
+    id: course_id,
+    title: "Course Details",
     subtitle: "Master the Egyptian Dialect",
     description:
       "Learn the most widely understood Arabic dialect in the Middle East. Perfect for everyday conversations, movies, and cultural immersion.",
@@ -126,6 +138,12 @@ export default function EnhancedCourseDetailPage() {
       difficulty: "Intermediate",
     },
   ];
+
+  const realUnits = units_data?.message || [];
+  const totalVideosInUnits = realUnits.reduce(
+    (acc, unit) => acc + (unit.videos?.length || 0),
+    0
+  );
 
   const liveClasses = [
     {
@@ -224,91 +242,6 @@ export default function EnhancedCourseDetailPage() {
     },
   ];
 
-  const exams = [
-    {
-      id: 1,
-      title: "Mid-Course Assessment",
-      type: "Comprehensive",
-      questions: 50,
-      duration: "90 min",
-      attempts: 2,
-      maxAttempts: 3,
-      bestScore: 85,
-      averageScore: 78,
-      status: "completed",
-      dueDate: "Aug 15, 2025",
-      topics: ["Vocabulary", "Grammar", "Listening", "Speaking"],
-      difficulty: "Intermediate",
-    },
-    {
-      id: 2,
-      title: "Vocabulary Quiz - Lessons 25-30",
-      type: "Quiz",
-      questions: 25,
-      duration: "30 min",
-      attempts: 1,
-      maxAttempts: 2,
-      bestScore: 92,
-      averageScore: 84,
-      status: "completed",
-      dueDate: "Aug 20, 2025",
-      topics: ["Vocabulary", "Pronunciation"],
-      difficulty: "Beginner",
-    },
-    {
-      id: 3,
-      title: "Speaking Assessment",
-      type: "Oral Exam",
-      questions: 10,
-      duration: "45 min",
-      attempts: 0,
-      maxAttempts: 2,
-      bestScore: null,
-      averageScore: 82,
-      status: "available",
-      dueDate: "Aug 30, 2025",
-      topics: ["Speaking", "Pronunciation", "Conversation"],
-      difficulty: "Intermediate",
-    },
-    {
-      id: 4,
-      title: "Final Course Examination",
-      type: "Final Exam",
-      questions: 75,
-      duration: "120 min",
-      attempts: 0,
-      maxAttempts: 2,
-      bestScore: null,
-      averageScore: 79,
-      status: "locked",
-      dueDate: "Sep 15, 2025",
-      topics: ["All Topics"],
-      difficulty: "Advanced",
-    },
-  ];
-
-  const tabs = [
-    {
-      id: "lessons",
-      label: "Lessons",
-      icon: PlayCircle,
-      count: lessons.length,
-    },
-    {
-      id: "lives",
-      label: "Live Classes",
-      icon: Video,
-      count: liveClasses.filter((c) => c.status === "upcoming").length,
-    },
-    { id: "books", label: "Books", icon: BookOpen, count: books.length },
-    {
-      id: "exams",
-      label: "Exams",
-      icon: PenTool,
-      count: exams.filter((e) => e.status === "available").length,
-    },
-  ];
-
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case "Beginner":
@@ -322,10 +255,43 @@ export default function EnhancedCourseDetailPage() {
     }
   };
 
+  const tabs = [
+    {
+      id: "Video",
+      label: "Videos",
+      icon: PlayCircle,
+      count: totalVideosInUnits,
+    },
+    /* {
+      id: "units",
+      label: "Units",
+      icon: LibraryBig,
+      count: realUnits.length,
+    }, */
+
+    { id: "books", label: "Books", icon: BookOpen, count: books.length },
+    { id: "lives", label: "Lives", icon: Users, count: liveClasses.length },
+  ];
+
   const renderTabContent = () => {
     switch (activeTab) {
-      case "lessons":
-        return <ProfileCourseLessons lessons={lessons} course={course} />;
+      case "Video":
+        return (
+          <ProfileCourseLessons
+            units={realUnits}
+            course={course}
+            loading={units_loading}
+          />
+        );
+
+      case "units":
+        return (
+          <ProfileCourseUnits
+            units={realUnits}
+            course={course}
+            loading={units_loading}
+          />
+        );
 
       case "lives":
         return <ProfileCoursesLives liveClasses={liveClasses} />;
@@ -335,14 +301,6 @@ export default function EnhancedCourseDetailPage() {
           <ProfileCoursesBooks
             animateProgress={animateProgress}
             books={books}
-          />
-        );
-
-      case "exams":
-        return (
-          <ProfileCoursesExams
-            getDifficultyColor={getDifficultyColor}
-            exams={exams}
           />
         );
 

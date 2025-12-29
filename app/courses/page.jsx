@@ -74,7 +74,7 @@ const CoursesPage = () => {
   } , [dispatch])
   
   useEffect(() => {
-    console.log(all_courses_data?.data?.message)
+    console.log(all_courses_data?.message)
   } , [all_courses_data])
     
   useEffect(() => {
@@ -117,7 +117,7 @@ const CoursesPage = () => {
         title={"Courses"}
         subTitle={"Providing the best learning experience."}
       />
-      <CoursesContentSection data={all_courses_data?.data?.message || []}/>
+      <CoursesContentSection data={all_courses_data?.message || []}/>
       {/* <MeetOurLanguageExperts /> */}
       <WhyChooseUs />
       <Dontwait image={"/images/teacher-and-his-students.jpg"} />

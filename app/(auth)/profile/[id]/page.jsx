@@ -14,6 +14,7 @@ import {
   ShoppingBasket,
   User,
   Video,
+  PenTool,
 } from "lucide-react";
 
 export const items = [
@@ -28,6 +29,7 @@ export const items = [
   { id: 4, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
   { id: 5, title: "Videos", icon: <Video />, route: "/videos" },
   { id: 6, title: "Lives", icon: <PictureInPicture />, route: "/lives" },
+  { id: 11, title: "Exams", icon: <PenTool />, route: "/exams" },
   {
     id: 7,
     title: "Reservations",
@@ -60,18 +62,17 @@ export default function ProfilePage() {
     localStorage.setItem("profile_active_route", activeRoute);
   }, [activeRoute]);
 
-  
   // Detect if mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-    }, []);
-   
-   const activeItem = useMemo(() => {
-     return items.find((i) => i.route === activeRoute) || items[0];
-   }, [activeRoute]);
+  }, []);
+
+  const activeItem = useMemo(() => {
+    return items.find((i) => i.route === activeRoute) || items[0];
+  }, [activeRoute]);
   return (
     <div className="relative">
       {isMobile && (

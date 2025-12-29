@@ -26,7 +26,9 @@ export default function ProfileCourses() {
   const { my_courses_loading, my_courses_data } = useSelector(
     (state) => state?.courses
   );
-
+  const UserData =
+    JSON.parse(localStorage.getItem("eg_user_data")) ??
+    JSON.parse(sessionStorage.getItem("eg_user_data"));
   useEffect(() => {
     const UserData =
       JSON.parse(localStorage.getItem("eg_user_data")) ??
@@ -141,7 +143,11 @@ export default function ProfileCourses() {
           {/* Play Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
-              onClick={() => router.push(`/profile/2/${course?.course_id}`)}
+              onClick={() =>
+                router.push(
+                  `/profile/${UserData.student_id}/${course?.course_id}`
+                )
+              }
               className="bg-white/20 backdrop-blur-md rounded-full p-4 hover:bg-white/30 transition-all duration-200 transform hover:scale-110"
             >
               <Play className="w-8 h-8 text-white fill-white" />
@@ -273,7 +279,11 @@ export default function ProfileCourses() {
           {/* Action Buttons */}
           <div className="flex gap-3">
             <button
-              onClick={() => router.push(`/profile/2/${course?.course_id}`)}
+              onClick={() =>
+                router.push(
+                  `/profile/${UserData?.student_id}/${course?.course_id}`
+                )
+              }
               className={`flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2`}
             >
               <Play className="w-4 h-4" />

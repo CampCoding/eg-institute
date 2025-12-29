@@ -9,15 +9,31 @@ const initialState = {
   reserve_meeting_loading : false,
 }
 
-export const handleGetAllReservedMeeting = createAsyncThunk("meetingSlice/handleGetAllReservedMeeting",async() => {
-  const response = await  _get("meeting_resrvations/select_meeting_resrvations.php");
-  return response;
-})
+export const handleGetAllReservedMeeting = createAsyncThunk(
+  "meetingSlice/handleGetAllReservedMeeting",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await _get(
+        "meeting_resrvations/select_meeting_resrvations.php"
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
-export const handleReserveMeeting = createAsyncThunk("meetingSlice/handleReserveMeeting",async({data}) => {
-  const response = await _post("meeting_resrvations/resrve_meeting.php",data);
-  return response;
-})
+export const handleReserveMeeting = createAsyncThunk(
+  "meetingSlice/handleReserveMeeting",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("meeting_resrvations/resrve_meeting.php", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 export const meetingSlice = createSlice({
   name:"meetingSlice",

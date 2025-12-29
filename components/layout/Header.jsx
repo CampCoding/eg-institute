@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { Dropdown, Space } from "antd";
 import { configs } from "../../libs/configs";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const router = useRouter();
@@ -34,11 +35,20 @@ const Header = () => {
 
   const ticking = useRef(false);
 
-  const userData =
-    JSON.parse(localStorage.getItem("eg_user_data")) ??
-    JSON.parse(sessionStorage.getItem("eg_user_data"));
+  const [userData, setUserData] = useState(null);
 
-  console.log(userData);
+  useEffect(() => {
+    try {
+      const raw =
+        localStorage.getItem("eg_user_data") ??
+        sessionStorage.getItem("eg_user_data");
+      if (raw) {
+        setUserData(JSON.parse(raw));
+      }
+    } catch (e) {
+      console.error("Error parsing user data", e);
+    }
+  }, []);
 
   const navigations = [
     { name: "Home", path: "/" },
@@ -139,33 +149,39 @@ const Header = () => {
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className={`group flex items-center space-x-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow duration-200 ${
-          isCompact ? "px-3 py-1.5 text-sm" : "px-4 py-2"
+        className={`group flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow duration-200 ${
+          isCompact ? "px-2 sm:px-3 py-1.5 text-sm" : "px-2 sm:px-4 py-2"
         }`}
       >
         <div
           className={`bg-white/20 rounded-full flex items-center justify-center ${
-            isCompact ? "w-6 h-6" : "w-8 h-8"
+            isCompact ? "w-6 h-6" : "w-7 h-7 sm:w-8 sm:h-8"
           }`}
         >
-          <User className={`${isCompact ? "w-4 h-4" : "w-5 h-5"}`} />
+          <User
+            className={`${isCompact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"}`}
+          />
         </div>
-        <span className="hidden md:inline">
+        <span className="hidden sm:inline text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px]">
           {isLoggedIn ? userData?.student_name : "Account"}
         </span>
         <ChevronDownIcon
           className={`transition-transform duration-200 ${
             showDropdown ? "rotate-180" : ""
-          } ${isCompact ? "w-3 h-3" : "w-4 h-4"}`}
+          } ${isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"}`}
         />
       </button>
 
       {showDropdown && (
-        <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+        <div className="absolute right-0 top-full mt-2 w-48 sm:w-52 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
           {isLoggedIn ? (
             <>
               <Link
-                href="/profile/2"
+                href={
+                  userData?.student_id
+                    ? `/profile/${userData.student_id}`
+                    : "/profile"
+                }
                 className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
                 onClick={() => setShowDropdown(false)}
               >
@@ -174,7 +190,7 @@ const Header = () => {
               </Link>
               <hr className="my-2" />
               <button
-                // onClick={logout}
+                onClick={logout}
                 className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
               >
                 <LogIn className="w-4 h-4 rotate-180" />
@@ -208,17 +224,25 @@ const Header = () => {
 
   const CartButton = ({ isCompact = false }) => (
     <div
-      onClick={() => setOpenCart(true)}
+      onClick={() => {
+        if (isLoggedIn) {
+          setOpenCart(true);
+        } else {
+          toast.error("must login in");
+        }
+      }}
       className={`relative bg-white text-[#02AAA0] shadow-md rounded-full flex items-center justify-center hover:scale-110 hover:shadow-xl transition-all duration-200 cursor-pointer ${
-        isCompact ? "w-8 h-8" : "w-12 h-12"
+        isCompact ? "w-8 h-8" : "w-10 h-10 sm:w-12 sm:h-12"
       }`}
     >
-      <ShoppingCart className={`${isCompact ? "w-4 h-4" : "w-8 h-8"}`} />
+      <ShoppingCart
+        className={`${isCompact ? "w-4 h-4" : "w-5 h-5 sm:w-6 sm:h-6"}`}
+      />
       <span
-        className={`absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full px-1 flex items-center justify-center ${
+        className={`absolute -top-1 -right-1 bg-red-500 text-white font-bold rounded-full flex items-center justify-center ${
           isCompact
-            ? "text-[8px] min-w-[14px] h-[14px]"
-            : "text-[10px] min-w-[16px] h-4"
+            ? "text-[8px] min-w-[14px] h-[14px] px-1"
+            : "text-[9px] sm:text-[10px] min-w-[16px] h-4 px-1"
         }`}
       >
         2
@@ -229,9 +253,9 @@ const Header = () => {
   // Navigation component with courses dropdown
   const NavigationLinks = ({ isCompact = false }) => (
     <div
-      className={`hidden lg:flex items-center ${
-        isCompact ? "space-x-8" : "space-x-10"
-      } font-bold ${isCompact ? "text-sm" : "text-base"}`}
+      className={`hidden xl:flex items-center ${
+        isCompact ? "space-x-4 xl:space-x-6" : "space-x-5 xl:space-x-8"
+      } font-bold ${isCompact ? "text-sm" : "text-sm xl:text-base"}`}
     >
       {navigations.map((item) =>
         item.hasDropdown ? (
@@ -242,7 +266,7 @@ const Header = () => {
             placement="bottomCenter"
             overlayClassName="courses-dropdown"
           >
-            <Space className="text-gray-700 text-xl whitespace-nowrap hover:text-teal-600 font-medium transition-colors duration-200 relative group cursor-pointer">
+            <Space className="text-gray-700 text-base xl:text-lg whitespace-nowrap hover:text-teal-600 font-medium transition-colors duration-200 relative group cursor-pointer">
               {item.name}
               <ChevronDownIcon className="w-3 h-3" />
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-500 to-cyan-500 group-hover:w-full transition-all duration-200"></span>
@@ -252,7 +276,7 @@ const Header = () => {
           <Link
             key={item.path}
             href={item.path}
-            className="text-gray-700 whitespace-nowrap text-xl hover:text-teal-600 font-medium transition-colors duration-200 relative group"
+            className="text-gray-700 whitespace-nowrap text-base xl:text-lg hover:text-teal-600 font-medium transition-colors duration-200 relative group"
           >
             {item.name}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-500 to-cyan-500 group-hover:w-full transition-all duration-200"></span>
@@ -266,7 +290,6 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showDropdown && !event.target.closest(".relative")) {
-        log;
         setShowDropdown(false);
       }
     };
@@ -306,25 +329,25 @@ const Header = () => {
       {/* Original Header (Normal Size) */}
       <div className="relative">
         {/* Top bar */}
-        <div className="bg-teal-500 text-white px-4 md:px-12 py-1 shadow-md border-b border-gray-200/50">
+        <div className="bg-teal-500 text-white px-3 sm:px-4 md:px-12 py-1.5 sm:py-1 shadow-md border-b border-gray-200/50">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 text-xs">
-                <MapPin className="w-4 h-4" />
-                <span className="hidden sm:inline">Egypt</span>
+            <div className="flex items-center space-x-3 sm:space-x-6">
+              <div className="flex items-center space-x-1 sm:space-x-2 text-[10px] sm:text-xs">
+                <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline sm:inline">Egypt</span>
               </div>
-              <div className="flex items-center space-x-2 text-xs">
-                <Phone className="w-4 h-4" />
+              <div className="flex items-center space-x-1 sm:space-x-2 text-[10px] sm:text-xs">
+                <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">021270075031+</span>
               </div>
             </div>
-            <div className="space-x-3 hidden md:flex">
+            <div className="flex space-x-2 sm:space-x-3">
               {[Facebook, Instagram, Twitter, Youtube].map((Icon, index) => (
                 <div
                   key={index}
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-pointer group"
+                  className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-pointer group"
                 >
-                  <Icon className="w-4 h-4 text-primary" />
+                  <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                 </div>
               ))}
             </div>
@@ -333,9 +356,9 @@ const Header = () => {
 
         {/* Main header */}
         <header className="bg-white/80 border-b border-white/20 shadow-lg">
-          <nav className="container mx-auto px-4 md:px-8 py-2 flex justify-between items-center">
+          <nav className="container mx-auto px-3 sm:px-4 md:px-8 py-2 flex justify-between items-center">
             {/* Logo */}
-            <div className="w-[80px]">
+            <div className="w-[60px] sm:w-[70px] md:w-[80px]">
               <img
                 src="/images/logo.png"
                 alt="Logo"
@@ -347,12 +370,12 @@ const Header = () => {
             <NavigationLinks />
 
             {/* Actions */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <UserDropdown />
               <CartButton />
               <Menu
                 onClick={() => setIsOpen(true)}
-                className="text-primary w-9 h-9 lg:hidden cursor-pointer hover:scale-110 transition-transform duration-200"
+                className="text-primary w-7 h-7 sm:w-9 sm:h-9 xl:hidden cursor-pointer hover:scale-110 transition-transform duration-200"
               />
             </div>
           </nav>
@@ -367,9 +390,9 @@ const Header = () => {
             : "-translate-y-full opacity-0"
         }`}
       >
-        <nav className="container mx-auto px-4 md:px-8 py-2 flex justify-between items-center">
+        <nav className="container mx-auto px-3 sm:px-4 md:px-8 py-2 flex justify-between items-center">
           {/* Compact Logo */}
-          <div className="w-[60px]">
+          <div className="w-[50px] sm:w-[60px]">
             <img src="/images/logo.png" alt="Logo" className="w-full h-auto" />
           </div>
 
@@ -377,12 +400,12 @@ const Header = () => {
           <NavigationLinks isCompact={true} />
 
           {/* Compact Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5 sm:space-x-2">
             <UserDropdown isCompact={true} />
             <CartButton isCompact={true} />
             <Menu
               onClick={() => setIsOpen(true)}
-              className="text-primary w-7 h-7 lg:hidden cursor-pointer hover:scale-110 transition-transform duration-200"
+              className="text-primary w-6 h-6 sm:w-7 sm:h-7 xl:hidden cursor-pointer hover:scale-110 transition-transform duration-200"
             />
           </div>
         </nav>

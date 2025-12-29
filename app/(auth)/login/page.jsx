@@ -66,13 +66,14 @@ const Login = () => {
           },
         })
       ).unwrap();
+console.log(res);
 
-      const msg = res?.data?.message;
+      const msg = res?.message;
       const accessToken = msg?.access_token;
       const refreshToken = msg?.refresh_token;
 
       if (!accessToken || !refreshToken) {
-        toast.error(res?.data?.message || "Invalid login response");
+        toast.error(res?.message || "Invalid login response");
         return;
       }
 

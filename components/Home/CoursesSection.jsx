@@ -74,207 +74,197 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
   const isHovered = hoveredCard === course.id;
   const delay = index * 150;
 
-  const badgeBg =
-    course.textColor === "text-white" ? "bg-white/10" : "bg-black/5";
-
   return (
     <div
       className={`
-        relative overflow-hidden h-full rounded-2xl shadow-lg transition-all duration-700 ease-out transform
+        group relative overflow-hidden rounded-3xl bg-white border border-gray-100
+        shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
-        ${course.bgColor} ${course.hoverBg}
-        ${isHovered ? "scale-105 shadow-2xl -translate-y-2" : "scale-100"}
-        group cursor-pointer
+        ${isHovered ? "scale-[1.02] bg-teal-200 -translate-y-2" : "scale-100"}
+        cursor-pointer
       `}
-      style={{
-        transitionDelay: isVisible ? `${delay}ms` : "0ms",
-        backgroundImage: course.bgColor?.includes("gradient")
-          ? ""
-          : "radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)",
-      }}
+      style={{ transitionDelay: isVisible ? `${delay}ms` : "0ms" }}
       onMouseEnter={() => setHoveredCard(course.id)}
       onMouseLeave={() => setHoveredCard(null)}
     >
-      {/* Animated background patterns */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className={`absolute top-4 right-4 w-20 h-20 rounded-full ${
-            course.accent
-          }
-          transform transition-transform duration-700
-          ${isHovered ? "scale-150 rotate-180" : "scale-100"}`}
+      {/* Image Container with Overlay */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={course?.img}
+          alt={course?.title || "course"}
+          className={`w-full h-full object-cover transition-transform duration-700 ${
+            isHovered ? "scale-110" : "scale-100"
+          }`}
         />
-        <div
-          className={`absolute bottom-8 left-8 w-12 h-12 rounded-full ${
-            course.accent
-          }
-          transform transition-transform duration-500
-          ${isHovered ? "scale-125 -rotate-90" : "scale-100"}`}
-        />
-        <div
-          className={`absolute top-1/2 left-4 w-6 h-6 rounded-full ${
-            course.accent
-          }
-          transform transition-transform duration-600
-          ${isHovered ? "scale-110 rotate-45" : "scale-100"}`}
-        />
-      </div>
+        {/* Gradient Overlay */}
+        {
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        }
 
-      {/* Content */}
-      <div className="relative h-full flex flex-col">
+        {/* Type Badge */}
         {course.type && (
           <div
-            className={`px-2 absolute py-1 rounded-full text-xs top-3 right-2  text-white font-semibold ${
-              course.type !== "online" ? "bg-red-500" : "bg-emerald-500"
+            className={`absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide backdrop-blur-md shadow-lg ${
+              course.type !== "online"
+                ? "bg-rose-500/90 text-white"
+                : "bg-emerald-500/90 text-white"
             }`}
           >
             {course.type}
           </div>
         )}
-        <img
-          src={course?.img}
-          alt={course?.title || "course"}
-          className="w-full max-h-[150px] overflow-hidden object-cover"
-        />
 
-        <div className="relative p-8 h-full flex flex-col">
-          {/* Course number */}
-          <div
-            className={`
-              w-12 h-12 rounded-full flex items-center justify-center mb-6 transition-all duration-500
-              ${course.accent} text-white
-              ${isHovered ? "scale-110 rotate-12" : "scale-100"}
-            `}
-          >
-            <span className="text-lg font-bold">{course.id}</span>
-          </div>
+        {/* Course Number Badge */}
+        <div
+          className={`absolute top-4 left-4 w-10 bg-teal-200 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-lg transition-transform duration-500 ${
+            isHovered ? "rotate-12 scale-110" : ""
+          }`}
+        >
+          <span className="text-white font-bold text-sm">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
 
-          {/* Title */}
-          <h3
-            className={`
-              text-2xl font-bold mb-3 transition-all duration-300
-              ${course.textColor}
-              ${isHovered ? "transform translate-x-2" : ""}
-            `}
-          >
-            {course.title}
-          </h3>
-
-          {/* meta badges */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {course.level && (
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${badgeBg}`}
-              >
-                {course.level}
-              </span>
-            )}
-            {course.duration && (
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${badgeBg}`}
-              >
-                {course.duration}
-              </span>
-            )}
-            {course.lessons && (
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${badgeBg}`}
-              >
-                {course.lessons} lessons
-              </span>
-            )}
-          </div>
-
-          {/* Description */}
-          <p
-            className={`
-              text-sm leading-relaxed mb-5 flex-grow transition-all duration-300
-              ${course.textColor}
-              ${course.textColor === "text-white" ? "opacity-90" : "opacity-75"}
-              ${isHovered ? "opacity-100" : ""}
-            `}
-          >
-            {course.description}
-          </p>
-
-          {/* Will learn (first 3) */}
-          {Array.isArray(course.willLearn) && course.willLearn.length > 0 && (
-            <ul
-              className={`
-                mb-5 text-sm space-y-2
-                ${course.textColor}
-                ${
-                  course.textColor === "text-white"
-                    ? "opacity-90"
-                    : "opacity-80"
-                }
-              `}
-            >
-              {course.willLearn.slice(0, 3).map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-current opacity-70" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+        {/* Meta Badges on Image */}
+        <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
+          {course.level && (
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/20">
+              {course.level}
+            </span>
           )}
+          {course.duration && (
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/20">
+              {course.duration}
+            </span>
+          )}
+        </div>
+      </div>
 
-          {/* Prices */}
-          <div
-            className={`
-              mb-6 text-sm flex flex-col justify-between items-start
-              ${course.textColor}
-              ${course.textColor === "text-white" ? "opacity-90" : "opacity-80"}
-            `}
-          >
-            <span className="my-4">Prices</span>
-            <div className="flex justify-between items-center w-full ">
-              {(course.groupPrice || course.groupPrice === 0) && (
-                <div className="flex items-center justify-between gap-3">
-                  <span>Group</span>
-                  <span className="font-bold">${course.groupPrice}</span>
-                </div>
-              )}
-              {(course.privatePrice || course.privatePrice === 0) && (
-                <div className="flex items-center justify-between gap-3">
-                  <span>Private</span>
-                  <span className="font-bold">${course.privatePrice}</span>
-                </div>
-              )}
-            </div>
+      {/* Content */}
+      <div className="p-6">
+        {/* Title */}
+        <h3
+          className={`text-xl font-bold text-gray-800 mb-3 line-clamp-2 transition-all duration-300 group-hover:text-teal-600`}
+        >
+          {course.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">
+          {course.description}
+        </p>
+
+        {/* Will Learn Preview */}
+        {Array.isArray(course.willLearn) && course.willLearn.length > 0 && (
+          <div className="mb-4 space-y-2">
+            {course.willLearn.slice(0, 2).map((item, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-2 text-sm text-gray-600"
+              >
+                <svg
+                  className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="line-clamp-1">{item}</span>
+              </div>
+            ))}
           </div>
+        )}
 
-          {/* Learn More Button */}
-          <button
-            onClick={() => router.push(`/courses/courseVideos/${course.id}`)}
-            className={`
-              px-6 py-3 rounded-lg font-semibold text-sm uppercase tracking-wide
-              transition-all duration-300 transform
-              bg-teal-500 text-white hover:bg-teal-600
-              ${isHovered ? "scale-105 shadow-lg" : "scale-100"}
-              backdrop-blur-sm
-            `}
-          >
-            <span className="flex items-center justify-center">
-              Learn More
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+
+        {/* Price Section */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-4">
+            {(course.groupPrice || course.groupPrice === 0) && (
+              <div className="text-center">
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">
+                  Group
+                </p>
+                <p className="text-lg font-bold text-gray-800">
+                  ${course.groupPrice}
+                </p>
+              </div>
+            )}
+            {(course.privatePrice || course.privatePrice === 0) && (
+              <div className="text-center pl-4 border-l border-gray-100">
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 font-medium">
+                  Private
+                </p>
+                <p className="text-lg font-bold text-gray-800">
+                  ${course.privatePrice}
+                </p>
+              </div>
+            )}
+          </div>
+          {course.lessons && (
+            <div className="flex items-center gap-1.5 text-gray-500 text-sm">
               <svg
-                className={`ml-2 w-4 h-4 transition-transform duration-300 ${
-                  isHovered ? "translate-x-1" : ""
-                }`}
+                className="w-4 h-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M9 5l7 7-7 7"
+                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                 />
               </svg>
-            </span>
-          </button>
+              <span>{course.lessons} lessons</span>
+            </div>
+          )}
         </div>
+
+        {/* CTA Button */}
+        <button
+          onClick={() => router.push(`/courses/courseVideos/${course.id}`)}
+          className={`
+            w-full py-3.5 rounded-xl font-semibold text-sm uppercase tracking-wide
+            transition-all duration-300 transform flex items-center justify-center gap-2
+            bg-gradient-to-r from-teal-500 to-teal-600 text-white
+            hover:from-teal-600 hover:to-teal-700 hover:shadow-lg hover:shadow-teal-200
+            ${isHovered ? "scale-[1.02]" : "scale-100"}
+          `}
+        >
+          <span>Explore Course</span>
+          <svg
+            className={`w-4 h-4 transition-transform duration-300 ${
+              isHovered ? "translate-x-1" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Hover Glow Effect */}
+      <div
+        className={`absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-500 ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <div className="absolute inset-0 rounded-3xl ring-2 ring-teal-400/30" />
       </div>
     </div>
   );
@@ -303,16 +293,33 @@ function CoursesGrid({ coursesFromApi = [], loading }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {uiCourses.map((course, index) => (
-        <CourseCard
-          key={course.id}
-          course={course}
-          index={index}
-          isVisible={isVisible}
-          hoveredCard={hoveredCard}
-          setHoveredCard={setHoveredCard}
-        />
-      ))}
+      {uiCourses.map((course, index) => {
+        const offsetClass =
+          index % 3 === 1
+            ? "xl:translate-y-6" // التاني ينزل أكتر
+            : index % 3 === 2
+            ? "xl:translate-y-0" // التالت ينزل بسيط
+            : "";
+
+        return (
+          <div
+            key={course.id}
+            className={`
+            transform transition-all duration-300
+            ${offsetClass}
+            hover:translate-y-0 hover:z-10
+          `}
+          >
+            <CourseCard
+              course={course}
+              index={index}
+              isVisible={isVisible}
+              hoveredCard={hoveredCard}
+              setHoveredCard={setHoveredCard}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -324,7 +331,85 @@ export default function CoursesSection() {
     (state) => state.courses
   );
 
-  const allData = all_courses_data?.data?.message ?? [];
+  const allData = all_courses_data?.message ?? [
+    {
+      course_id: "7",
+      type: "online",
+      course_name: "Egyptian Arabic Conversation Bootcamp",
+      course_descreption:
+        "Practice real-life Egyptian Arabic conversations with guided dialogues, listening drills, and speaking tasks.\r\n\r\nPerfect for learners who want to sound natural and confident.\r\n\r\n",
+      overview:
+        "This hands-on course focuses on speaking Egyptian Arabic in everyday situations. You’ll learn how to start conversations, ask for help, bargain politely, and express opinions using common Egyptian phrases. Each module includes videos, audio practice, and role-play exercises to boost fluency and comprehension.",
+      level: "beginner",
+      Duration: "8 weeks",
+      lessons: "24",
+      group_price: "99",
+      private_price: "160",
+      image: "/4.png",
+      video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/egyptian_arabic_intro.mp4",
+      advertising_video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/egyptian_arabic_ad.mp4",
+      wiil_learn:
+        "Introduce yourself confidently**CAMP**Use greetings and polite phrases naturally**CAMP**Order food and drinks in cafés**CAMP**Ask for directions and transportation**CAMP**Handle shopping and bargaining**CAMP**Talk about daily routines and plans",
+      feature:
+        "Live Speaking Sessions**CAMP**Downloadable PDFs**CAMP**Audio Pronunciation Practice**CAMP**Quizzes & Feedback",
+      created_at: "2025-12-20 11:45:10",
+      hidden: "0",
+    },
+    {
+      course_id: "8",
+      type: "offline",
+      course_name: "Modern Standard Arabic Foundations",
+      course_descreption:
+        "Learn the Arabic alphabet, pronunciation, basic grammar, and everyday phrases in Modern Standard Arabic.\r\n\r\nIncludes writing practice and reading drills.\r\n\r\n",
+      overview:
+        "A structured beginner-friendly course that builds strong foundations in Modern Standard Arabic (الفصحى). You’ll master letters and sounds, learn essential grammar patterns, and practice reading and writing with short texts. Ideal for learners preparing for formal study, travel, or Arabic media.",
+      level: "beginner",
+      Duration: "10 weeks",
+      lessons: "30",
+      group_price: "129",
+      private_price: "210",
+      image: "/images/EgyArabic.png",
+      video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/msa_foundations_intro.mp4",
+      advertising_video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/msa_foundations_ad.mp4",
+      wiil_learn:
+        "Read Arabic letters with correct vowel sounds**CAMP**Write Arabic words and sentences clearly**CAMP**Use common greetings and introductions**CAMP**Understand basic sentence structure**CAMP**Build vocabulary for daily topics**CAMP**Read short texts with confidence",
+      feature:
+        "Alphabet Workbook**CAMP**Guided Writing Practice**CAMP**Weekly Assessments",
+      created_at: "2025-12-12 09:20:05",
+      hidden: "0",
+    },
+    {
+      course_id: "9",
+      type: "online",
+      course_name: "Intermediate Egyptian Arabic: Stories & Culture",
+      course_descreption:
+        "Improve listening and speaking through Egyptian stories, short scenes, and cultural notes.\r\n\r\nGreat for learners who already know the basics.\r\n\r\n",
+      overview:
+        "Level up your Egyptian Arabic using authentic content: mini-stories, TV-style dialogues, and cultural deep-dives. Each lesson includes vocabulary, pronunciation tips, and speaking prompts. You’ll learn to understand fast speech, idioms, and natural rhythm—just like Egyptians speak.",
+      level: "intermediate",
+      Duration: "12 weeks",
+      lessons: "36",
+      group_price: "149",
+      private_price: "230",
+      image: "/images/MSA.png",
+      video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/egyptian_stories_intro.mp4",
+      advertising_video:
+        "https://res.cloudinary.com/demo/video/upload/v1690000000/courses/egyptian_stories_ad.mp4",
+      wiil_learn:
+        "Understand common Egyptian idioms and slang**CAMP**Follow fast conversations in cafés and streets**CAMP**Talk about opinions, feelings, and plans**CAMP**Improve pronunciation and intonation**CAMP**Understand cultural references in media**CAMP**Speak more naturally in real situations",
+      feature:
+        "Story-Based Lessons**CAMP**Listening Drills**CAMP**Cultural Notes**CAMP**Speaking Prompts",
+      created_at: "2025-12-25 18:05:44",
+      hidden: "0",
+    },
+  ];
+
+  console.log(all_courses_data?.message);
 
   useEffect(() => {
     dispatch(handleGetAllCourses());
@@ -349,7 +434,10 @@ export default function CoursesSection() {
         </div>
 
         {/* Grid */}
-        <CoursesGrid coursesFromApi={allData.slice(0,3)} loading={all_courses_loading} />
+        <CoursesGrid
+          coursesFromApi={allData.slice(0, 3)}
+          loading={all_courses_loading}
+        />
       </div>
 
       {/* Decorative elements */}

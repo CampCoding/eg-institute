@@ -18,13 +18,36 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllTeachers } from "../../libs/features/teacherSlice";
 
 const TeamsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [swiperRef, setSwiperRef] = useState(null);
   const sectionRef = useRef(null);
+  const dispatch = useDispatch();
+  const { all_Teachers_data } = useSelector((state) => state?.teachers);
+  console.log(all_Teachers_data);
+  useEffect(() => {
+    dispatch(handleGetAllTeachers());
+  }, [dispatch]);
 
-  const teamMembers = [
+  const teamMembers = all_Teachers_data?.message?.map((item, index) => {
+    return {
+      id: item.teacher_id,
+      name: item.teacher_name,
+      role: item.specialization,
+      image: item.teacher_image,
+      description: item.bio,
+      location: item.country,
+      email: item.teacher_email,
+      phone: item.phone,
+      social: {
+        facebook: item.facebook,
+        instagram: item.instagram,
+      },
+    };
+  }) ?? [
     {
       id: 1,
       name: "Ahmed Hassan",
@@ -288,7 +311,7 @@ const TeamsSection = () => {
                       </div>
 
                       {/* Social Media Icons */}
-                      <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                      {/*    <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                         <a
                           href={member.social.facebook}
                           target="_blank"
@@ -307,7 +330,7 @@ const TeamsSection = () => {
                         >
                           <Instagram className="w-4 h-4" />
                         </a>
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Content */}

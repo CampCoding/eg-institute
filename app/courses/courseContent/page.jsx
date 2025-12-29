@@ -5,8 +5,10 @@ import Link from "next/link.js";
 import { Icon } from "@iconify/react";
 import BannerSection from "../../../components/Courses/CourseDetails/BannerSection";
 import { FadeInWhenVisible } from "../../../components/shared/FadeInWhenVisible";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
   const course = {
     id: 1,
     level: "Level 1",
@@ -74,13 +76,15 @@ export default function Page() {
     <div className="bg-gray-50">
       <div className="container  mx-auto px-6 py-14 rounded-xl m-5">
         {/* 🔙 BACK */}
-        <Link
-          href="/Courses"
-          className="text-gray-600 hover:text-black flex items-center gap-2 mb-6"
+        <div
+          onClick={() => {
+            router.back();
+          }}
+          className="text-gray-600 hover:text-black flex items-center gap-2 cursor-pointer mb-6"
         >
           <ArrowLeftCircle className="w-5 h-5" />
           Back to Courses
-        </Link>
+        </div>
 
         {/* 🏷️ HEADER */}
         <FadeInWhenVisible delay={0.01} dir="down">

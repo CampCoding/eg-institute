@@ -10,6 +10,7 @@ import ProfileReservation from "../ProfileReservation/ProfileReservation";
 import ProfileOrders from "../ProfileOrders/ProfileOrders";
 import ProfilePurchases from "../ProfilePurchases/ProfilePurchases";
 import Schedule from "../Schedule/Schedule";
+import ProfileCoursesExams from "../ProfileCourses/ProfileCourseDetails/ProfileCoursesExams/ProfileCoursesExams";
 
 export default function ProfileContent({ route, title }) {
   return (
@@ -23,6 +24,7 @@ export default function ProfileContent({ route, title }) {
       {route == "/my-reservation" && <ProfileReservation />}
       {route == "/my-orders" && <ProfileOrders />}
       {route == "/my-purchases" && <ProfilePurchases />}
+      {route == "/exams" && <ProfileCoursesExams />}
     </div>
   );
 }

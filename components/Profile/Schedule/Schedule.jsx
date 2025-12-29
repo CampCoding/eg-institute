@@ -138,7 +138,7 @@ export default function Schedule() {
     };
 
     const res = await dispatch(handleGetAllStudentSchedules({ data: payload })).unwrap();
-    if (res?.data?.status === "success") {
+    if (res?.status === "success") {
       setApiData(res.data);
       setWeekStartISO(res.data.week_start || startISO || null);
     }

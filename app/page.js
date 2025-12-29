@@ -56,14 +56,14 @@ export default function Home() {
       )
         .unwrap()
         .then((res) => {
-          if (res?.data?.status === "out") {
-            toast.success(res?.data?.message);
+          if (res?.status === "out") {
+            toast.success(res?.message);
             localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
             Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName);
-          } else if (res?.data?.status === "success") {
+          } else if (res?.status === "success") {
             localStorage.setItem(
               configs.localstorageEgyIntstituteTokenName,
-              res?.data?.access_token
+              res?.access_token
             );
           }
         })

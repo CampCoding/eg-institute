@@ -18,6 +18,9 @@ export default function AnimatedFooter() {
   const [isVisible, setIsVisible] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
+  const userData =
+    JSON.parse(localStorage.getItem("eg_user_data")) ??
+    JSON.parse(sessionStorage.getItem("eg_user_data"));
 
   useEffect(() => {
     setIsVisible(true);
@@ -260,16 +263,18 @@ export default function AnimatedFooter() {
                 </div>
               </div>
 
-              <button className="group relative w-full py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <span className="group-hover:scale-105 transition-transform duration-300">
-                    SIGN UP
-                  </span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-              </button>
+              {!userData ?? (
+                <button className="group relative w-full py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative flex items-center justify-center space-x-2">
+                    <span className="group-hover:scale-105 transition-transform duration-300">
+                      SIGN UP
+                    </span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                </button>
+              )}
             </div>
           </div>
         </div>

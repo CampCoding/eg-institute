@@ -21,64 +21,109 @@ const initialState = {
   make_schedule_loading: false,
   make_schedule_data: null,
   make_schedule_error: null,
+
+  units_data: [],
+  units_loading: false,
+
+  quizzes_data: [],
+  quizzes_loading: false,
 };
 
 export const handleGetAllCourses = createAsyncThunk(
   "coursesSlice/handleGetAllCourses",
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await _get(apiRoutes.get_courses);
-      return response;
+      return response.data;
     } catch (err) {
-      return err;
+      return rejectWithValue(err.message);
     }
   }
 );
 
 export const handleGetMyCourses = createAsyncThunk(
   "coursesSlice/handleGetMyCourses",
-  async ({ data }) => {
+  async ({ data }, { rejectWithValue }) => {
     try {
       const response = await _post(apiRoutes.get_Mycourses, data);
       return response.data.message;
     } catch (err) {
-      return err;
+      return rejectWithValue(err.message);
     }
   }
 );
 
 export const handleGetAllCourseTeachers = createAsyncThunk(
   "coursesSlice/handleGetAllCourseTeachers",
-  async ({ data }) => {
-    const response = await _post("teachers/select_course_teachers.php", data);
-    return response;
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("teachers/select_course_teachers.php", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
 export const handleGetAllCourseTeacherGroups = createAsyncThunk(
   "coursesSlice/handleGetAllCourseTeacherGroups",
-  async ({ data }) => {
-    const response = await _post("groups/select_teacher_groups.php", data);
-    return response;
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("groups/select_teacher_groups.php", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
 export const handleGetAllStudentSchedules = createAsyncThunk(
   "coursesSlice/handleGetAllStudentSchedules",
-  async ({ data }) => {
-    const response = await _post("courses/student_schedule.php", data);
-    return response;
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("courses/student_schedule.php", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+export const handleGetAllUnitsData = createAsyncThunk(
+  "coursesSlice/handleGetAllUnitsData",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("units/select_course_units.php", data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const handleGetQuizzes = createAsyncThunk(
+  "coursesSlice/handleGetQuizzes",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post(apiRoutes.get_quizzes, data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
 export const handleMakeStudentSchedule = createAsyncThunk(
   "coursesSlice/handleMakeStudentSchedule",
-  async ({ data }) => {
-    const response = await _post(
-      "subscreptions/make_student_subscreption.php",
-      data
-    );
-    return response;
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post(
+        "subscreptions/make_student_subscreption.php",
+        data
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
@@ -154,7 +199,31 @@ export const coursesSlice = createSlice({
       })
       .addCase(handleMakeStudentSchedule.rejected, (state, action) => {
         state.make_schedule_loading = false;
-        state.make_schedule_error = action?.error?.message || "Subscription failed";
+        state.make_schedule_error =
+          action?.error?.message || "Subscription failed";
+      })
+      .addCase(handleGetAllUnitsData.pending, (state) => {
+        state.units_loading = true;
+        state.units_error = null;
+        state.units_data = null;
+      })
+      .addCase(handleGetAllUnitsData.fulfilled, (state, action) => {
+        state.units_loading = false;
+        state.units_data = action.payload;
+      })
+      .addCase(handleGetAllUnitsData.rejected, (state, action) => {
+        state.units_loading = false;
+        state.units_error = action?.error?.message || "Subscription failed";
+      })
+      .addCase(handleGetQuizzes.pending, (state) => {
+        state.quizzes_loading = true;
+      })
+      .addCase(handleGetQuizzes.fulfilled, (state, action) => {
+        state.quizzes_loading = false;
+        state.quizzes_data = action.payload;
+      })
+      .addCase(handleGetQuizzes.rejected, (state) => {
+        state.quizzes_loading = false;
       });
   },
 });
