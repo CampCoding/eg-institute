@@ -1,6 +1,14 @@
 "use client";
 
-import { Eye, EyeOff, Lock, Mail, ArrowRight, BookOpen, Users } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ArrowRight,
+  BookOpen,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -21,12 +29,11 @@ const Login = () => {
   const [focusedField, setFocusedField] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-    const { timeZone, coords, error } = useTimeZoneFromLocation();
+  const { timeZone, coords, error } = useTimeZoneFromLocation();
 
-    useEffect(() =>{
-      console.log("timeZone" , timeZone)
-    } ,[timeZone])
-
+  useEffect(() => {
+    console.log("timeZone", timeZone);
+  }, [timeZone]);
 
   const router = useRouter();
 
@@ -42,51 +49,61 @@ const Login = () => {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data_send = {
-      email: formData.email,
-      password: formData.password,
-      notification_token: "notification_token",
-      time_zone : timeZone
-    };
+    const tz =
+      timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
 
-    dispatch(handleLogin({ data: data_send }))
-      .unwrap()
-      .then((res) => {
-        if (res?.data?.status === "success") {
-          toast.success("User Login Successfully");
+    try {
+      const res = await dispatch(
+        handleLogin({
+          data: {
+            email: formData.email.trim().toLowerCase(),
+            password: formData.password,
+            notification_token: "notification_token",
+            time_zone: tz,
+          },
+        })
+      ).unwrap();
+console.log(res);
 
-          setFormData({ email: "", password: "" });
+      const msg = res?.message;
+      const accessToken = msg?.access_token;
+      const refreshToken = msg?.refresh_token;
 
-          const accessToken = res?.data?.message?.access_token;
-          const refreshToken = res?.data?.message?.refresh_token;
+      if (!accessToken || !refreshToken) {
+        toast.error(res?.message || "Invalid login response");
+        return;
+      }
 
-          const storage = rememberMe ? localStorage : sessionStorage;
-          const otherStorage = rememberMe ? sessionStorage : localStorage;
+      toast.success("User Login Successfully");
+      setFormData({ email: "", password: "" });
 
-          otherStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
-          otherStorage.removeItem("eg_user_data");
+      const storage = rememberMe ? localStorage : sessionStorage;
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
 
-          storage.setItem(configs.localstorageEgyIntstituteTokenName, accessToken);
-          storage.setItem("eg_user_data", JSON.stringify(res?.data?.message));
+      otherStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
+      otherStorage.removeItem("eg_user_data");
 
-          if (rememberMe) {
-            Cookies.set(configs.localstorageEgyIntstituteRefreshTokenName, refreshToken, {
-              expires: 30, // days
-            });
-          } else {
-            Cookies.set(configs.localstorageEgyIntstituteRefreshTokenName, refreshToken); // session cookie
-          }
+      storage.setItem(configs.localstorageEgyIntstituteTokenName, accessToken);
+      storage.setItem("eg_user_data", JSON.stringify(msg));
 
-          router.push("/");
-        } else {
-          toast.error(res?.data?.message);
+      Cookies.set(
+        configs.localstorageEgyIntstituteRefreshTokenName,
+        refreshToken,
+        {
+          expires: rememberMe ? 30 : undefined,
+          secure: true,
+          sameSite: "lax",
+          path: "/",
         }
-      })
-      .catch((e) => console.log(e));
+      );
+
+      router.push("/");
+    } catch (err) {
+      toast.error(err?.message || "Login failed");
+    }
   };
 
   const features = [
@@ -110,7 +127,11 @@ const Login = () => {
         className={`
           relative z-10 w-full max-w-md lg:max-w-6xl bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden
           transform transition-all duration-1000
-          ${isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-12 opacity-0 scale-95"}
+          ${
+            isVisible
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-12 opacity-0 scale-95"
+          }
         `}
       >
         <div className="grid lg:grid-cols-2 min-h-[600px]">
@@ -124,7 +145,11 @@ const Login = () => {
               <div
                 className={`
                   transform transition-all duration-700 delay-200
-                  ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}
+                  ${
+                    isVisible
+                      ? "translate-x-0 opacity-100"
+                      : "-translate-x-12 opacity-0"
+                  }
                 `}
               >
                 <img
@@ -138,14 +163,19 @@ const Login = () => {
                 className={`
                   space-y-4 mb-12
                   transform transition-all duration-700 delay-300
-                  ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}
+                  ${
+                    isVisible
+                      ? "translate-x-0 opacity-100"
+                      : "-translate-x-12 opacity-0"
+                  }
                 `}
               >
                 <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
                   Welcome Back!
                 </h1>
                 <p className="text-lg text-white/90 leading-relaxed max-w-md">
-                  Continue your Arabic learning journey. Sign in to access your personalized dashboard and lessons.
+                  Continue your Arabic learning journey. Sign in to access your
+                  personalized dashboard and lessons.
                 </p>
               </div>
 
@@ -158,7 +188,11 @@ const Login = () => {
                       className={`
                         bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20
                         transform transition-all duration-700 hover:scale-105 hover:bg-white/20
-                        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                        ${
+                          isVisible
+                            ? "translate-y-0 opacity-100"
+                            : "translate-y-8 opacity-0"
+                        }
                       `}
                       style={{ transitionDelay: `${400 + index * 100}ms` }}
                     >
@@ -167,8 +201,12 @@ const Login = () => {
                       >
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="text-white font-bold text-sm mb-1">{feature.title}</h3>
-                      <p className="text-white/70 text-xs">{feature.description}</p>
+                      <h3 className="text-white font-bold text-sm mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-white/70 text-xs">
+                        {feature.description}
+                      </p>
                     </div>
                   );
                 })}
@@ -179,11 +217,16 @@ const Login = () => {
               className={`
                 relative z-10 mt-8 pt-8 border-t border-white/20
                 transform transition-all duration-700 delay-800
-                ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                }
               `}
             >
               <p className="text-white/80 italic text-sm">
-                "Learning Arabic opens doors to rich cultures and endless opportunities."
+                "Learning Arabic opens doors to rich cultures and endless
+                opportunities."
               </p>
             </div>
           </div>
@@ -194,7 +237,11 @@ const Login = () => {
                 className={`
                   text-center mb-8
                   transform transition-all duration-700 delay-400
-                  ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                  ${
+                    isVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-8 opacity-0"
+                  }
                 `}
               >
                 <div className="inline-block mb-4">
@@ -202,15 +249,23 @@ const Login = () => {
                     <Lock className="w-8 h-8 text-white" />
                   </div>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign In</h2>
-                <p className="text-gray-600">Enter your credentials to continue</p>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                  Sign In
+                </h2>
+                <p className="text-gray-600">
+                  Enter your credentials to continue
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div
                   className={`
                     transform transition-all duration-700 delay-500
-                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                    ${
+                      isVisible
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }
                   `}
                 >
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -220,7 +275,9 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Mail
                         className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "email" ? "text-teal-500" : "text-gray-400"
+                          focusedField === "email"
+                            ? "text-teal-500"
+                            : "text-gray-400"
                         }`}
                       />
                     </div>
@@ -250,7 +307,11 @@ const Login = () => {
                 <div
                   className={`
                     transform transition-all duration-700 delay-600
-                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                    ${
+                      isVisible
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }
                   `}
                 >
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -260,7 +321,9 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Lock
                         className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "password" ? "text-teal-500" : "text-gray-400"
+                          focusedField === "password"
+                            ? "text-teal-500"
+                            : "text-gray-400"
                         }`}
                       />
                     </div>
@@ -289,7 +352,11 @@ const Login = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-teal-500 transition-colors duration-300"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -298,7 +365,11 @@ const Login = () => {
                   className={`
                     flex items-center justify-between
                     transform transition-all duration-700 delay-700
-                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                    ${
+                      isVisible
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }
                   `}
                 >
                   <label className="flex items-center cursor-pointer group">
@@ -332,7 +403,11 @@ const Login = () => {
                     disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
                     overflow-hidden
                     transform transition-all duration-700 delay-800
-                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                    ${
+                      isVisible
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }
                   `}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
@@ -376,7 +451,11 @@ const Login = () => {
                   className={`
                     text-center
                     transform transition-all duration-700 delay-900
-                    ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
+                    ${
+                      isVisible
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }
                   `}
                 >
                   <p className="text-gray-600">

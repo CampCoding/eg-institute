@@ -21,7 +21,7 @@ const Banner = () => {
   const slides = [
     {
       id: 1,
-      backgroundImage: "/images/firstBanner.png",
+      backgroundImage: "/3.png",
       badge: "WELCOME TO THE EGYPTIAN INSTITUTE OF ARABIC LANGUAGE",
       title: "Learn Arabic with professionals",
       highlightedText: "",
@@ -49,7 +49,7 @@ that teaches real Egyptian Arabic + grammar in a fun, natural way.`,
     },
     {
       id: 3,
-      backgroundImage: "/images/MODERNSTANDARDARABIC.png",
+      backgroundImage: "/10.png",
       badge: "JOIN OUR COMMUNITY OF LEARNERS",
       title: "Sound  ",
       highlightedText: "smart  ",

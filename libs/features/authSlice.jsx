@@ -13,31 +13,43 @@ const initialState  = {
   refresh_token_data :[],
 }
 
-export const handleRegister = createAsyncThunk("authSlice/handleRegister",async({data}) => {
-  try{    
-    const response = await _post(apiRoutes.signUp ,data);
-    return response;
-  }catch(err) {
-    return err;
+export const handleRegister = createAsyncThunk(
+  "authSlice/handleRegister",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post(apiRoutes.signUp, data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-})
+);
 
-export const handleLogin = createAsyncThunk("authSlice/handleLogin",async({data}) => {
-  try{    
-    const response = await _post(apiRoutes.login ,data);
-    return response;
-  }catch(err) {
-    return err;
+export const handleLogin = createAsyncThunk(
+  "authSlice/handleLogin",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post(apiRoutes.login, data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-})
+);
 
-export const handleRefreshToken = createAsyncThunk("authSlice/handleRefreshToken",async({data}) =>{
-  console.log("data" , data);
-  const response = await _post('ask_refresh_tokens_data.php', data ,{
-    baseURL :"https://camp-coding.tech/eg_Institute/"
-  } );
-  return response
-})
+export const handleRefreshToken = createAsyncThunk(
+  "authSlice/handleRefreshToken",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await _post("ask_refresh_tokens_data.php", data, {
+        baseURL: "https://camp-coding.tech/eg_Institute/",
+      });
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 export const authSlice = createSlice({
   name:"authSlice",

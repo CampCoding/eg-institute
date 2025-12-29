@@ -14,41 +14,67 @@ import {
   ShoppingBasket,
   User,
   Video,
+  PenTool,
 } from "lucide-react";
 
 export const items = [
-  { id: 1, title: "Profile Settings", icon: <User />, route: "/profile-settings" },
+  {
+    id: 1,
+    title: "Profile Settings",
+    icon: <User />,
+    route: "/profile-settings",
+  },
   { id: 2, title: "Notifications", icon: <Bell />, route: "/notifications" },
   { id: 3, title: "My Courses", icon: <LibraryBig />, route: "/user-courses" },
-  { id: 3, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
-  { id: 4, title: "Videos", icon: <Video />, route: "/videos" },
-  { id: 5, title: "Lives", icon: <PictureInPicture />, route: "/lives" },
-  { id: 6, title: "Reservations", icon: <CalendarFold />, route: "/my-reservation" },
-  { id: 7, title: "Orders", icon: <Package />, route: "/my-orders" },
-  { id: 8, title: "My purchases", icon: <ShoppingBasket />, route: "/my-purchases" },
-  { id: 9, title: "Logout", icon: <LogOut />, route: "/" },
+  { id: 4, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
+  { id: 5, title: "Videos", icon: <Video />, route: "/videos" },
+  { id: 6, title: "Lives", icon: <PictureInPicture />, route: "/lives" },
+  { id: 11, title: "Exams", icon: <PenTool />, route: "/exams" },
+  {
+    id: 7,
+    title: "Reservations",
+    icon: <CalendarFold />,
+    route: "/my-reservation",
+  },
+  { id: 8, title: "Orders", icon: <Package />, route: "/my-orders" },
+  {
+    id: 9,
+    title: "My purchases",
+    icon: <ShoppingBasket />,
+    route: "/my-purchases",
+  },
+  { id: 10, title: "Logout", icon: <LogOut />, route: "/" },
 ];
 
 export default function ProfilePage() {
-  const [openSideBar, setOpenSideBar] = useState(false);
   const [activeRoute, setActiveRoute] = useState("/profile-settings");
+  const [openSideBar, setOpenSideBar] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const activeItem = useMemo(() => {
-    return items.find((i) => i.route === activeRoute) || items[0];
+  // ✅ restore active tab on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("profile_active_route");
+    if (saved) setActiveRoute(saved);
+  }, []);
+
+  // ✅ persist active tab whenever it changes
+  useEffect(() => {
+    localStorage.setItem("profile_active_route", activeRoute);
   }, [activeRoute]);
 
   // Detect if mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); // set initially
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const activeItem = useMemo(() => {
+    return items.find((i) => i.route === activeRoute) || items[0];
+  }, [activeRoute]);
   return (
     <div className="relative">
-      {/* Mobile menu toggle */}
       {isMobile && (
         <div className="m-4">
           <button
@@ -61,17 +87,18 @@ export default function ProfilePage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] mt-5 gap-6 px-4 md:px-10 pb-10">
-        {/* Sidebar */}
         <SideBar
           items={items}
           activeRoute={activeRoute}
-          onNavigate={setActiveRoute}
+          onNavigate={(route) => {
+            setActiveRoute(route);
+            if (isMobile) setOpenSideBar(false);
+          }}
           isMobile={isMobile}
           open={openSideBar}
           onClose={() => setOpenSideBar(false)}
         />
 
-        {/* Main Content */}
         <ProfileContent route={activeRoute} title={activeItem.title} />
       </div>
     </div>

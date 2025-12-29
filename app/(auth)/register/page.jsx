@@ -113,7 +113,7 @@ const Register = () => {
     dispatch(handleRegister({data : data_send}))
     .unwrap()
     .then(res => {
-      if(res?.data?.status == "success") {
+      if(res?.status == "success") {
         toast.success("Student Registered Successfully!");
         setFormData({
           firstName:"",
@@ -123,7 +123,7 @@ const Register = () => {
         })
         router.push('/login');
       }else {
-        toast.error(res?.data?.message);
+        toast.error(res?.message);
       }
     }).catch(e =>{
       console.log("catch error",e)

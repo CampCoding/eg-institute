@@ -73,7 +73,7 @@ export default function OralMeetingModal({
   // Normalize backend list
   const allSlots = useMemo(() => {
     const msg =
-      all_reserved_meetings_list?.data?.message ||
+      all_reserved_meetings_list?.message ||
       all_reserved_meetings_list?.message ||
       [];
     return Array.isArray(msg) ? msg : [];
@@ -139,7 +139,9 @@ export default function OralMeetingModal({
     setTimeInput(firstTime);
 
     const slot = findSlotByTime(firstTime);
-    setSelectedReservationId(slot?.meeting_resrvations_id ? String(slot.meeting_resrvations_id) : "");
+    setSelectedReservationId(
+      slot?.meeting_resrvations_id ? String(slot.meeting_resrvations_id) : ""
+    );
   }, [selectedDate, allowedTimeInputs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Whenever time changes, set reservation id based on selected time
@@ -150,7 +152,9 @@ export default function OralMeetingModal({
     }
 
     const slot = findSlotByTime(timeInput);
-    setSelectedReservationId(slot?.meeting_resrvations_id ? String(slot.meeting_resrvations_id) : "");
+    setSelectedReservationId(
+      slot?.meeting_resrvations_id ? String(slot.meeting_resrvations_id) : ""
+    );
   }, [selectedDate, timeInput]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const validate = () => {
@@ -195,15 +199,16 @@ export default function OralMeetingModal({
       student_id: String(studentId),
     };
 
-    const res = await dispatch(handleReserveMeeting({ data: payload }))
-    .unwrap();
+    const res = await dispatch(
+      handleReserveMeeting({ data: payload })
+    ).unwrap();
 
-    if(res?.data?.status == "success") {
+    if (res?.status == "success") {
       dispatch(handleGetAllReservedMeeting());
-    setSuccess(true);
-    toast.success(res?.data?.message || "Meeting reserved successfully!");
-    }else {
-      toast.error(res?.data?.message);
+      setSuccess(true);
+      toast.success(res?.message || "Meeting reserved successfully!");
+    } else {
+      toast.error(res?.message);
     }
   }
 
@@ -304,7 +309,7 @@ export default function OralMeetingModal({
                             key={t}
                             type="button"
                             onClick={() => {
-                              console.log("time",t);
+                              console.log("time", t);
                               setTimeInput(t);
 
                               // set reservation id right away for safety
@@ -409,7 +414,9 @@ function Field({ label, error, children }) {
         {label}
       </span>
       {children}
-      {error && <span className="block mt-1 text-xs text-red-600">{error}</span>}
+      {error && (
+        <span className="block mt-1 text-xs text-red-600">{error}</span>
+      )}
     </label>
   );
 }

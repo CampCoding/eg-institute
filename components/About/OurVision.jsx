@@ -23,25 +23,26 @@ export default function OurVision() {
 
     return () => observer.disconnect();
   }, []);
-
   const visionElements = [
     {
       icon: Globe,
-      title: "Global Language",
-      description: "Making Arabic accessible to everyone, everywhere",
+      title: "Global & Accessible",
+      description:
+        "Making Arabic a truly global and accessible language for everyone, everywhere.",
     },
     {
       icon: Heart,
-      title: "Cultural Connection",
-      description: "Bridging gaps and inspiring meaningful communication",
+      title: "Bridge Between Cultures",
+      description:
+        "Using Arabic as a bridge — connecting cultures, strengthening communication, and inspiring understanding.",
     },
     {
       icon: Star,
-      title: "Leading Innovation",
-      description: "Pioneering the future of Arabic language education",
+      title: "Immersion + Innovation",
+      description:
+        "Combining cultural immersion with innovative teaching methods to help learners embrace Arabic with confidence, pride, and joy.",
     },
   ];
-
   return (
     <div
       ref={sectionRef}
@@ -144,11 +145,22 @@ export default function OurVision() {
               </h2>
 
               <p className="text-xl text-gray-600 leading-relaxed mb-8">
+                At the Egyptian Institute of Arabic Language, we envision a
+                world where Arabic becomes a bridge — connecting cultures,
+                strengthening communication, and inspiring understanding. Our
+                vision is to make Arabic a truly global and accessible language
+                for everyone, everywhere. We aim to lead this movement by
+                combining cultural immersion with innovative teaching methods,
+                empowering learners to embrace Arabic with confidence, pride,
+                and joy.
+              </p>
+
+              {/*    <p className="text-xl text-gray-600 leading-relaxed mb-8">
                 At the Egyptian Institute of Arabic Language, we dream of a
                 world where the Arabic language connects cultures, bridges gaps,
                 and inspires communication. Our vision is to make Arabic a
                 global language, accessible to everyone, everywhere.
-              </p>
+              </p> */}
 
               {/* <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl p-6 border border-cyan-100/50 mb-8">
                 <p className="text-gray-700 italic text-lg">

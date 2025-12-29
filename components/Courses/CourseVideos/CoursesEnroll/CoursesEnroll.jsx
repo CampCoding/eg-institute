@@ -636,7 +636,7 @@ const TeacherSelectionModal = ({
   }, [isOpen, courseId, dispatch]);
 
   const teachers = useMemo(() => {
-    const list = course_teacher_data?.data?.message || [];
+    const list = course_teacher_data?.message || [];
     return list.map((t) => ({
       id: String(t.teacher_id ?? ""),
       name: t?.teacher_name || "Teacher",
@@ -839,7 +839,7 @@ const GroupSelectionModal = ({
   }, [isOpen, teacherId, dispatch]);
 
   const groups = useMemo(() => {
-    const list = course_teacher_group_data?.data?.message || [];
+    const list = course_teacher_group_data?.message || [];
     return list.map((g) => ({
       id: String(g?.group_id ?? g?.id ?? ""),
       title: g?.group_name || g?.title || "Group",
@@ -1177,8 +1177,8 @@ const ScheduleSelectionModal = ({
     dispatch(handleGetAllCourseTeachers({ data: { course_id: courseId } }))
       .unwrap()
       .then(res => {
-        if (res?.data?.status === "success") {
-          const teachersList = res?.data?.message || [];
+        if (res?.status === "success") {
+          const teachersList = res?.message || [];
           const filtered = teachersList.find(item =>
             String(item?.teacher_id) === String(selectedTeacher?.id)
           );
@@ -1716,14 +1716,14 @@ const EmailNotificationModal = ({
     const res = await dispatch(handleMakeStudentSchedule({ data: payload }))
       .unwrap();
 
-    if (res?.data?.status == "success") {
-      toast.success(res?.data?.message);
+    if (res?.status == "success") {
+      toast.success(res?.message);
       await dispatch(
         handleGetAllStudentSchedules({ data: { student_id: studentId } })
       );
       setIsSubmitted(true)
     } else {
-      toast.error(res?.data?.message || "Subscription failed. Please try again.");
+      toast.error(res?.message || "Subscription failed. Please try again.");
     }
   };
 

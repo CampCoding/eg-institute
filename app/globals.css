@@ -18,3 +18,23 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #02aaa0;
+  border-radius: 999px;
+  border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #018b83;
+}

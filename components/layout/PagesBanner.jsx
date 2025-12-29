@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 const PagesBanner = ({
   title,
   subTitle,
+  isLarge = false,
   backgroundImage = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80", // Default students studying image
   overlayOpacity = 0.7,
 }) => {
@@ -117,7 +118,11 @@ const PagesBanner = ({
         {/* Title */}
         <h1
           ref={titleRef}
-          className={`text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 transform transition-all duration-1000 ease-out ${
+          className={`${
+            isLarge
+              ? "text-3xl md:text-4xl lg:text-5xl xl:text-6xl "
+              : "text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
+          }  md:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 transform transition-all duration-1000 ease-out ${
             backgroundImage
               ? "text-white drop-shadow-2xl"
               : "bg-gradient-to-r from-slate-800 via-blue-900 to-cyan-800 bg-clip-text"

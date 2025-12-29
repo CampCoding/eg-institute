@@ -21,14 +21,18 @@ import toast from "react-hot-toast";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { refresh_token_loading, refresh_token_data } = useSelector(state => state?.auth);
+  const { refresh_token_loading, refresh_token_data } = useSelector(
+    (state) => state?.auth
+  );
   const tokenInterval = useRef();
 
-
   useEffect(() => {
-    const refreshToken = Cookies.get(configs.localstorageEgyIntstituteRefreshTokenName);
+    const refreshToken = Cookies.get(
+      configs.localstorageEgyIntstituteRefreshTokenName
+    );
     const rawUser =
-      localStorage.getItem("eg_user_data") || sessionStorage.getItem("eg_user_data");
+      localStorage.getItem("eg_user_data") ||
+      sessionStorage.getItem("eg_user_data");
     const userData = rawUser ? JSON.parse(rawUser) : null;
 
     const token =
@@ -52,18 +56,18 @@ export default function Home() {
       )
         .unwrap()
         .then((res) => {
-          if (res?.data?.status === "out") {
-            toast.success(res?.data?.message);
+          if (res?.status === "out") {
+            toast.success(res?.message);
             localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
             Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName);
-          } else if (res?.data?.status === "success") {
+          } else if (res?.status === "success") {
             localStorage.setItem(
               configs.localstorageEgyIntstituteTokenName,
-              res?.data?.access_token
+              res?.access_token
             );
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     };
 
     // run once immediately

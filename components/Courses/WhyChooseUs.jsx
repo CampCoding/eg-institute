@@ -10,7 +10,7 @@ export default function WhyChooseUs() {
   useEffect(() => {
     setIsVisible(true);
     const interval = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % 3);
+      setActiveFeature((prev) => (prev + 1) % features.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -18,24 +18,52 @@ export default function WhyChooseUs() {
   const features = [
     {
       icon: BookOpen,
-      title: "Tailored Approach",
+      title: "A Complete, Original Curriculum",
       description:
-        "We design customized learning paths that align with your unique goals. Experience focused support that accelerates your language mastery.",
+        "Developed in-house by certified specialists — not copied, borrowed, or improvised.",
       color: "from-blue-500 to-cyan-500",
     },
     {
       icon: Users,
-      title: "Experienced Mentors",
+      title: "Specialized Teachers for Foreign Learners",
       description:
-        "Learn from certified experts with years of proven teaching experience. Our dedicated team offers personalized guidance every step of the way.",
+        "Our team is trained specifically to teach Arabic to non-Arabic speakers — not just native speakers who “can teach.”",
       color: "from-purple-500 to-pink-500",
     },
     {
-      icon: Zap,
-      title: "Interactive Environment",
+      icon: BookOpen,
+      title: "Accessible Learning for Everyone",
       description:
-        "Engage in dynamic, hands-on lessons that build practical communication skills. Our immersive approach fosters confidence and measurable progress.",
+        "Egyptian Arabic students study using Arabic + Franco + English, while MSA programs include Arabic + English — perfect for learners who cannot read Arabic yet.",
+      color: "from-indigo-500 to-blue-500",
+    },
+    {
+      icon: Zap,
+      title: "A Speaking-Focused Approach",
+      description:
+        "You start speaking from day one — real conversations, real situations, real Egyptian Arabic.",
       color: "from-green-500 to-teal-500",
+    },
+    {
+      icon: Users,
+      title: "Flexible Learning Options",
+      description:
+        "Choose between structured group classes or fully customized one-to-one programs.",
+      color: "from-emerald-500 to-cyan-500",
+    },
+    {
+      icon: Users,
+      title: "Global Community",
+      description:
+        "We proudly support learners from over 40+ countries, creating a rich, multicultural learning experience.",
+      color: "from-pink-500 to-rose-500",
+    },
+    {
+      icon: Zap,
+      title: "Real Results",
+      description:
+        "Hundreds of students reached conversational fluency, improved pronunciation, and built a real connection to Arabic culture.",
+      color: "from-orange-500 to-amber-500",
     },
   ];
 
@@ -57,9 +85,41 @@ export default function WhyChooseUs() {
           <div className="w-24 h-1 bg-gradient-to-r from-teal-600 to-teal-600 mx-auto mt-6 rounded-full"></div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-1 gap-12 items-center">
           {/* Left side - Features */}
-          <div className="space-y-8">
+
+          {/* Right side - Image */}
+          <div
+            className={`relative transition-all duration-1000 delay-300 ${
+              isVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-8"
+            }`}
+          >
+            <div className="relative overflow-hidden rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-500">
+              {/* Background with gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/20 z-10"></div>
+
+              {/* Simulated image content */}
+              <div className="bg-gradient-to-br from-green-100 to-blue-100 aspect-[4/3] relative">
+                <img
+                  className="w-full h-full object-cover"
+                  src="/images/student-connecting-with-his-smartphone.jpg"
+                  alt=""
+                />
+              </div>
+
+              {/* Floating elements */}
+              {/* <div className="absolute top-8 right-8 w-4 h-4 bg-blue-400 rounded-full animate-bounce"></div>
+              <div className="absolute top-16 right-16 w-3 h-3 bg-purple-400 rounded-full animate-bounce delay-100"></div>
+              <div className="absolute top-12 right-24 w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-200"></div> */}
+            </div>
+
+            {/* Decorative elements */}
+            {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-green-400 to-teal-500 rounded-full opacity-15 animate-pulse delay-1000"></div> */}
+          </div>
+          <div className=" grid grid-cols-1 md:grid-cols-2 gap-8  ">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
@@ -143,38 +203,6 @@ export default function WhyChooseUs() {
                 </div>
               );
             })}
-          </div>
-
-          {/* Right side - Image */}
-          <div
-            className={`relative transition-all duration-1000 delay-300 ${
-              isVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 -translate-x-8"
-            }`}
-          >
-            <div className="relative overflow-hidden rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-500">
-              {/* Background with gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/20 z-10"></div>
-
-              {/* Simulated image content */}
-              <div className="bg-gradient-to-br from-green-100 to-blue-100 aspect-[4/3] relative">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/images/student-connecting-with-his-smartphone.jpg"
-                  alt=""
-                />
-              </div>
-
-              {/* Floating elements */}
-              {/* <div className="absolute top-8 right-8 w-4 h-4 bg-blue-400 rounded-full animate-bounce"></div>
-              <div className="absolute top-16 right-16 w-3 h-3 bg-purple-400 rounded-full animate-bounce delay-100"></div>
-              <div className="absolute top-12 right-24 w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-200"></div> */}
-            </div>
-
-            {/* Decorative elements */}
-            {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
-            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-green-400 to-teal-500 rounded-full opacity-15 animate-pulse delay-1000"></div> */}
           </div>
         </div>
 

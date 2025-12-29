@@ -12,11 +12,15 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function AnimatedFooter() {
   const [isVisible, setIsVisible] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
+  const userData =
+    JSON.parse(localStorage.getItem("eg_user_data")) ??
+    JSON.parse(sessionStorage.getItem("eg_user_data"));
 
   useEffect(() => {
     setIsVisible(true);
@@ -47,6 +51,20 @@ export default function AnimatedFooter() {
     "Careers",
     "Article & News",
     "Legal Notice",
+  ];
+  const footerLinks = [
+    {
+      label: "Term of Service",
+      href: "/terms-of-service",
+    },
+    {
+      label: "Privacy Policy",
+      href: "/privacy",
+    },
+    {
+      label: "Cookie Policy",
+      href: "/cookie",
+    },
   ];
 
   return (
@@ -245,16 +263,18 @@ export default function AnimatedFooter() {
                 </div>
               </div>
 
-              <button className="group relative w-full py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <span className="group-hover:scale-105 transition-transform duration-300">
-                    SIGN UP
-                  </span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-              </button>
+              {!userData ?? (
+                <button className="group relative w-full py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative flex items-center justify-center space-x-2">
+                    <span className="group-hover:scale-105 transition-transform duration-300">
+                      SIGN UP
+                    </span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -274,18 +294,16 @@ export default function AnimatedFooter() {
             </p>
 
             <div className="flex flex-wrap justify-center md:justify-end space-x-6 text-sm">
-              {["Term of use", "Privacy Policy", "Cookie Policy"].map(
-                (item, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="text-gray-600 hover:text-teal-600 transition-all duration-300 relative group"
-                  >
-                    {item}
-                    <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-teal-500 group-hover:w-full transition-all duration-300"></div>
-                  </a>
-                )
-              )}
+              {footerLinks.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="text-gray-600 hover:text-teal-600 transition-all duration-300 relative group"
+                >
+                  {item.label}
+                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-teal-500 group-hover:w-full transition-all duration-300"></div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
