@@ -11,16 +11,13 @@ const apiInstance = axios.create({
 apiInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
-    const token2 = localStorage.getItem(
-      configs.localstorageEgyIntstituteTokenName
-    );
 
     // ✅ تأكيد إن headers موجود
     config.headers = config.headers || {};
 
     // ✅ لو انت بعت Authorization يدويًا في request سيبه
-    if (!config.headers["Authorization"] && token2) {
-      config.headers["Authorization"] = `Bearer ${token2}`;
+    if (!config.headers["Authorization"] && token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
 
     return config;

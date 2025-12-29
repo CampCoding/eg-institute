@@ -18,12 +18,20 @@ export default function AnimatedFooter() {
   const [isVisible, setIsVisible] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
-  const userData =
-    JSON.parse(localStorage.getItem("eg_user_data")) ??
-    JSON.parse(sessionStorage.getItem("eg_user_data"));
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     setIsVisible(true);
+    try {
+      const raw =
+        localStorage.getItem("eg_user_data") ??
+        sessionStorage.getItem("eg_user_data");
+      if (raw) {
+        setUserData(JSON.parse(raw));
+      }
+    } catch (e) {
+      console.error("Error parsing user data", e);
+    }
   }, []);
 
   const socialIcons = [
