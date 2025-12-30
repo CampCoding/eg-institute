@@ -6,9 +6,9 @@ import { getMessagingIfSupported } from "../configs/fireBase";
 import toast from "react-hot-toast";
 import { Bounce } from "react-toastify";
 import { showModernToast } from "../../components/shared/Toaster";
+import { playNotifSound } from "../../utils/notificationSound";
 
 export function useFCM() {
-  
   useEffect(() => {
     let unsub;
 
@@ -41,9 +41,9 @@ export function useFCM() {
         unsub = onMessage(messaging, (payload) => {
           const title = payload?.notification?.title || "New notification";
           const body = payload?.notification?.body || "";
-          const kind = payload?.data?.type || "message";
+          const kind = "alert";
 
-          new Notification(title, { body });
+          /* new Notification(title, { body }); */
           console.log(payload);
 
           showModernToast({
@@ -51,6 +51,14 @@ export function useFCM() {
             body,
             kind,
           });
+
+          playNotifSound(
+            kind === "alert"
+              ? "alert"
+              : kind === "message"
+              ? "message"
+              : "alert"
+          );
         });
       } catch (e) {
         console.error("FCM init error:", e);

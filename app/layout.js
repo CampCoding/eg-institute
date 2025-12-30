@@ -4,6 +4,7 @@ import ConditionalLayout from "../components/layout/ConditionalLayout";
 import { Toaster } from "react-hot-toast";
 import NotificationsInit from "../components/shared/NotificationInit";
 import ToastProvider from "../components/shared/ToastProvider";
+import EnableNotificationSound from "../components/shared/EnableSound";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,9 @@ export default function RootLayout({ children }) {
         <Toaster position="top-right" reverseOrder={false} />
         <NotificationsInit />
         <ToastProvider />
+        <div className="fixed bottom-[10%] right-[1%] z-50 animate-pulse">
+          <EnableNotificationSound />
+        </div>
       </body>
     </html>
   );
