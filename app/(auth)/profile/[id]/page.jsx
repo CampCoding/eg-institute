@@ -27,8 +27,6 @@ export const items = [
   { id: 2, title: "Notifications", icon: <Bell />, route: "/notifications" },
   { id: 3, title: "My Courses", icon: <LibraryBig />, route: "/user-courses" },
   { id: 4, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
-  { id: 5, title: "Videos", icon: <Video />, route: "/videos" },
-  { id: 6, title: "Lives", icon: <PictureInPicture />, route: "/lives" },
   { id: 11, title: "Exams", icon: <PenTool />, route: "/exams" },
   {
     id: 7,
@@ -47,15 +45,17 @@ export const items = [
 ];
 
 export default function ProfilePage() {
-  const [activeRoute, setActiveRoute] = useState("/profile-settings");
+  // Initialize from localStorage if available
+  const [activeRoute, setActiveRoute] = useState(() => {
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.getItem("profile_active_route") || "/profile-settings"
+      );
+    }
+    return "/profile-settings";
+  });
   const [openSideBar, setOpenSideBar] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  // ✅ restore active tab on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("profile_active_route");
-    if (saved) setActiveRoute(saved);
-  }, []);
 
   // ✅ persist active tab whenever it changes
   useEffect(() => {

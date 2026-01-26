@@ -50,10 +50,8 @@ export default function OralMeetingModal({
   const [success, setSuccess] = useState(false);
 
   const platforms = [
-    { label: "Google Meet", value: "Google Meet", icon: Video },
     { label: "Zoom", value: "Zoom", icon: Video },
     { label: "WhatsApp", value: "WhatsApp", icon: Phone },
-    { label: "Phone Call", value: "Phone Call", icon: Phone },
   ];
 
   const update = (k, v) => setForm((s) => ({ ...s, [k]: v }));

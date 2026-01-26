@@ -20,10 +20,12 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { handleGetAllTeachers } from "../../libs/features/teacherSlice";
+import { useRouter } from "next/navigation";
 
 const TeamsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [swiperRef, setSwiperRef] = useState(null);
+  const router = useRouter();
   const sectionRef = useRef(null);
   const dispatch = useDispatch();
   const { all_Teachers_data } = useSelector((state) => state?.teachers);
@@ -55,7 +57,7 @@ const TeamsSection = () => {
       image:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
       description:
-        "Leading the company with 15+ years of experience in education technology and Arabic language instruction.",
+        "Leading the company with 15+ hours of experience in education technology and Arabic language instruction.",
       location: "Dubai, UAE",
       email: "ahmed@company.com",
       phone: "+971 50 123 4567",
@@ -103,7 +105,7 @@ const TeamsSection = () => {
       image:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
       description:
-        "Tech innovator with 12+ years experience building educational platforms and learning management systems.",
+        "Tech innovator with 12+ hours experience building educational platforms and learning management systems.",
       location: "Doha, Qatar",
       email: "yusuf@company.com",
       phone: "+974 5012 3456",
@@ -355,7 +357,7 @@ const TeamsSection = () => {
                         styles={{ root: { maxWidth: "300px" } }}
                       >
                         <div>
-                          <p className="text-gray-600 line-clamp-2 text-sm leading-relaxed mb-4 flex-grow cursor-help">
+                          <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-grow cursor-help line-clamp-1">
                             {member.description}
                           </p>
                         </div>
@@ -388,6 +390,18 @@ const TeamsSection = () => {
                           </div>
                         </Tooltip>
                       </div> */}
+
+                      <button
+                        onClick={() =>
+                          router.push(`/teachers/teacher-profile/${member.id}`)
+                        }
+                        className="w-full mt-auto bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group/btn"
+                      >
+                        <span className="flex  items-center justify-center gap-2">
+                          Details
+                          <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -19,8 +19,9 @@ export default function AnimatedFooter() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
   const userData =
-    JSON.parse(localStorage.getItem("eg_user_data")) ??
-    JSON.parse(sessionStorage.getItem("eg_user_data"));
+    typeof window !== "undefined" &&
+    (localStorage.getItem("eg_user_data") ??
+      sessionStorage.getItem("eg_user_data"));
 
   useEffect(() => {
     setIsVisible(true);

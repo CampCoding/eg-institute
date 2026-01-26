@@ -25,7 +25,7 @@ export default function TeacherSection() {
         "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=600&h=600&fit=crop",
       bio:
         teacher.bio ??
-        "Specialist in advanced syntax and media Arabic with 10+ years teaching experience.",
+        "Specialist in advanced syntax and media Arabic with 100+ hours teaching experience.",
       rating: teacher.rate ?? 4.9,
       students: 1200,
       specialties: teacher.languages.split("**"),
@@ -38,7 +38,7 @@ export default function TeacherSection() {
       role: "Modern Standard Arabic",
       photo:
         "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=600&h=600&fit=crop",
-      bio: "Specialist in advanced syntax and media Arabic with 10+ years teaching experience.",
+      bio: "Specialist in advanced syntax and media Arabic with 100+ hours teaching experience.",
       rating: 4.9,
       students: 1200,
       specialties: ["Grammar", "Media Arabic", "Academic Writing"],
@@ -199,7 +199,9 @@ export default function TeacherSection() {
                   </div>
 
                   <button
-                    onClick={() => router.push(`/teachers/teacher-profile/1`)}
+                    onClick={() =>
+                      router.push(`/teachers/teacher-profile/${teacher.id}`)
+                    }
                     className="w-full mt-auto bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group/btn"
                   >
                     <span className="flex  items-center justify-center gap-2">

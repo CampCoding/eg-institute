@@ -28,7 +28,7 @@ const Banner = () => {
       subtitle: "",
       subtitle2: "",
       highlightedText2: "",
-      description: `Specialized & Native teachers with 15+ years of experience in
+      description: `Specialized & Native teachers with 15+ hours of experience in
 teaching Arabic to non-native speakers — live, interactive, and fun!`,
       primaryButton: "Start Your Journey",
       secondaryButton: "DISCOVER MORE",

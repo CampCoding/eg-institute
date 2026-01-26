@@ -64,7 +64,7 @@ export default function SideBar({
                   onClick={(e) => {
                     e.preventDefault();
                     onNavigate?.(item.route);
-                    localStorage.setItem("tab", item.route);
+                    localStorage.setItem("profile_active_route", item.route);
 
                     if (isMobile) onClose?.();
                   }}

@@ -19,13 +19,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const CoursesContentSection = ({data}) => {
+const CoursesContentSection = ({ data }) => {
   const [yearsCount, setYearsCount] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const sectionRef = useRef(null);
   const router = useRouter();
-
 
   const features = [
     {
@@ -131,13 +130,16 @@ const CoursesContentSection = ({data}) => {
                 <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full px-6 py-3 animate-fade-in">
                   <Sparkles className="w-5 h-5 text-teal-600 animate-pulse" />
                   <span className="text-teal-700 font-semibold tracking-wider">
-                    🇪🇬 { data &&  (data[0]?.course_name || "EGYPTIAN ARABIC")}
+                    🇪🇬 {data && (data[0]?.course_name || "EGYPTIAN ARABIC")}
                   </span>
                 </div>
 
-                <h2 
-                dangerouslySetInnerHTML={{__html : data && data[0]?.course_name}}
-                className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
+                <h2
+                  dangerouslySetInnerHTML={{
+                    __html: data && data[0]?.course_name,
+                  }}
+                  className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight"
+                >
                   {/* <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
                     Egyptian Arabic
                   </span>
@@ -147,9 +149,12 @@ const CoursesContentSection = ({data}) => {
               </div>
 
               {/* Description */}
-              <div 
-              dangerouslySetInnerHTML={{__html : data && data[0]?.course_descreption}}
-              className="space-y-6 text-gray-600 leading-relaxed">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: data && data[0]?.course_descreption,
+                }}
+                className="space-y-6 text-gray-600 leading-relaxed"
+              >
                 {/* <p className="text-lg">
                   Learn the{" "}
                   <span className="font-semibold text-teal-600">
@@ -183,7 +188,11 @@ const CoursesContentSection = ({data}) => {
                 style={{ animationDelay: "1s" }}
               >
                 <button
-                  onClick={() => router.push(`/courses/courseVideos/${data[0]?.course_id}?groupPrice=${data[0]?.group_price}&private=${data[0]?.private_price}`)}
+                  onClick={() =>
+                    router.push(
+                      `/courses/courseVideos/${data[0]?.course_id}?groupPrice=${data[0]?.group_price}&private=${data[0]?.private_price}`
+                    )
+                  }
                   className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
@@ -214,7 +223,7 @@ const CoursesContentSection = ({data}) => {
                     <span className="text-2xl ml-1">+</span>
                   </div>
                   <div className="text-sm font-medium opacity-90">
-                    Years of Experience
+                    Hours of Experience
                   </div>
                 </div>
 
@@ -257,7 +266,10 @@ const CoursesContentSection = ({data}) => {
 
                   {/* Bottom Controls */}
                   <img
-                    src={data[0]?.image  || "/images/female-teacher-in-headphones-teaching-young-student-girl-online-.jpg"}
+                    src={
+                      data[0]?.image ||
+                      "/images/female-teacher-in-headphones-teaching-young-student-girl-online-.jpg"
+                    }
                     alt=""
                   />
                 </div>
@@ -279,7 +291,7 @@ const CoursesContentSection = ({data}) => {
           </div>
         </div>
       </div>
-      
+
       <div
         ref={sectionRef}
         className=" bg-gradient-to-br from-slate-50 via-white to-gray-100 py-20 px-6 relative overflow-hidden"
@@ -328,7 +340,7 @@ const CoursesContentSection = ({data}) => {
                     <span className="text-2xl ml-1">+</span>
                   </div>
                   <div className="text-sm font-medium opacity-90">
-                    Years of Experience
+                    Hours of Experience
                   </div>
                 </div>
 
@@ -370,7 +382,12 @@ const CoursesContentSection = ({data}) => {
                   {/* Main Video Area */}
 
                   {/* Bottom Controls */}
-                  <img alt="" src={data[1]?.image || "/images/teacher-and-his-students.jpg"} />
+                  <img
+                    alt=""
+                    src={
+                      data[1]?.image || "/images/teacher-and-his-students.jpg"
+                    }
+                  />
                 </div>
 
                 {/* Success Metrics */}
@@ -399,13 +416,14 @@ const CoursesContentSection = ({data}) => {
                 <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full px-6 py-3 animate-fade-in">
                   <Sparkles className="w-5 h-5 text-teal-600 animate-pulse" />
                   <span className="text-teal-700 uppercase font-semibold tracking-wider">
-                    {data[1]?.course_name ||  "MODERN STANDARD ARABIC"}
+                    {data[1]?.course_name || "MODERN STANDARD ARABIC"}
                   </span>
                 </div>
 
-                <h2 
-                dangerouslySetInnerHTML={{__html : data[1]?.course_name}}
-                className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
+                <h2
+                  dangerouslySetInnerHTML={{ __html: data[1]?.course_name }}
+                  className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight"
+                >
                   {/* <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
                     Modern Standard Arabic{" "}
                   </span>
@@ -415,9 +433,12 @@ const CoursesContentSection = ({data}) => {
               </div>
 
               {/* Description */}
-              <div 
-              dangerouslySetInnerHTML={{__html : data[0]?.course_descreption}}
-              className="space-y-6 text-gray-600 leading-relaxed">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: data[0]?.course_descreption,
+                }}
+                className="space-y-6 text-gray-600 leading-relaxed"
+              >
                 {/* <p className="text-lg">
                   Master the{" "}
                   <span className="font-semibold text-teal-600">
@@ -451,7 +472,9 @@ const CoursesContentSection = ({data}) => {
                 style={{ animationDelay: "1s" }}
               >
                 <button
-                  onClick={() => router.push(`/courses/courseVideos/${data[1]?.course_id}`)}
+                  onClick={() =>
+                    router.push(`/courses/courseVideos/${data[1]?.course_id}`)
+                  }
                   className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
                 >
                   <span className="relative z-10 flex items-center space-x-2">

@@ -17,7 +17,6 @@ export default function TeacherReservationLessonModal({
   const [selectedTime, setSelectedTime] = useState(null);
   const [timezone, setTimezone] = useState(data?.timezone || "UTC");
 
-
   useEffect(() => {
     if (open) {
       setSelectedDate(null);

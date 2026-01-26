@@ -261,7 +261,7 @@ export default function AboutSection() {
                   <span className="text-2xl ml-1">+</span>
                 </div>
                 <div className="text-sm font-medium opacity-90">
-                  Years of Experience
+                  Hours of Experience
                 </div>
               </div>
 

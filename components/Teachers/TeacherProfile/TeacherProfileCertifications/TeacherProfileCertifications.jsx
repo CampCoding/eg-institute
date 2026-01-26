@@ -7,7 +7,7 @@ export default function TeacherProfileCertifications({ teacher }) {
 
   return (
     <div>
-      <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50">
+      {/* <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-200/50">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center">
             <Award className="w-5 h-5 text-white" />
@@ -43,7 +43,7 @@ export default function TeacherProfileCertifications({ teacher }) {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

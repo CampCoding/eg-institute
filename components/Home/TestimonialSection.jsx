@@ -375,7 +375,7 @@ const TestimonialSection = () => {
                     ></div>
                     <img
                       src={testimonial.image}
-                      alt={testimonial.name}
+                      // alt={testimonial.name}
                       className="relative w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg"
                       loading="lazy"
                     />

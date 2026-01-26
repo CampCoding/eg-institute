@@ -177,9 +177,12 @@ const ExamCoursesContent = () => {
                 }`}
                 style={{ animationDelay: "1s" }}
               >
-                <button 
-                onClick={() => router.push(`/exams/exam-courses/exam-units/1`)}
-                className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105">
+                <button
+                  onClick={() =>
+                    router.push(`/exams/exam-courses/exam-units/1`)
+                  }
+                  className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
+                >
                   <span className="relative z-10 flex items-center space-x-2">
                     <span>Units</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -208,7 +211,7 @@ const ExamCoursesContent = () => {
                     <span className="text-2xl ml-1">+</span>
                   </div>
                   <div className="text-sm font-medium opacity-90">
-                    Years of Experience
+                    Hours of Experience
                   </div>
                 </div>
 
@@ -321,7 +324,7 @@ const ExamCoursesContent = () => {
                     <span className="text-2xl ml-1">+</span>
                   </div>
                   <div className="text-sm font-medium opacity-90">
-                    Years of Experience
+                    Hours of Experience
                   </div>
                 </div>
 
@@ -363,10 +366,7 @@ const ExamCoursesContent = () => {
                   {/* Main Video Area */}
 
                   {/* Bottom Controls */}
-                  <img
-                    alt=""
-                    src="/images/teacher-and-his-students.jpg"
-                  />
+                  <img alt="" src="/images/teacher-and-his-students.jpg" />
                 </div>
 
                 {/* Success Metrics */}
@@ -442,9 +442,12 @@ const ExamCoursesContent = () => {
                 }`}
                 style={{ animationDelay: "1s" }}
               >
-                <button 
-                onClick={() => router.push(`/exams/exam-courses/exam-units/2`)}
-                className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105">
+                <button
+                  onClick={() =>
+                    router.push(`/exams/exam-courses/exam-units/2`)
+                  }
+                  className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
+                >
                   <span className="relative z-10 flex items-center space-x-2">
                     <span>Units</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
