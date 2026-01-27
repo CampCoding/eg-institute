@@ -29,7 +29,9 @@ import { Spin } from "antd";
 
 const CoursesPage = () => {
   const dispatch = useDispatch();
-  const {all_courses_loading , all_courses_data} = useSelector(state => state?.courses);
+  const { all_courses_loading, all_courses_data } = useSelector(
+    (state) => state?.courses
+  );
 
   const [yearsCount, setYearsCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -70,13 +72,13 @@ const CoursesPage = () => {
   ];
 
   useEffect(() => {
-    dispatch(handleGetAllCourses())
-  } , [dispatch])
-  
+    dispatch(handleGetAllCourses());
+  }, [dispatch]);
+
   useEffect(() => {
-    console.log(all_courses_data?.message)
-  } , [all_courses_data])
-    
+    console.log(all_courses_data?.message);
+  }, [all_courses_data]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -102,14 +104,13 @@ const CoursesPage = () => {
     return () => observer.disconnect();
   }, []);
 
-  if(all_courses_loading) {
+  if (all_courses_loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Spin size="large" spinning/>
+        <Spin size="large" spinning />
       </div>
-    )
+    );
   }
-
 
   return (
     <div>
@@ -117,9 +118,9 @@ const CoursesPage = () => {
         title={"Courses"}
         subTitle={"Providing the best learning experience."}
       />
-      <CoursesContentSection data={all_courses_data?.message || []}/>
+      <CoursesContentSection data={all_courses_data?.message || []} />
       {/* <MeetOurLanguageExperts /> */}
-      <WhyChooseUs />
+      {/* <WhyChooseUs /> */}
       <Dontwait image={"/images/teacher-and-his-students.jpg"} />
       <NeedMoreHelp />
     </div>

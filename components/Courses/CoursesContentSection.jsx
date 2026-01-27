@@ -26,38 +26,9 @@ const CoursesContentSection = ({ data }) => {
   const sectionRef = useRef(null);
   const router = useRouter();
 
-  const features = [
-    {
-      icon: Users,
-      label: "Expert Instructors",
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: Video,
-      label: "Interactive Lessons",
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Calendar,
-      label: "Flexible Scheduling",
-      color: "from-green-500 to-teal-500",
-    },
-    {
-      icon: Globe,
-      label: "Cultural Immersion",
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      icon: Target,
-      label: "Personalized Learning",
-      color: "from-indigo-500 to-purple-500",
-    },
-    {
-      icon: Heart,
-      label: "Global Community",
-      color: "from-pink-500 to-rose-500",
-    },
-  ];
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -84,415 +55,218 @@ const CoursesContentSection = ({ data }) => {
     return () => observer.disconnect();
   }, []);
 
+  // Default image fallbacks based on index
+  const defaultImages = [
+    "/images/female-teacher-in-headphones-teaching-young-student-girl-online-.jpg",
+    "/images/teacher-and-his-students.jpg",
+  ];
+
   return (
-    <div>
-      <div
-        ref={sectionRef}
-        className=" bg-gradient-to-br from-slate-50 via-white to-gray-100 py-20 px-6 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-teal-200/20 to-cyan-200/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-200/15 to-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    <div ref={sectionRef}>
+      {data?.map((course, index) => {
+        const isEven = index % 2 === 0; // Even = image right, Odd = image left
 
-          {/* Floating Arabic Letters */}
-          {["ع", "ر", "ب", "ي"].map((letter, i) => (
-            <div
-              key={i}
-              className="absolute text-6xl font-bold text-teal-200/30 animate-float"
-              style={{
-                left: `${20 + i * 20}%`,
-                top: `${10 + i * 15}%`,
-                animationDelay: `${i * 1.5}s`,
-                animationDuration: `${4 + i}s`,
-              }}
-            >
-              {letter}
-            </div>
-          ))}
+        return (
+          <div
+            key={course.course_id || index}
+            className="bg-gradient-to-br from-slate-50 via-white to-gray-100 py-20 px-6 relative overflow-hidden"
+          >
+            {/* Background Decorations */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-teal-200/20 to-cyan-200/20 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-200/15 to-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-          {/* Geometric Shapes */}
-          <div className="absolute top-1/4 right-1/4 w-16 h-16 border-4 border-teal-300/40 rounded-lg animate-spin-slow"></div>
-          {/* <div className="absolute bottom-1/3 left-1/5 w-12 h-12 bg-gradient-to-r from-cyan-400/30 to-teal-400/30 rounded-full animate-bounce"></div> */}
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div
-              className={`space-y-8 transform transition-all duration-1000 ${
-                isVisible
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-20 opacity-0"
-              }`}
-            >
-              {/* Header */}
-              <div className="space-y-6">
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full px-6 py-3 animate-fade-in">
-                  <Sparkles className="w-5 h-5 text-teal-600 animate-pulse" />
-                  <span className="text-teal-700 font-semibold tracking-wider">
-                    🇪🇬 {data && (data[0]?.course_name || "EGYPTIAN ARABIC")}
-                  </span>
-                </div>
-
-                <h2
-                  dangerouslySetInnerHTML={{
-                    __html: data && data[0]?.course_name,
+              {/* Floating Arabic Letters */}
+              {["ع", "ر", "ب", "ي"].map((letter, i) => (
+                <div
+                  key={i}
+                  className="absolute text-6xl font-bold text-teal-200/30 animate-float"
+                  style={{
+                    left: `${20 + i * 20}%`,
+                    top: `${10 + i * 15}%`,
+                    animationDelay: `${i * 1.5}s`,
+                    animationDuration: `${4 + i}s`,
                   }}
-                  className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight"
                 >
-                  {/* <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    Egyptian Arabic
-                  </span>
-                  <br />
-                  Courses{" "} */}
-                </h2>
-              </div>
+                  {letter}
+                </div>
+              ))}
 
-              {/* Description */}
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: data && data[0]?.course_descreption,
-                }}
-                className="space-y-6 text-gray-600 leading-relaxed"
-              >
-                {/* <p className="text-lg">
-                  Learn the{" "}
-                  <span className="font-semibold text-teal-600">
-                    vibrant dialect of Egypt and immerse yourself{" "}
-                  </span>
-                  in the local culture and daily conversations.{" "}
-                </p>
-                <p>
-                  Our courses are designed to help you speak like a local.
-                  Whether you're traveling, working, or simply fascinated by
-                  Egyptian life, we make learning both practical and fun.
-                </p>
-                <p>
-                  Through real-life scenarios and cultural context, you'll build
-                  conversational confidence and a deeper connection with Egypt's
-                  rich heritage.
-                </p>
-                <p className="text-lg font-medium text-gray-700">
-                  Join us and discover the heart of Egyptian life — one phrase
-                  at a time.
-                </p> */}
-              </div>
-
-              {/* Features Grid */}
-
-              {/* CTA Button */}
-              <div
-                className={`pt-4 ${
-                  isVisible ? "animate-fade-in" : "opacity-0"
-                }`}
-                style={{ animationDelay: "1s" }}
-              >
-                <button
-                  onClick={() =>
-                    router.push(
-                      `/courses/courseVideos/${data[0]?.course_id}?groupPrice=${data[0]?.group_price}&private=${data[0]?.private_price}`
-                    )
-                  }
-                  className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
-                >
-                  <span className="relative z-10 flex items-center space-x-2">
-                    <span>Join Now</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Button Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400 blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500 transform scale-150"></div>
-                </button>
-              </div>
+              {/* Geometric Shapes */}
+              <div className="absolute top-1/4 right-1/4 w-16 h-16 border-4 border-teal-300/40 rounded-lg animate-spin-slow"></div>
             </div>
 
-            {/* Right Content - Enhanced Video Call Scene */}
-            <div
-              className={`relative transform transition-all duration-1000 delay-300 ${
-                isVisible
-                  ? "translate-x-0 opacity-100"
-                  : "translate-x-20 opacity-0"
-              }`}
-            >
-              {/* Experience Badge */}
-              <div className="absolute -top-8 -left-8 z-20 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-3xl p-6 shadow-2xl animate-bounce">
-                <div className="text-center text-white">
-                  <div className="text-4xl font-bold mb-2 flex items-center justify-center">
-                    <span className="animate-count">{yearsCount}</span>
-                    <span className="text-2xl ml-1">+</span>
+            <div className="max-w-7xl mx-auto relative z-10">
+              <div
+                className={`grid lg:grid-cols-2 gap-16 items-center ${
+                  !isEven ? "lg:flex lg:flex-row-reverse" : ""
+                }`}
+              >
+                {/* Text Content */}
+                <div
+                  className={`space-y-8 transform transition-all duration-1000 flex-1 ${
+                    isVisible
+                      ? "translate-x-0 opacity-100"
+                      : isEven
+                        ? "-translate-x-20 opacity-0"
+                        : "translate-x-20 opacity-0"
+                  }`}
+                >
+                  {/* Header */}
+                  <div className="space-y-6">
+                    <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full px-6 py-3 animate-fade-in">
+                      <Sparkles className="w-5 h-5 text-teal-600 animate-pulse" />
+                      <span className="text-teal-700 font-semibold tracking-wider uppercase">
+                        {course?.course_name || "ARABIC COURSE"}
+                      </span>
+                    </div>
+
+                    <h2
+                      dangerouslySetInnerHTML={{
+                        __html: course?.course_name,
+                      }}
+                      className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight"
+                    />
                   </div>
-                  <div className="text-sm font-medium opacity-90">
-                    Hours of Experience
+
+                  {/* Description */}
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: course?.course_descreption,
+                    }}
+                    className="space-y-6 text-gray-600 leading-relaxed"
+                  />
+
+                  {/* Overview (optional - if you want to show it) */}
+                  {course?.overview && (
+                    <div className="text-gray-600 leading-relaxed">
+                      <p>{course.overview}</p>
+                    </div>
+                  )}
+
+                  {/* CTA Button */}
+                  <div
+                    className={`pt-4 ${
+                      isVisible ? "animate-fade-in" : "opacity-0"
+                    }`}
+                    style={{ animationDelay: "1s" }}
+                  >
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/courses/courseVideos/${course?.course_id}?groupPrice=${course?.group_price}&private=${course?.private_price}`
+                        )
+                      }
+                      className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
+                    >
+                      <span className="relative z-10 flex items-center space-x-2">
+                        <span>Join Now</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                      {/* Button Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400 blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500 transform scale-150"></div>
+                    </button>
                   </div>
                 </div>
 
-                {/* Floating Stars */}
-                {[...Array(3)].map((_, i) => (
+                {/* Image Content */}
+                <div
+                  className={`relative transform transition-all duration-1000 delay-300 flex-1 ${
+                    isVisible
+                      ? "translate-x-0 opacity-100"
+                      : isEven
+                        ? "translate-x-20 opacity-0"
+                        : "-translate-x-20 opacity-0"
+                  }`}
+                >
+                  {/* Experience Badge */}
                   <div
-                    key={i}
-                    className="absolute animate-ping"
-                    style={{
-                      top: `${-10 + i * 5}px`,
-                      right: `${-5 + i * 8}px`,
-                      animationDelay: `${i * 0.5}s`,
-                    }}
+                    className={`absolute -top-8 w-fit lg:block hidden ${
+                      isEven ? "-left-8" : "-right-8 lg:-left-8"
+                    } z-20 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-3xl p-6 shadow-2xl animate-bounce`}
                   >
-                    <Star className="w-3 h-3 text-yellow-300" />
-                  </div>
-                ))}
-              </div>
+                    <div className="text-center text-white">
+                      <div className="text-4xl font-bold mb-2 flex items-center justify-center">
+                        <span className="animate-count">{yearsCount}</span>
+                        <span className="text-2xl ml-1">+</span>
+                      </div>
+                      <div className="text-sm font-medium opacity-90">
+                        Hours of Experience
+                      </div>
+                    </div>
 
-              {/* Main Video Call Interface */}
-              <div className="relative bg-gradient-to-br from-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl">
-                {/* Decorative Pattern */}
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute top-4 right-4 grid grid-cols-6 gap-2">
-                    {[...Array(24)].map((_, i) => (
+                    {/* Floating Stars */}
+                    {[...Array(3)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-2 h-2 bg-white rounded-full animate-pulse"
-                        style={{ animationDelay: `${i * 100}ms` }}
-                      ></div>
+                        className="absolute animate-ping"
+                        style={{
+                          top: `${-10 + i * 5}px`,
+                          right: `${-5 + i * 8}px`,
+                          animationDelay: `${i * 0.5}s`,
+                        }}
+                      >
+                        <Star className="w-3 h-3 text-yellow-300" />
+                      </div>
                     ))}
                   </div>
-                </div>
 
-                {/* Video Interface */}
-                <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl">
-                  {/* Header Bar */}
-
-                  {/* Main Video Area */}
-
-                  {/* Bottom Controls */}
-                  <img
-                    src={
-                      data[0]?.image ||
-                      "/images/female-teacher-in-headphones-teaching-young-student-girl-online-.jpg"
-                    }
-                    alt=""
-                  />
-                </div>
-
-                {/* Success Metrics */}
-                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-white" />
+                  {/* Main Video Call Interface */}
+                  <div className="relative bg-gradient-to-br from-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl">
+                    {/* Decorative Pattern */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="absolute top-4 right-4 grid grid-cols-6 gap-2">
+                        {[...Array(24)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-2 h-2 bg-white rounded-full animate-pulse"
+                            style={{ animationDelay: `${i * 100}ms` }}
+                          ></div>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-bold text-gray-800">98%</div>
-                      <div className="text-sm text-gray-500">Success Rate</div>
+
+                    {/* Video Interface */}
+                    <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl lg:h-auto max-h-[400px]">
+                      <img
+                        src={
+                          course?.image ||
+                          defaultImages[index % defaultImages.length]
+                        }
+                        alt={course?.course_name || "Course Image"}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+
+                    {/* Success Metrics */}
+                    <div
+                      className={`absolute -bottom-6 w-fit lg:block hidden  ${
+                        isEven ? "-right-6 " : " lg:right-6"
+                      } bg-white rounded-2xl p-4 shadow-xl border border-gray-100`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                          <TrendingUp className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-bold text-gray-800">
+                            98%
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Success Rate
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRef}
-        className=" bg-gradient-to-br from-slate-50 via-white to-gray-100 py-20 px-6 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-teal-200/20 to-cyan-200/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-200/15 to-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-
-          {/* Floating Arabic Letters */}
-          {["ع", "ر", "ب", "ي"].map((letter, i) => (
-            <div
-              key={i}
-              className="absolute text-6xl font-bold text-teal-200/30 animate-float"
-              style={{
-                left: `${20 + i * 20}%`,
-                top: `${10 + i * 15}%`,
-                animationDelay: `${i * 1.5}s`,
-                animationDuration: `${4 + i}s`,
-              }}
-            >
-              {letter}
-            </div>
-          ))}
-
-          {/* Geometric Shapes */}
-          <div className="absolute top-1/4 right-1/4 w-16 h-16 border-4 border-teal-300/40 rounded-lg animate-spin-slow"></div>
-          {/* <div className="absolute bottom-1/3 left-1/5 w-12 h-12 bg-gradient-to-r from-cyan-400/30 to-teal-400/30 rounded-full animate-bounce"></div> */}
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-
-            <div
-              className={`relative transform transition-all duration-1000 delay-300 ${
-                isVisible
-                  ? "translate-x-0 opacity-100"
-                  : "translate-x-20 opacity-0"
-              }`}
-            >
-              {/* Experience Badge */}
-              <div className="absolute -top-8 -left-8 z-20 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-3xl p-6 shadow-2xl animate-bounce">
-                <div className="text-center text-white">
-                  <div className="text-4xl font-bold mb-2 flex items-center justify-center">
-                    <span className="animate-count">{yearsCount}</span>
-                    <span className="text-2xl ml-1">+</span>
-                  </div>
-                  <div className="text-sm font-medium opacity-90">
-                    Hours of Experience
-                  </div>
-                </div>
-
-                {/* Floating Stars */}
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute animate-ping"
-                    style={{
-                      top: `${-10 + i * 5}px`,
-                      right: `${-5 + i * 8}px`,
-                      animationDelay: `${i * 0.5}s`,
-                    }}
-                  >
-                    <Star className="w-3 h-3 text-yellow-300" />
-                  </div>
-                ))}
-              </div>
-
-              {/* Main Video Call Interface */}
-              <div className="relative bg-gradient-to-br from-teal-500 to-cyan-600 rounded-3xl p-8 shadow-2xl">
-                {/* Decorative Pattern */}
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute top-4 right-4 grid grid-cols-6 gap-2">
-                    {[...Array(24)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 bg-white rounded-full animate-pulse"
-                        style={{ animationDelay: `${i * 100}ms` }}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Video Interface */}
-                <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl">
-                  {/* Header Bar */}
-
-                  {/* Main Video Area */}
-
-                  {/* Bottom Controls */}
-                  <img
-                    alt=""
-                    src={
-                      data[1]?.image || "/images/teacher-and-his-students.jpg"
-                    }
-                  />
-                </div>
-
-                {/* Success Metrics */}
-                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-gray-800">98%</div>
-                      <div className="text-sm text-gray-500">Success Rate</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              className={`space-y-8 transform transition-all duration-1000 ${
-                isVisible
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-20 opacity-0"
-              }`}
-            >
-              {/* Header */}
-              <div className="space-y-6">
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-full px-6 py-3 animate-fade-in">
-                  <Sparkles className="w-5 h-5 text-teal-600 animate-pulse" />
-                  <span className="text-teal-700 uppercase font-semibold tracking-wider">
-                    {data[1]?.course_name || "MODERN STANDARD ARABIC"}
-                  </span>
-                </div>
-
-                <h2
-                  dangerouslySetInnerHTML={{ __html: data[1]?.course_name }}
-                  className="text-4xl lg:text-5xl font-bold text-gray-800 leading-tight"
-                >
-                  {/* <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    Modern Standard Arabic{" "}
-                  </span>
-                  <br />
-                  Courses{" "} */}
-                </h2>
-              </div>
-
-              {/* Description */}
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: data[0]?.course_descreption,
-                }}
-                className="space-y-6 text-gray-600 leading-relaxed"
-              >
-                {/* <p className="text-lg">
-                  Master the{" "}
-                  <span className="font-semibold text-teal-600">
-                    universal Arabic language used in media, literature,{" "}
-                  </span>
-                  and formal communication worldwide.{" "}
-                </p>
-                <p>
-                  Our Modern Standard Arabic (MSA) program is perfect for
-                  learners aiming to understand news broadcasts, formal texts,
-                  academic material, and official documents.
-                </p>
-                <p>
-                  From grammar to vocabulary and reading comprehension, our
-                  structured lessons give you a strong foundation in classical
-                  Arabic with a modern twist.
-                </p>
-                <p className="text-lg font-medium text-gray-700">
-                  Join us to develop fluency in the formal register of Arabic
-                  spoken across the Arab world.
-                </p> */}
-              </div>
-
-              {/* Features Grid */}
-
-              {/* CTA Button */}
-              <div
-                className={`pt-4 ${
-                  isVisible ? "animate-fade-in" : "opacity-0"
-                }`}
-                style={{ animationDelay: "1s" }}
-              >
-                <button
-                  onClick={() =>
-                    router.push(`/courses/courseVideos/${data[1]?.course_id}`)
-                  }
-                  className="group bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl transition-all duration-500 relative overflow-hidden hover:scale-105"
-                >
-                  <span className="relative z-10 flex items-center space-x-2">
-                    <span>Join Now</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Button Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400 blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500 transform scale-150"></div>
-                </button>
-              </div>
-            </div>
-
-            {/* Right Content - Enhanced Video Call Scene */}
-          </div>
-        </div>
-      </div>
+        );
+      })}
 
       {/* Custom Styles */}
       <style jsx>{`

@@ -14,6 +14,12 @@
   display: none;
 }
 
+:where(.css-dev-only-do-not-override-1vjf2v5).ant-radio-button-wrapper:not(
+    :first-child
+  )::before {
+  display: none;
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
