@@ -28,18 +28,28 @@ export default function GroupSelectionModal({
 
   const groups = useMemo(() => {
     const list = course_teacher_group_data?.message || [];
-    return list.map((g) => ({
-      id: String(g?.group_id ?? g?.id ?? ""),
-      title: g?.group_name || g?.title || "Group",
-      day: g?.day_of_week || g?.day || "",
-      time: g?.time || "",
-      startDate: g?.start_date || "",
-      sessionDuration: g?.session_duration || "90",
-      available:
-        String(g?.is_full ?? "0") !== "1" &&
-        String(g?.available ?? "1") !== "0",
-      raw: g,
-    }));
+    return list.map((g) => {
+      const currentStudents = Number(g?.group_students ?? 0);
+      const maxStudents = Number(g?.max_students ?? 0);
+      const isFull = currentStudents >= maxStudents;
+
+      return {
+        id: String(g?.group_id ?? g?.id ?? ""),
+        title: g?.group_name || g?.title || "Group",
+        day: g?.day_of_week || g?.day || "",
+        time: g?.time || "",
+        startDate: g?.start_date || "",
+        sessionDuration: g?.session_duration || "90",
+        currentStudents,
+        maxStudents,
+        isFull,
+        available:
+          !isFull &&
+          String(g?.is_full ?? "0") !== "1" &&
+          String(g?.available ?? "1") !== "0",
+        raw: g,
+      };
+    });
   }, [course_teacher_group_data]);
 
   const handleConfirm = () => {
@@ -95,69 +105,100 @@ export default function GroupSelectionModal({
             </div>
           ) : (
             <div className="space-y-3">
-              {groups.map((g) => (
-                <button
-                  key={g.id}
-                  onClick={() => g.available && setSelectedGroup(g)}
-                  disabled={!g.available}
-                  className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
-                    selectedGroup?.id === g.id
-                      ? "border-teal-500 bg-teal-50"
-                      : g.available
-                        ? "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                        : "border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-start gap-4">
-                      <Calendar
-                        className={`w-5 h-5 mt-1 ${
-                          selectedGroup?.id === g.id
-                            ? "text-teal-600"
-                            : "text-gray-400"
-                        }`}
-                      />
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {g.title}
+              {groups.map((g) => {
+                const availableSlots = g.maxStudents - g.currentStudents;
+
+                return (
+                  <button
+                    key={g.id}
+                    onClick={() => g.available && setSelectedGroup(g)}
+                    disabled={!g.available}
+                    className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                      selectedGroup?.id === g.id
+                        ? "border-teal-500 bg-teal-50"
+                        : g.available
+                          ? "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          : "border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start gap-4">
+                        <Calendar
+                          className={`w-5 h-5 mt-1 ${
+                            selectedGroup?.id === g.id
+                              ? "text-teal-600"
+                              : g.available
+                                ? "text-gray-400"
+                                : "text-gray-300"
+                          }`}
+                        />
+                        <div>
+                          <div className="font-semibold text-gray-900">
+                            {g.title}
+                          </div>
+
+                          <div className="flex gap-3 items-center mt-2">
+                            <div
+                              className={`text-sm font-medium ${
+                                g.isFull ? "text-rose-600" : "text-emerald-600"
+                              }`}
+                            >
+                              {g.currentStudents}/{g.maxStudents} students
+                            </div>
+
+                            {!g.isFull && (
+                              <div className="text-xs text-gray-500 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                {availableSlots}{" "}
+                                {availableSlots === 1 ? "slot" : "slots"} left
+                              </div>
+                            )}
+                          </div>
+
+                          {g?.raw?.group_schedules &&
+                            g?.raw?.group_schedules.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {g.raw.group_schedules.map((schedule, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="text-sm text-gray-600"
+                                  >
+                                    {schedule.day_of_week} •{" "}
+                                    {schedule.start_time} - {schedule.end_time}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                          {!!g?.raw?.session_duration && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              Duration: {g?.raw?.session_duration} min
+                            </div>
+                          )}
+
+                          {!!g.startDate && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Starts: {g.startDate}
+                            </div>
+                          )}
                         </div>
-
-                        <div className="flex gap-2 items-center mt-1">
-                          <div className="text-sm text-gray-600">
-                            Current: {g?.raw?.current_students || 0}
-                          </div>
-
-                          <div className="text-sm text-gray-600">
-                            Max: {g?.raw?.max_students || 0}
-                          </div>
-                        </div>
-
-                        {!!g.day && (
-                          <div className="text-sm text-gray-600 mt-1">
-                            {g.day}
-                          </div>
-                        )}
-                        {!!g?.raw?.session_duration && (
-                          <div className="text-sm text-gray-600">
-                            Duration: {g?.raw?.session_duration} min
-                          </div>
-                        )}
-                        {!!g.startDate && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            Starts: {g.startDate}
-                          </div>
-                        )}
                       </div>
-                    </div>
 
-                    {!g.available && (
-                      <span className="text-sm text-red-600 font-medium">
-                        Fully Booked
-                      </span>
-                    )}
-                  </div>
-                </button>
-              ))}
+                      {!g.available && (
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-sm text-rose-600 font-semibold bg-rose-50 px-3 py-1 rounded-full">
+                            {g.isFull ? "FULL" : "Not Available"}
+                          </span>
+                          {g.isFull && (
+                            <span className="text-xs text-gray-500">
+                              {g.currentStudents}/{g.maxStudents}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
 

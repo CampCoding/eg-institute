@@ -22,7 +22,12 @@ export default function useFetchCourseDetails(courseId) {
 
         const response = await axios.post(
           `${base_url}/courses/select_course_details.php`,
-          { course_id: courseId },
+          {
+            course_id: courseId,
+            user_id:
+              JSON.parse(localStorage.getItem("eg_user_data"))?.student_id ||
+              JSON.parse(sessionStorage.getItem("eg_user_data"))?.student_id,
+          },
           {
             headers: {
               Authorization: `Bearer ${token}`,
