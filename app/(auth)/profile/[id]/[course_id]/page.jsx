@@ -140,10 +140,12 @@ export default function EnhancedCourseDetailPage() {
   ];
 
   const realUnits = units_data?.message || [];
-  const totalVideosInUnits = realUnits.reduce(
-    (acc, unit) => acc + (unit.videos?.length || 0),
-    0
-  );
+  // const totalVideosInUnits = realUnits?.reduce(
+  //   (acc, unit) => acc + (unit.videos?.length || 0),
+  //   0
+  // );
+
+  const totalVideosInUnits = 0;
 
   const liveClasses = [
     {

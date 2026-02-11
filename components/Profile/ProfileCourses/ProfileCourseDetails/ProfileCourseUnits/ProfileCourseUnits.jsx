@@ -26,7 +26,7 @@ export default function ProfileCourseUnits({ course, units, loading }) {
 
   return (
     <div className="space-y-12">
-      {units?.map((unit, unitIndex) => (
+      {/* {units?.map((unit, unitIndex) => (
         <div key={unit.unit_id} className="space-y-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
@@ -97,7 +97,7 @@ export default function ProfileCourseUnits({ course, units, loading }) {
             )}
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }

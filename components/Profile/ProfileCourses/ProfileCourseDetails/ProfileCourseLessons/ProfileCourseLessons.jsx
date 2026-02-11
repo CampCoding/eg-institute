@@ -72,7 +72,7 @@ export default function ProfileCourseLessons({ course, units, loading }) {
         </div>
       </div>
 
-      {units?.map((unit) => (
+      {/* {units?.map((unit) => (
         <div key={unit.unit_id} className="space-y-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
@@ -85,9 +85,7 @@ export default function ProfileCourseLessons({ course, units, loading }) {
           <div className="space-y-6">
             {unit.videos && unit.videos.length > 0 ? (
               unit.videos.map((video, index) => {
-                // Determine status based on hidden or some other logic if available. 
-                // For now, mirroring previous logic but with real data.
-                const isCompleted = false; // Mocking completion for now as API doesn't specify
+                const isCompleted = false; 
                 const isCurrent = index === 0 && !isCompleted; 
 
                 return (
@@ -102,7 +100,6 @@ export default function ProfileCourseLessons({ course, units, loading }) {
                     <div className="p-8">
                       <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 flex-1 w-full text-center sm:text-left">
-                          {/* Enhanced Lesson Number */}
                           <div className="relative">
                             <div
                               className={`w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-white shadow-lg transition-all duration-300 ${
@@ -126,7 +123,6 @@ export default function ProfileCourseLessons({ course, units, loading }) {
                             )}
                           </div>
 
-                          {/* Lesson Info */}
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-2">
                               <h3 className="text-xl font-bold text-gray-800 group-hover:text-[#02AAA0] transition-colors duration-300">
@@ -149,7 +145,6 @@ export default function ProfileCourseLessons({ course, units, loading }) {
                           </div>
                         </div>
 
-                        {/* Enhanced Action Button */}
                         <button
                           className={`w-full md:w-auto px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center gap-3 ${
                             isCompleted
@@ -195,7 +190,7 @@ export default function ProfileCourseLessons({ course, units, loading }) {
             )}
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }
