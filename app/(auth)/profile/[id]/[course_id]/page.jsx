@@ -36,9 +36,11 @@ import ProfileCourseLessons from "@/components/Profile/ProfileCourses/ProfileCou
 import ProfileCourseUnits from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCourseUnits/ProfileCourseUnits";
 import ProfileCoursesLives from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesLives/ProfileCoursesLives";
 import ProfileCoursesBooks from "@/components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesBooks/ProfileCoursesBooks";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { handleGetAllUnitsData } from "../../../../../libs/features/coursesSlice";
+import { handleGetAllCourseVideos } from "../../../../../libs/features/profile";
+import ProfileCoursesExams from "../../../../../components/Profile/ProfileCourses/ProfileCourseDetails/ProfileCoursesExams/ProfileCoursesExams";
 
 export default function EnhancedCourseDetailPage() {
   const [activeTab, setActiveTab] = useState("Video");
@@ -47,9 +49,22 @@ export default function EnhancedCourseDetailPage() {
   const [animateProgress, setAnimateProgress] = useState(false);
   const dispatch = useDispatch();
   const { units_data, units_loading } = useSelector((state) => state.courses);
+  const {all_course_videos_loading , all_course_videos_list} = useSelector(state => state?.profile)
   const { id, course_id } = useParams();
-  console.log(id, course_id);
-  console.log(units_data);
+  
+  // const searchParams = useSearchParams()
+  // const group_id = searchParams.get("group_id");
+
+
+  // console.log("all_course_videos_list", all_course_videos_list);
+
+  //   useEffect(() => {
+  //   dispatch(handleGetAllCourseVideos({
+  //     data : {
+  //       group_id
+  //     }
+  //   }))
+  // } , [dispatch, group_id])
 
   useEffect(() => {
     setAnimateProgress(true);
@@ -262,7 +277,6 @@ export default function EnhancedCourseDetailPage() {
       id: "Video",
       label: "Videos",
       icon: PlayCircle,
-      count: totalVideosInUnits,
     },
     /* {
       id: "units",
@@ -271,8 +285,8 @@ export default function EnhancedCourseDetailPage() {
       count: realUnits.length,
     }, */
 
-    { id: "books", label: "Books", icon: BookOpen, count: books.length },
-    { id: "lives", label: "Lives", icon: Users, count: liveClasses.length },
+    { id: "books", label: "Books", icon: BookOpen },
+    { id: "lives", label: "Exams", icon: Users },
   ];
 
   const renderTabContent = () => {
@@ -296,7 +310,8 @@ export default function EnhancedCourseDetailPage() {
         );
 
       case "lives":
-        return <ProfileCoursesLives liveClasses={liveClasses} />;
+        return <ProfileCoursesExams />
+        // return <ProfileCoursesLives liveClasses={liveClasses} />;
 
       case "books":
         return (

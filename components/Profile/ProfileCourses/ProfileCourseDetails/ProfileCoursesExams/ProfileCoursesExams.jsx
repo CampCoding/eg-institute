@@ -14,14 +14,22 @@ import {
   Zap,
 } from "lucide-react";
 import { Spin } from "antd";
-import { useRouter, useParams } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { handleGetQuizzes } from "@/libs/features/coursesSlice";
 import toast from "react-hot-toast";
 import usePdfUploader from "../../../../../libs/shared/PdfUploader";
 import { base_url } from "../../../../../libs/constant";
 import { _post } from "../../../../../libs/shared/api";
+
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+}
 
 export default function ProfileCoursesExams() {
   const dispatch = useDispatch();
@@ -42,11 +50,30 @@ export default function ProfileCoursesExams() {
   // ✅ refs to reset file input per exam
   const fileInputsRef = useRef({});
 
+  const searchParams = useSearchParams()
+    const group_id = searchParams.get("group_id");
+
+    const adminData = useMemo(() => {
+            if (typeof window === "undefined") return null;
+        
+            const raw =
+              localStorage.getItem("eg_user_data") ||
+              sessionStorage.getItem("eg_user_data");
+        
+              console.log("raw")
+        
+            if (!raw) return null;
+      
+            return safeParse(raw) || null;
+          }, []);
+        
+          const student_id = adminData?.student_id;
+
   useEffect(() => {
-    if (id) {
-      dispatch(handleGetQuizzes({ data: { student_id: id } }));
-    }
-  }, [id, dispatch]);
+    dispatch(handleGetQuizzes({ data: { student_id,
+        group_id 
+       } }));
+  }, [id, dispatch , student_id , group_id]);
 
   const exams =
     quizzes_data?.message?.flatMap((group) => group.group_quizes) || [];

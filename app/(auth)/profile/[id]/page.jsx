@@ -27,7 +27,7 @@ export const items = [
   { id: 2, title: "Notifications", icon: <Bell />, route: "/notifications" },
   { id: 3, title: "My Courses", icon: <LibraryBig />, route: "/user-courses" },
   { id: 4, title: "My Schedule", icon: <Calendar />, route: "/schedule" },
-  { id: 11, title: "Exams", icon: <PenTool />, route: "/exams" },
+  // { id: 11, title: "Exams", icon: <PenTool />, route: "/exams" },
   {
     id: 7,
     title: "Reservations",

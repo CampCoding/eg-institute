@@ -84,6 +84,7 @@ export default function ProfileCourses() {
   const stats = calculateStats();
 
   const CourseCard = ({ course }) => {
+    console.log("group course",course?.group_id);
     // Calculate progress based on available data
     const totalLessons = parseInt(course.lessons) || 1;
     const completedLessons = parseInt(course.completedLessons) || 0;
@@ -145,7 +146,7 @@ export default function ProfileCourses() {
             <button
               onClick={() =>
                 router.push(
-                  `/profile/${UserData.student_id}/${course?.course_id}`
+                  `/profile/${UserData.student_id}/${course?.course_id}?group_id=${course?.group_id}`
                 )
               }
               className="bg-white/20 backdrop-blur-md rounded-full p-4 hover:bg-white/30 transition-all duration-200 transform hover:scale-110"
@@ -281,7 +282,7 @@ export default function ProfileCourses() {
             <button
               onClick={() =>
                 router.push(
-                  `/profile/${UserData?.student_id}/${course?.course_id}`
+                  `/profile/${UserData?.student_id}/${course?.course_id}?group_id=${course?.group_id}`
                 )
               }
               className={`flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2`}

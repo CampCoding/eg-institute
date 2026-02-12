@@ -10,13 +10,30 @@ import {
   Play,
   Video,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Spin } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllCourseVideos } from "../../../../../libs/features/profile";
 
 export default function ProfileCourseUnits({ course, units, loading }) {
   const router = useRouter();
 
-  if (loading) {
+   const searchParams = useSearchParams()
+    const group_id = searchParams.get("group_id");
+
+  const dispatch = useDispatch();
+    const {all_course_videos_loading , all_course_videos_list} = useSelector(state => state?.profile)
+  
+    useEffect(() => {
+      dispatch(handleGetAllCourseVideos({
+        data:  {
+          group_id
+        }
+      }))
+    } , [dispatch , group_id])
+  
+
+  if (all_course_videos_loading) {
     return (
       <div className="flex justify-center items-center py-20">
         <Spin size="large" />
