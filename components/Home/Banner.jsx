@@ -196,27 +196,6 @@ learn through joy, not pressure.`,
                       )}
                     </div>
                   </div>
-
-                  {/* Right Content - Enhanced Floating Elements (Desktop Only) */}
-                  <div className="relative hidden lg:block">
-                    <div className="relative z-10">
-                      {/* Floating elements with enhanced design */}
-                      <div className="absolute top-10 right-10 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl animate-bounce border border-white/30">
-                        <Star className="w-8 h-8 text-yellow-500" />
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
-                      </div>
-
-                      <div className="absolute top-1/3 left-10 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-2xl p-4 shadow-2xl animate-pulse">
-                        <BookOpen className="w-8 h-8" />
-                        <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-teal-300 rounded-full opacity-70"></div>
-                      </div>
-
-                      <div className="absolute bottom-1/4 right-16 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl animate-bounce delay-700 border border-white/30">
-                        <Award className="w-8 h-8 text-teal-600" />
-                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-teal-400 rounded-full animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

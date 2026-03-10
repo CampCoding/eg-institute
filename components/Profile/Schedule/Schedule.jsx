@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { handleGetAllStudentSchedules } from "../../../libs/features/coursesSlice";
+import { handleGetAllStudentSchedules } from "@/libs/features/coursesSlice";
 import { ChevronLeft, ChevronRight, Search, Video } from "lucide-react";
 import { Modal } from "antd";
 

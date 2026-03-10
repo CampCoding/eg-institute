@@ -66,46 +66,67 @@ const Login = () => {
           },
         })
       ).unwrap();
-console.log(res);
 
-      const msg = res?.message;
-      const accessToken = msg?.access_token;
-      const refreshToken = msg?.refresh_token;
+      console.log("Response:", res);
 
-      if (!accessToken || !refreshToken) {
-        toast.error(res?.message || "Invalid login response");
+      const userData = res?.message;
+
+      // ✅ تحقق من وجود التوكنات
+      if (!userData?.access_token || !userData?.refresh_token) {
+        toast.error("Invalid login response");
         return;
       }
 
-      toast.success("User Login Successfully");
-      setFormData({ email: "", password: "" });
-
+      // ✅ اختار الـ Storage بناءً على rememberMe
       const storage = rememberMe ? localStorage : sessionStorage;
-      const otherStorage = rememberMe ? sessionStorage : localStorage;
 
+      // ✅ امسح من الـ Storage التاني
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
       otherStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
       otherStorage.removeItem("eg_user_data");
 
-      storage.setItem(configs.localstorageEgyIntstituteTokenName, accessToken);
-      storage.setItem("eg_user_data", JSON.stringify(msg));
+      // ✅ خزن Access Token
+      storage.setItem(
+        configs.localstorageEgyIntstituteTokenName,
+        userData.access_token
+      );
 
+      // ✅ خزن بيانات اليوزر
+      storage.setItem("eg_user_data", JSON.stringify(userData));
+
+      // ✅ خزن Refresh Token في الكوكيز
       Cookies.set(
         configs.localstorageEgyIntstituteRefreshTokenName,
-        refreshToken,
+        userData.refresh_token,
         {
           expires: rememberMe ? 30 : undefined,
-          secure: true,
+          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           path: "/",
         }
       );
 
+      // ✅ تأكيد التخزين
+      console.log(
+        "✅ Token stored:",
+        storage.getItem(configs.localstorageEgyIntstituteTokenName)
+      );
+      console.log("✅ User data stored:", storage.getItem("eg_user_data"));
+      console.log(
+        "✅ Using storage:",
+        rememberMe ? "localStorage" : "sessionStorage"
+      );
+
+      toast.success("Login Successful!");
+      setFormData({ email: "", password: "" });
+
+      // ✅ Navigate بعد كل حاجة
       router.push("/");
     } catch (err) {
+      console.error("Login error:", err);
       toast.error(err?.message || "Login failed");
     }
   };
-
   const features = [
     {
       icon: BookOpen,

@@ -306,7 +306,8 @@ const Header = () => {
       <style jsx global>{`
         .courses-dropdown .ant-dropdown-menu {
           border-radius: 12px;
-          box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1),
+          box-shadow:
+            0 10px 25px -3px rgba(0, 0, 0, 0.1),
             0 4px 6px -2px rgba(0, 0, 0, 0.05);
           border: 1px solid #e5e7eb;
           padding: 8px;
@@ -372,7 +373,7 @@ const Header = () => {
             {/* Actions */}
             <div className="flex items-center space-x-2 sm:space-x-3">
               <UserDropdown />
-              <CartButton />
+              {/* <CartButton /> */}
               <Menu
                 onClick={() => setIsOpen(true)}
                 className="text-primary w-7 h-7 sm:w-9 sm:h-9 xl:hidden cursor-pointer hover:scale-110 transition-transform duration-200"
@@ -402,7 +403,7 @@ const Header = () => {
           {/* Compact Actions */}
           <div className="flex items-center space-x-1.5 sm:space-x-2">
             <UserDropdown isCompact={true} />
-            <CartButton isCompact={true} />
+            {/* <CartButton isCompact={true} /> */}
             <Menu
               onClick={() => setIsOpen(true)}
               className="text-primary w-6 h-6 sm:w-7 sm:h-7 xl:hidden cursor-pointer hover:scale-110 transition-transform duration-200"

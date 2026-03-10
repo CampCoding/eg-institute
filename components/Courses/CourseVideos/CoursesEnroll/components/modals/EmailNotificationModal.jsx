@@ -28,7 +28,7 @@ export default function EmailNotificationModal({
   selectedSchedules,
   selectedTeacher,
   selectedGroup,
-  placementTestMeeting, // ✅ بيانات الـ placement test
+  placementTestMeeting,
 }) {
   const dispatch = useDispatch();
   const { make_schedule_loading } = useSelector((state) => state?.courses);
@@ -37,12 +37,41 @@ export default function EmailNotificationModal({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // ✅ جلب الإيميل من localStorage عند فتح الـ Modal
   useEffect(() => {
-    if (!isOpen) return;
-    const storedEmail =
-      JSON.parse(localStorage.getItem("eg_user_data"))?.student_email || "";
-    setEmail(storedEmail);
+    if (isOpen) {
+      try {
+        const userData = localStorage.getItem("eg_user_data");
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          const storedEmail = parsedData?.student_email || "";
+          setEmail(storedEmail);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        setEmail("");
+      }
+    }
   }, [isOpen]);
+
+  // ✅ أو لو حابب تجيبه من sessionStorage كمان
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     try {
+  //       const userData =
+  //         localStorage.getItem("eg_user_data") ||
+  //         sessionStorage.getItem("eg_user_data");
+  //
+  //       if (userData) {
+  //         const parsedData = JSON.parse(userData);
+  //         setEmail(parsedData?.student_email || "");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error parsing user data:", error);
+  //       setEmail("");
+  //     }
+  //   }
+  // }, [isOpen]);
 
   const handleClose = () => {
     setEmail("");
@@ -52,8 +81,8 @@ export default function EmailNotificationModal({
 
   useEffect(() => {
     if (!isOpen) {
-      setEmail("");
       setIsSubmitted(false);
+      // ✅ لا تمسح الإيميل هنا عشان يفضل موجود لما يفتح تاني
     }
   }, [isOpen]);
 
@@ -66,9 +95,9 @@ export default function EmailNotificationModal({
     : "";
 
   const buildSubscriptionPayload = () => {
-    const studentId = JSON.parse(
-      localStorage.getItem("eg_user_data")
-    )?.student_id;
+    const userData = JSON.parse(localStorage.getItem("eg_user_data") || "{}");
+    const studentId = userData?.student_id;
+
     if (!studentId) return null;
 
     const base = {
@@ -109,9 +138,9 @@ export default function EmailNotificationModal({
   const handleSubmitEmail = async (e) => {
     e.preventDefault();
 
-    const studentId = JSON.parse(
-      localStorage.getItem("eg_user_data")
-    )?.student_id;
+    const userData = JSON.parse(localStorage.getItem("eg_user_data") || "{}");
+    const studentId = userData?.student_id;
+
     if (!studentId) {
       toast.error("Student ID not found. Please log in again.");
       return;
@@ -133,7 +162,6 @@ export default function EmailNotificationModal({
     setIsProcessing(true);
 
     try {
-      // ✅ 1. أولاً: إرسال الاشتراك
       const subscriptionRes = await dispatch(
         handleMakeStudentSchedule({ data: subscriptionPayload })
       ).unwrap();
@@ -148,7 +176,6 @@ export default function EmailNotificationModal({
 
       toast.success(subscriptionRes?.message || "Subscription created!");
 
-      // ✅ 2. ثانياً: لو في placement test meeting، نرسله
       if (placementTestMeeting) {
         const meetingPayload = {
           meeting_resrvations_id: String(
@@ -176,7 +203,6 @@ export default function EmailNotificationModal({
         }
       }
 
-      // ✅ 3. تحديث قائمة الجداول
       await dispatch(
         handleGetAllStudentSchedules({ data: { student_id: studentId } })
       );
@@ -288,7 +314,6 @@ export default function EmailNotificationModal({
                     </>
                   )}
 
-                  {/* ✅ عرض بيانات الـ Placement Test */}
                   {placementTestMeeting && (
                     <>
                       <div className="mt-3 pt-3 border-t border-gray-200">
@@ -357,16 +382,19 @@ export default function EmailNotificationModal({
                     id="email"
                     disabled
                     value={email}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter your email address"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed"
+                    placeholder="Your email address"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This is your registered email address
+                  </p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
-                    disabled={isProcessing}
+                    disabled={isProcessing || !email}
                     className="flex-1 bg-gradient-to-r from-[#023f4d] to-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:to-teal-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isProcessing ? (
