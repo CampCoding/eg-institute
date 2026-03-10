@@ -41,7 +41,9 @@ export default function EmailNotificationModal({
   useEffect(() => {
     if (isOpen) {
       try {
-        const userData = localStorage.getItem("eg_user_data");
+        const userData =
+          localStorage.getItem("eg_user_data") ||
+          sessionStorage?.getItem("eg_user_data");
         if (userData) {
           const parsedData = JSON.parse(userData);
           const storedEmail = parsedData?.student_email || "";
