@@ -11,11 +11,54 @@ import {
   Users,
   Video,
 } from "lucide-react";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback , useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllCourseQuizs } from "../../../../../libs/features/profile";
+import { useSearchParams } from "next/navigation";
+
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+}
 
 export default function ProfileCoursesLives({ liveClasses }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recordingSrc, setRecordingSrc] = useState(null);
+
+   const dispatch = useDispatch();
+    const { all_course_quizes_loading, all_course_quizes_list } = useSelector(state => state?.profile)
+    
+    const searchParams = useSearchParams()
+      const group_id = searchParams.get("group_id");
+
+      const adminData = useMemo(() => {
+        if (typeof window === "undefined") return null;
+    
+        const raw =
+          localStorage.getItem("eg_user_data") ||
+          sessionStorage.getItem("eg_user_data");
+    
+          console.log("raw")
+    
+        if (!raw) return null;
+  
+        return safeParse(raw) || null;
+      }, []);
+    
+      const student_id = adminData?.student_id;
+  
+    useEffect(() => {
+      dispatch(handleGetAllCourseQuizs({
+        data: {
+          group_id,
+          student_id ,
+        }
+      }))
+    }, [dispatch, group_id, student_id])
+    
 
   const isExternal = (url) => /^https?:\/\//i.test(url);
 

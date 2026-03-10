@@ -166,9 +166,11 @@ export default function ProfileSettingForm() {
   useEffect(() => {
     // Pre-fill form with user data
 
-    const userData = window.localStorage
-      ? JSON.parse(localStorage.getItem("eg_user_data"))
-      : undefined;
+    const userData = (window.localStorage || window.sessionStorage)
+      ? (JSON.parse(localStorage.getItem("eg_user_data")) || 
+      JSON.parse(sessionStorage.getItem("eg_user_data"))) : undefined;
+
+      console.log("userData",userData);
 
     if (userData) {
       setFormData((prev) => ({
@@ -224,7 +226,7 @@ export default function ProfileSettingForm() {
               icon={Phone}
             />
 
-            <InputField
+            {/* <InputField
               name="password"
               label="New Password"
               placeholder="Create a strong password"
@@ -242,7 +244,7 @@ export default function ProfileSettingForm() {
               showToggle={true}
               showValue={showConfirm}
               onToggle={() => setShowConfirm(!showConfirm)}
-            />
+            /> */}
           </div>
 
           {/* Password Requirements */}
@@ -297,7 +299,7 @@ export default function ProfileSettingForm() {
           )}
 
           {/* Submit Button */}
-          <div className="flex justify-end mt-8">
+          {/* <div className="flex justify-end mt-8">
             <button
               type="button"
               onClick={handleSubmit}
@@ -316,7 +318,7 @@ export default function ProfileSettingForm() {
                 </>
               )}
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

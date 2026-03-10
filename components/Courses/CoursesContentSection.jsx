@@ -268,6 +268,32 @@ const CoursesContentSection = ({ data }) => {
         );
       })}
 
+      {/* View More Button - Improved styling and positioning */}
+      {data && data.length > 2 && (
+        <div className="flex justify-center items-center py-16 px-6">
+          <button
+            onClick={() => router.push('/all-courses')}
+            className="group relative inline-flex items-center justify-center px-10 py-5 overflow-hidden font-bold text-white rounded-2xl shadow-2xl transition-all duration-500 transform hover:scale-105"
+          >
+            {/* Animated gradient background */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-600 animate-gradient-x"></span>
+            
+            {/* Pulse effect */}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-teal-400 to-cyan-400 blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-700"></span>
+            
+            {/* Button content */}
+            <span className="relative flex items-center space-x-3 text-lg">
+              <span>View All Courses</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+            </span>
+            
+            {/* Decorative dots */}
+            {/* <span className="absolute top-2 right-2 w-2 h-2 bg-white/40 rounded-full animate-ping"></span>
+            <span className="absolute bottom-2 left-2 w-2 h-2 bg-white/40 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></span> */}
+          </button>
+        </div>
+      )}
+
       {/* Custom Styles */}
       <style jsx>{`
         @keyframes float {
@@ -301,6 +327,15 @@ const CoursesContentSection = ({ data }) => {
           }
         }
 
+        @keyframes gradient-x {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
@@ -320,6 +355,11 @@ const CoursesContentSection = ({ data }) => {
 
         .animate-fade-in {
           animation: fadeIn 0.8s ease-out both;
+        }
+
+        .animate-gradient-x {
+          background-size: 200% 200%;
+          animation: gradient-x 3s ease infinite;
         }
 
         @keyframes fadeIn {

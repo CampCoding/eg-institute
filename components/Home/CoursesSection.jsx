@@ -81,14 +81,14 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
         shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}
         ${isHovered ? "scale-[1.02] bg-teal-200 -translate-y-2" : "scale-100"}
-        cursor-pointer
+        cursor-pointer h-full flex flex-col
       `}
       style={{ transitionDelay: isVisible ? `${delay}ms` : "0ms" }}
       onMouseEnter={() => setHoveredCard(course.id)}
       onMouseLeave={() => setHoveredCard(null)}
     >
-      {/* Image Container with Overlay */}
-      <div className="relative h-48 overflow-hidden">
+      {/* Image Container with fixed height */}
+      <div className="relative h-48 flex-shrink-0 overflow-hidden">
         <img
           src={course?.img}
           alt={course?.title || "course"}
@@ -97,9 +97,7 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
           }`}
         />
         {/* Gradient Overlay */}
-        {
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        }
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
         {/* Type Badge */}
         {course.type && (
@@ -116,7 +114,7 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
 
         {/* Course Number Badge */}
         <div
-          className={`absolute top-4 left-4 w-10 bg-teal-200 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-lg transition-transform duration-500 ${
+          className={`absolute top-4 left-4 w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-lg transition-transform duration-500 ${
             isHovered ? "rotate-12 scale-110" : ""
           }`}
         >
@@ -140,23 +138,27 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        {/* Title */}
-        <h3
-          className={`text-xl font-bold text-gray-800 mb-3 line-clamp-2 transition-all duration-300 group-hover:text-teal-600`}
-        >
-          {course.title}
-        </h3>
+      {/* Content - flex-grow to fill remaining space with consistent height */}
+      <div className="p-6 flex-grow flex flex-col">
+        {/* Title with fixed height for 2 lines */}
+        <div className="min-h-[56px] mb-3">
+          <h3
+            className={`text-xl font-bold text-gray-800 line-clamp-2 transition-all duration-300 group-hover:text-teal-600`}
+          >
+            {course.title}
+          </h3>
+        </div>
 
-        {/* Description */}
-        <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">
-          {course.description}
-        </p>
+        {/* Description with fixed height for 2 lines */}
+        <div className="min-h-[42px] mb-4">
+          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+            {course.description}
+          </p>
+        </div>
 
-        {/* Will Learn Preview */}
+        {/* Will Learn Preview - fixed height for 2 items */}
         {Array.isArray(course.willLearn) && course.willLearn.length > 0 && (
-          <div className="mb-4 space-y-2">
+          <div className="mb-4 space-y-2 min-h-[56px]">
             {course.willLearn.slice(0, 2).map((item, i) => (
               <div
                 key={i}
@@ -178,14 +180,21 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
                 <span className="line-clamp-1">{item}</span>
               </div>
             ))}
+            {/* Placeholder if no willLearn items to maintain height */}
+            {course.willLearn.length === 0 && (
+              <div className="h-[56px] invisible">Placeholder</div>
+            )}
           </div>
         )}
 
-        {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+        {/* Spacer to push content to bottom */}
+        <div className="flex-grow"></div>
 
-        {/* Price Section */}
-        <div className="flex items-center justify-between mb-5">
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4 flex-shrink-0" />
+
+        {/* Price Section - fixed height */}
+        <div className="flex items-center justify-between mb-5 flex-shrink-0 min-h-[60px]">
           <div className="flex items-center gap-4">
             {(course.groupPrice || course.groupPrice === 0) && (
               <div className="text-center">
@@ -207,9 +216,13 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
                 </p>
               </div>
             )}
+            {/* Placeholder if no prices to maintain height */}
+            {!course.groupPrice && !course.privatePrice && (
+              <div className="w-full invisible">No pricing</div>
+            )}
           </div>
           {course.lessons && (
-            <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+            <div className="flex items-center gap-1.5 text-gray-500 text-sm flex-shrink-0">
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -228,7 +241,7 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
           )}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button - fixed at bottom */}
         <button
           onClick={() => router.push(`/courses/courseVideos/${course.id}`)}
           className={`
@@ -237,6 +250,7 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
             bg-gradient-to-r from-teal-500 to-teal-600 text-white
             hover:from-teal-600 hover:to-teal-700 hover:shadow-lg hover:shadow-teal-200
             ${isHovered ? "scale-[1.02]" : "scale-100"}
+            flex-shrink-0
           `}
         >
           <span>Explore Course</span>
@@ -269,7 +283,6 @@ function CourseCard({ course, index, isVisible, hoveredCard, setHoveredCard }) {
     </div>
   );
 }
-
 // ---------- CoursesGrid ----------
 function CoursesGrid({ coursesFromApi = [], loading }) {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -293,13 +306,9 @@ function CoursesGrid({ coursesFromApi = [], loading }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {uiCourses.map((course, index) => {
+      {uiCourses?.map((course, index) => {
         const offsetClass =
-          index % 3 === 1
-            ? "xl:translate-y-6" // التاني ينزل أكتر
-            : index % 3 === 2
-            ? "xl:translate-y-0" // التالت ينزل بسيط
-            : "";
+          "";
 
         return (
           <div

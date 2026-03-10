@@ -10,6 +10,19 @@ import {
   Star,
   X,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { handleGetAllCoursePDFS } from "../../../../../libs/features/profile";
+import { Spin } from "antd";
+
+
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+}
 
 export default function ProfileCoursesBooks({
   books,
@@ -18,6 +31,65 @@ export default function ProfileCoursesBooks({
   animateProgress,
 }) {
   const [previewBook, setPreviewBook] = useState(null);
+
+  const searchParams = useSearchParams()
+  const group_id = searchParams.get("group_id");
+
+  const dispatch = useDispatch();
+  const { all_course_pdfs_loading, all_course_pdfs_list } = useSelector(state => state?.profile)
+
+  const adminData = useMemo(() => {
+    if (typeof window === "undefined") return null;
+
+    const raw =
+      localStorage.getItem("eg_user_data") ||
+      sessionStorage.getItem("eg_user_data");
+
+    console.log("raw")
+
+    if (!raw) return null;
+
+    return safeParse(raw) || null;
+  }, []);
+
+  const student_id = adminData?.student_id;
+
+  useEffect(() => {
+    if (!group_id || !student_id) return;
+
+    dispatch(
+      handleGetAllCoursePDFS({
+        data: {
+          group_id,
+          student_id,
+        },
+      })
+    );
+  }, [dispatch, group_id, student_id]);
+
+  const pdfs = useMemo(() => {
+    const payload = all_course_pdfs_list;
+
+    // احتمالات شائعة حسب الـ API
+    const maybe =
+      payload?.data?.message ??
+      payload?.data?.data ??
+      payload?.data ??
+      payload?.message ??
+      payload;
+
+    // لو object واحد مش array
+    if (maybe && !Array.isArray(maybe) && typeof maybe === "object") return [maybe];
+
+    // لو array
+    if (Array.isArray(maybe)) return maybe;
+
+    // غير كده: فاضي
+    return [];
+  }, [all_course_pdfs_list]);
+
+  const isEmpty = pdfs?.length === 0;
+
 
   const openModal = (book) => {
     if (!book?.pdfUrl) return;
@@ -63,114 +135,86 @@ export default function ProfileCoursesBooks({
     a.remove();
   };
 
+  if (all_course_pdfs_loading) {
+    return (
+      <div className="flex justify-center items-center">
+        <Spin size="large" spinning />
+      </div>
+    )
+  }
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {books.map((book) => (
-          <div
-            key={book.id}
-            className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border-2 border-transparent hover:border-[#02AAA0]/30 overflow-hidden"
-          >
-            {/* Cover */}
-            <div className="relative h-64 overflow-hidden">
-              <img
-                src={book.image}
-                alt={book.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-              {/* Badges */}
-              <div className="absolute top-4 left-4">
-                <span className="px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r from-[#02AAA0]/90 to-[#02AAA0]/70 backdrop-blur-sm border border-white/20">
-                  {book.category}
-                </span>
-              </div>
-
-              <div className="absolute top-4 right-4 flex gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C9AE6C]/90 to-[#C9AE6C]/70 backdrop-blur-sm border border-white/20">
-                  {book.format}
-                </span>
-                <div className="flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full">
-                  <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                  <span className="text-xs font-bold text-white">{book.rating}</span>
-                </div>
-              </div>
-
-              {/* Overlay info */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="text-white/90 text-sm mb-2">
-                  {book.pages} pages • {book.size}
-                </div>
-                <div className="text-white/70 text-xs">Last read: {book.lastRead}</div>
-              </div>
-            </div>
-
-            {/* Body */}
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-[#02AAA0] transition-colors duration-300 line-clamp-2">
-                {book.title}
-              </h3>
-              <p className="text-gray-600 mb-4 font-medium">by {book.author}</p>
-
-              {/* Progress */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-[#C9AE6C]" />
-                    <span className="font-semibold text-gray-700">Reading Progress</span>
-                  </div>
-                  <span className="text-xl font-black text-[#02AAA0]">{book.progress}%</span>
-                </div>
-                <div className="relative w-full bg-gray-100 rounded-full h-4 shadow-inner overflow-hidden">
-                  <div
-                    className={`bg-gradient-to-r from-[#02AAA0] to-[#C9AE6C] h-4 rounded-full transition-all duration-700 shadow-sm ${
-                      animateProgress ? "animate-pulse" : ""
-                    }`}
-                    style={{ width: `${book.progress}%` }}
-                  >
-                    <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse opacity-50" />
-                  </div>
-                </div>
-                <div className="flex justify-between text-sm mt-3">
-                  <span className="text-gray-500 flex items-center gap-1">
-                    <BookOpen className="w-4 h-4" />
-                    {book.completedChapters} of {book.chapters} chapters
-                  </span>
-                  <span className="text-[#02AAA0] font-bold">
-                    {Math.max(0, (book.chapters || 0) - (book.completedChapters || 0))} remaining
-                  </span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              {/* <div className="flex gap-3">
-                <button
-                  onClick={() => openModal(book)}
-                  disabled={!book.pdfUrl}
-                  className={`flex-1 bg-gradient-to-r from-[#02AAA0] to-[#02AAA0]/90 text-white py-4 rounded-2xl font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group ${
-                    book.pdfUrl ? "" : "opacity-60 cursor-not-allowed"
-                  }`}
-                >
-                  <BookOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  Continue Reading
-                </button>
-
-                {typeof setIsBookmarked === "function" && (
-                  <button
-                    onClick={() => setIsBookmarked?.(!isBookmarked)}
-                    className={`px-4 py-4 rounded-2xl font-bold hover:shadow-lg transition-all duration-300 flex items-center justify-center ${
-                      isBookmarked ? "bg-rose-100 text-rose-600" : "bg-gray-100 text-gray-600"
-                    }`}
-                    title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-                  >
-                    <Heart className={`w-5 h-5 ${isBookmarked ? "fill-current" : ""}`} />
-                  </button>
-                )}
-              </div> */}
-            </div>
+      <div>
+        {isEmpty ? (
+          <div className="col-span-full bg-gray-50/50 border-2 border-dashed border-gray-200 rounded-3xl p-10 text-center">
+            <BookOpen className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500 font-semibold">No PDFs available yet</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Once PDFs are uploaded for this group, they’ll appear here.
+            </p>
           </div>
-        ))}
+        ) : (
+          <div  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {pdfs?.map((book) => (
+            <div
+              key={book.pdf_id}
+              className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border-2 border-transparent hover:border-[#02AAA0]/30 overflow-hidden"
+            >
+              {/* Cover */}
+              <div className="relative h-64 overflow-hidden">
+                <img
+                  src={book?.pdf_image || "/placeholder.jpg"}
+                  alt={book?.pdf_title || "PDF"}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C9AE6C]/90 to-[#C9AE6C]/70 backdrop-blur-sm border border-white/20">
+                    PDF
+                  </span>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-[#02AAA0] transition-colors duration-300 line-clamp-2">
+                  {book?.pdf_title || "Untitled PDF"}
+                </h3>
+
+                {/* Actions (لو عايز ترجعها) */}
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() =>
+                      window.open(book?.pdf_url, "_blank", "noopener,noreferrer")
+                    }
+                    disabled={!book?.pdf_url}
+                    className={`flex-1 bg-gradient-to-r from-[#02AAA0] to-[#02AAA0]/90 text-white py-3 rounded-2xl font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 ${book?.pdf_url ? "" : "opacity-60 cursor-not-allowed"
+                      }`}
+                  >
+                    <BookOpen className="w-5 h-5" />
+                    Preview
+                  </button>
+
+                  {/* <a
+            href={book?.pdf_url || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`px-4 py-3 rounded-2xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-center ${
+              book?.pdf_url ? "" : "pointer-events-none opacity-50"
+            }`}
+            title="Open in new tab"
+          >
+            <ExternalLink className="w-5 h-5" />
+          </a> */}
+                </div>
+              </div>
+            </div>
+          ))}
+          </div>
+        )}
+
       </div>
 
       {/* PDF Modal */}
