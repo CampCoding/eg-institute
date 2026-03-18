@@ -5,43 +5,73 @@ import {
   EyeOff,
   Lock,
   Mail,
-  Phone,
   ArrowRight,
   User,
   BookOpen,
   Users,
-  Award,
   Globe,
-  CheckCircle,
+  MapPin,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { handleRegister } from "../../../libs/features/authSlice";
 import { useRouter } from "next/navigation";
-import { useTimeZoneFromLocation } from "../../../hooks/useTimeZoneFromLocation";
+import axios from "axios";
+import { Select, message } from "antd";
+import {
+  PlusOutlined,
+  LoadingOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
+import { timezoneOptions } from "../../../utils/timeZone";
+import { base_url } from "../../../libs/constant";
+import "./style.css";
+
+const IMAGE_UPLOAD_URL =
+  "https://camp-coding.tech/eg_Institute/image_uplouder.php";
+
+const arabicLevelOptions = [
+  { value: "complete_beginner", label: "Complete Beginner" },
+  { value: "beginner", label: "Beginner" },
+  { value: "elementary", label: "Elementary" },
+  { value: "intermediate", label: "Intermediate" },
+  { value: "upper_intermediate", label: "Upper Intermediate" },
+  { value: "advanced", label: "Advanced" },
+  { value: "fluent", label: "Fluent / Native" },
+];
+
+const genderOptions = [
+  { value: "male", label: "Male - ذكر" },
+  { value: "female", label: "Female - أنثى" },
+];
 
 const Register = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
-  const {register_loading , register_data} = useSelector(state => state?.auth);
-    const { timeZone, coords, error } = useTimeZoneFromLocation();
 
   const [isVisible, setIsVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
-    agree: false,
+    country: "",
+    time_zone: undefined,
+    gender: undefined,
+    expectation_level: undefined,
   });
   const [focusedField, setFocusedField] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+
+  // ✅ Track previous country code to detect country change
+  const previousCountryCode = useRef("");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -63,134 +93,261 @@ const Register = () => {
     },
   ];
 
-  // const benefits = [
-  //   "Personalized learning dashboard",
-  //   "Track your progress in real-time",
-  //   "Access to exclusive content",
-  //   "Join our global community",
-  //   "Get certified upon completion",
-  // ];
-
   const onInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
+  };
+
+  const onSelectChange = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ✅ Fixed: Auto-fill country when phone country changes
+  const onPhoneChange = (value, countryData) => {
+    const newCountryCode = countryData?.countryCode || "";
+    const countryChanged = newCountryCode !== previousCountryCode.current;
+
+    setFormData((prev) => ({
+      ...prev,
+      phone: "+" + value,
+      // Update country when country code changes
+      country: countryChanged
+        ? countryData?.name || prev.country
+        : prev.country,
+    }));
+
+    // Update the previous country code
+    previousCountryCode.current = newCountryCode;
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        message.error("You can only upload image files!");
+        return;
+      }
+
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const clearImage = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    const fileInput = document.getElementById("profile-image-input");
+    if (fileInput) fileInput.value = "";
+  };
+
+  const uploadImage = async (file) => {
+    const data = new FormData();
+    data.append("image", file);
+
+    try {
+      setImageUploading(true);
+      const response = await axios.post(IMAGE_UPLOAD_URL, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data) {
+        return response.data;
+      }
+      throw new Error("Failed to get image URL from response");
+    } catch (error) {
+      console.error("Image upload error:", error);
+      throw error;
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.firstName) {
-      toast.error("Please Enter name first!");
+    if (!formData.name.trim()) {
+      toast.error("Please enter your name!");
       return;
     }
 
-    if (!formData.email) {
-      toast.error("Please Enter email first!");
+    if (!formData.email.trim()) {
+      toast.error("Please enter your email!");
       return;
     }
 
-    if (!formData.phone) {
-      toast.error("Please Enter phone first!");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email!");
+      return;
+    }
+
+    if (!formData.phone || formData.phone.length < 8) {
+      toast.error("Please enter a valid phone number!");
       return;
     }
 
     if (!formData.password) {
-      toast.error("Please Enter password first!");
+      toast.error("Please enter your password!");
       return;
     }
 
-    const data_send = {
-      name  : formData.firstName,
-      email: formData.email,
-      password : formData.password,
-      phone : formData.phone,
-      notification_token:'fcm_test_999',
-      time_zone : timeZone
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters!");
+      return;
     }
-    dispatch(handleRegister({data : data_send}))
-    .unwrap()
-    .then(res => {
-      if(res?.status == "success") {
-        toast.success("Student Registered Successfully!");
-        setFormData({
-          firstName:"",
-          email:"",
-          phone:"",
-          password:"",
-        })
-        router.push('/login');
-      }else {
-        toast.error(res?.message);
+
+    if (!formData.country.trim()) {
+      toast.error("Please enter your country!");
+      return;
+    }
+
+    if (!formData.time_zone) {
+      toast.error("Please select your timezone!");
+      return;
+    }
+
+    if (!formData.gender) {
+      toast.error("Please select your gender!");
+      return;
+    }
+
+    if (!formData.expectation_level) {
+      toast.error("Please select your Arabic level!");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      let imageUrl = "";
+
+      if (imageFile && imageFile instanceof File) {
+        try {
+          imageUrl = await uploadImage(imageFile);
+        } catch (error) {
+          toast.error("Failed to upload image. Please try again.");
+          setIsLoading(false);
+          return;
+        }
       }
-    }).catch(e =>{
-      console.log("catch error",e)
-    })
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        image: imageUrl,
+        country: formData.country,
+        time_zone: formData.time_zone,
+        gender: formData.gender,
+        expectation_level: formData.expectation_level,
+      };
+
+      const response = await axios.post(
+        base_url + "/auth/signUp.php",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response?.data?.status === "success") {
+        toast.success("Account created successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          country: "",
+          time_zone: undefined,
+          gender: undefined,
+          expectation_level: undefined,
+        });
+        clearImage();
+        router.push("/login");
+      } else {
+        toast.error(response?.data?.message || "Registration failed!");
+      }
+    } catch (error) {
+      console.error("Register error:", error);
+      toast.error("Something went wrong!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+
+  const getInputClass = (fieldName) => {
+    const baseClass =
+      "w-full pl-10 pr-4 py-2.5 bg-white border-2 rounded-xl text-gray-800 placeholder-gray-400 text-sm transition-all duration-300 focus:outline-none";
+    const focusedClass = "border-teal-500 shadow-lg shadow-teal-500/20";
+    const normalClass = "border-gray-200 hover:border-gray-300";
+
+    return `${baseClass} ${focusedField === fieldName ? focusedClass : normalClass}`;
+  };
+
+  const getIconClass = (fieldName) => {
+    return `w-4 h-4 transition-colors duration-300 ${
+      focusedField === fieldName ? "text-teal-500" : "text-gray-400"
+    }`;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-cyan-50 to-teal-100 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -left-20 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute top-40 -right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-20 left-1/2 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
-      </div> */}
-
-      {/* Main Container */}
       <div
-        className={`
-          relative z-10 w-full max-w-md lg:max-w-6xl bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden
-          transform transition-all duration-1000
-          ${
-            isVisible
-              ? "translate-y-0 opacity-100 scale-100"
-              : "translate-y-12 opacity-0 scale-95"
-          }
-        `}
+        className={`relative z-10 w-full max-w-md lg:max-w-6xl bg-white/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-1000 ${
+          isVisible
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-12 opacity-0 scale-95"
+        }`}
       >
         <div className="grid lg:grid-cols-2 min-h-[700px]">
-          {/* Left Side - Branding & Features */}
+          {/* Left Side */}
           <div className="relative bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 p-8 lg:p-12 hidden lg:flex flex-col justify-between overflow-hidden">
-            {/* Decorative Elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"></div>
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full translate-y-48 -translate-x-48"></div>
             </div>
 
-            {/* Content */}
             <div className="relative z-10">
-              {/* Logo */}
               <div
-                className={`
-                  transform transition-all duration-700 delay-200
-                  ${
-                    isVisible
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-12 opacity-0"
-                  }
-                `}
+                className={`transform transition-all duration-700 delay-200 ${
+                  isVisible
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-12 opacity-0"
+                }`}
               >
-                <img
-                  src="/images/logo.png"
-                  alt="Logo"
-                  className="w-32 mb-8 drop-shadow-2xl"
-                />
+                <Link href="/">
+                  <img
+                    src="/images/logo.png"
+                    alt="Logo"
+                    className="w-32 mb-8 drop-shadow-2xl cursor-pointer hover:scale-105 transition-transform"
+                  />
+                </Link>
               </div>
 
-              {/* Welcome Text */}
               <div
-                className={`
-                  space-y-4 mb-8
-                  transform transition-all duration-700 delay-300
-                  ${
-                    isVisible
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-12 opacity-0"
-                  }
-                `}
+                className={`space-y-4 mb-8 transform transition-all duration-700 delay-300 ${
+                  isVisible
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-12 opacity-0"
+                }`}
               >
                 <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
                   Start Your Journey
@@ -201,56 +358,17 @@ const Register = () => {
                 </p>
               </div>
 
-              {/* Benefits List */}
-              {/* <div
-                className={`
-                  space-y-3 mb-8
-                  transform transition-all duration-700 delay-400
-                  ${
-                    isVisible
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-12 opacity-0"
-                  }
-                `}
-              >
-                {benefits.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className={`
-                      flex items-center gap-3 text-white/90
-                      transform transition-all duration-700
-                      ${
-                        isVisible
-                          ? "translate-x-0 opacity-100"
-                          : "-translate-x-12 opacity-0"
-                      }
-                    `}
-                    style={{ transitionDelay: `${500 + index * 100}ms` }}
-                  >
-                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm">{benefit}</span>
-                  </div>
-                ))}
-              </div> */}
-
-              {/* Features Grid */}
               <div className="grid grid-cols-1 gap-4">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   return (
                     <div
                       key={index}
-                      className={`
-                        bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20
-                        transform transition-all duration-700 hover:scale-105 hover:bg-white/20
-                        ${
-                          isVisible
-                            ? "translate-y-0 opacity-100"
-                            : "translate-y-8 opacity-0"
-                        }
-                      `}
+                      className={`bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 transform transition-all duration-700 hover:scale-105 hover:bg-white/20 ${
+                        isVisible
+                          ? "translate-y-0 opacity-100"
+                          : "translate-y-8 opacity-0"
+                      }`}
                       style={{ transitionDelay: `${800 + index * 100}ms` }}
                     >
                       <div
@@ -270,142 +388,151 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Bottom Quote */}
             <div
-              className={`
-                relative z-10 mt-8 pt-8 border-t border-white/20
-                transform transition-all duration-700 delay-1200
-                ${
-                  isVisible
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-8 opacity-0"
-                }
-              `}
+              className={`relative z-10 mt-8 pt-8 border-t border-white/20 transform transition-all duration-700 delay-1200 ${
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-8 opacity-0"
+              }`}
             >
               <p className="text-white/80 italic text-sm">
-                "Every expert was once a beginner. Start your Arabic journey
-                today."
+                &quot;Every expert was once a beginner. Start your Arabic
+                journey today.&quot;
               </p>
             </div>
           </div>
 
-          {/* Right Side - Registration Form */}
-          <div className="p-8 lg:p-12 flex items-center justify-center">
+          {/* Right Side */}
+          <div className="p-6 lg:p-10 flex items-center justify-center overflow-y-auto max-h-screen">
             <div className="w-full max-w-md">
-              {/* Form Header */}
               <div
-                className={`
-                  text-center mb-8
-                  transform transition-all duration-700 delay-400
-                  ${
-                    isVisible
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-8 opacity-0"
-                  }
-                `}
+                className={`text-center mb-6 transform transition-all duration-700 delay-400 ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                }`}
               >
-                <div className="inline-block mb-4">
-                  <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl shadow-lg">
-                    <User className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                <Link href="/" className="lg:hidden inline-block mb-4">
+                  <img
+                    src="/images/logo.png"
+                    alt="Logo"
+                    className="w-20 mx-auto"
+                  />
+                </Link>
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">
                   Create Account
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   Fill in your details to get started
                 </p>
               </div>
 
-              {/* Form */}
-              <form onSubmit={onSubmit} className="space-y-5">
-                {/* First & Last Name */}
+              <form onSubmit={onSubmit} className="space-y-4">
+                {/* Profile Image Upload */}
                 <div
-                  className={`
-                     gap-4
-                    transform transition-all duration-700 delay-500
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
+                  className={`flex flex-col items-center mb-6 transform transition-all duration-700 delay-450 ${
+                    isVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-8 opacity-0"
+                  }`}
                 >
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Name
-                    </label>
+                  <div className="relative group">
+                    <div
+                      onClick={() =>
+                        document.getElementById("profile-image-input").click()
+                      }
+                      className={`w-32 h-32 sm:w-36 sm:h-36 rounded-full border-4 cursor-pointer flex items-center justify-center overflow-hidden transition-all duration-300 ${
+                        imagePreview
+                          ? "border-teal-500 border-solid shadow-xl shadow-teal-500/20"
+                          : "border-dashed border-gray-300 bg-gray-50 hover:border-teal-500 hover:bg-teal-50/30"
+                      }`}
+                    >
+                      {imagePreview ? (
+                        <>
+                          <img
+                            src={imagePreview}
+                            alt="Profile Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm font-medium">
+                              Change Photo
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center p-4">
+                          {imageUploading ? (
+                            <LoadingOutlined className="text-3xl text-teal-500 mb-2" />
+                          ) : (
+                            <PlusOutlined className="text-3xl text-gray-400 mb-2" />
+                          )}
+                          <p className="text-xs text-gray-500">
+                            {imageUploading ? "Uploading..." : "Add Photo"}
+                          </p>
+                        </div>
+                      )}
+
+                      {imageUploading && imagePreview && (
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                          <LoadingOutlined className="text-3xl text-white" />
+                        </div>
+                      )}
+                    </div>
+
+                    {imagePreview && !imageUploading && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearImage();
+                        }}
+                        className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors duration-200 transform hover:scale-110"
+                      >
+                        <DeleteOutlined className="text-sm" />
+                      </button>
+                    )}
+
                     <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={onInputChange}
-                      onFocus={() => setFocusedField("firstName")}
-                      onBlur={() => setFocusedField("")}
-                      className={`
-                        w-full px-4 py-3 bg-white border-2 rounded-xl
-                        text-gray-800 placeholder-gray-400 text-sm
-                        transition-all duration-300 focus:outline-none
-                        ${
-                          focusedField === "firstName"
-                            ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                            : "border-gray-200 hover:border-gray-300"
-                        }
-                      `}
-                      placeholder="John"
+                      id="profile-image-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
                     />
                   </div>
+                </div>
 
-                  {/* <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Last Name
-                    </label>
+                {/* Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className={getIconClass("name")} />
+                    </div>
                     <input
                       type="text"
-                      name="lastName"
-                      value={formData.lastName}
+                      name="name"
+                      value={formData.name}
                       onChange={onInputChange}
-                      onFocus={() => setFocusedField("lastName")}
+                      onFocus={() => setFocusedField("name")}
                       onBlur={() => setFocusedField("")}
-                      className={`
-                        w-full px-4 py-3 bg-white border-2 rounded-xl
-                        text-gray-800 placeholder-gray-400 text-sm
-                        transition-all duration-300 focus:outline-none
-                        ${
-                          focusedField === "lastName"
-                            ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                            : "border-gray-200 hover:border-gray-300"
-                        }
-                      `}
-                      placeholder="Doe"
-                      required
+                      className={getInputClass("name")}
+                      placeholder="John Doe"
                     />
-                  </div> */}
+                  </div>
                 </div>
 
                 {/* Email */}
-                <div
-                  className={`
-                    transform transition-all duration-700 delay-600
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
-                >
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email Address
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Email Address *
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail
-                        className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "email"
-                            ? "text-teal-500"
-                            : "text-gray-400"
-                        }`}
-                      />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className={getIconClass("email")} />
                     </div>
                     <input
                       type="email"
@@ -414,258 +541,161 @@ const Register = () => {
                       onChange={onInputChange}
                       onFocus={() => setFocusedField("email")}
                       onBlur={() => setFocusedField("")}
-                      className={`
-                        w-full pl-12 pr-4 py-3 bg-white border-2 rounded-xl
-                        text-gray-800 placeholder-gray-400 text-sm
-                        transition-all duration-300 focus:outline-none
-                        ${
-                          focusedField === "email"
-                            ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                            : "border-gray-200 hover:border-gray-300"
-                        }
-                      `}
+                      className={getInputClass("email")}
                       placeholder="you@example.com"
                     />
                   </div>
                 </div>
 
                 {/* Phone */}
-                <div
-                  className={`
-                    transform transition-all duration-700 delay-700
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
-                >
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone Number
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Phone Number *
+                  </label>
+                  <PhoneInput
+                    country="eg"
+                    value={formData.phone}
+                    onChange={onPhoneChange}
+                    onFocus={() => setFocusedField("phone")}
+                    onBlur={() => setFocusedField("")}
+                    enableSearch
+                    searchPlaceholder="Search country..."
+                    inputProps={{
+                      name: "phone",
+                      required: true,
+                    }}
+                    containerClass="phone-input-container"
+                    inputClass="phone-input-field"
+                    buttonClass="phone-input-button"
+                    dropdownClass="phone-input-dropdown"
+                    searchClass="phone-input-search"
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Password *
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Phone
-                        className={`w-5 h-5 transition-colors duration-300 ${
-                          focusedField === "phone"
-                            ? "text-teal-500"
-                            : "text-gray-400"
-                        }`}
-                      />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className={getIconClass("password")} />
                     </div>
                     <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
                       onChange={onInputChange}
-                      onFocus={() => setFocusedField("phone")}
+                      onFocus={() => setFocusedField("password")}
                       onBlur={() => setFocusedField("")}
-                      className={`
-                        w-full pl-12 pr-4 py-3 bg-white border-2 rounded-xl
-                        text-gray-800 placeholder-gray-400 text-sm
-                        transition-all duration-300 focus:outline-none
-                        ${
-                          focusedField === "phone"
-                            ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                            : "border-gray-200 hover:border-gray-300"
-                        }
-                      `}
-                      placeholder="+1 (555) 000-0000"
+                      className={`${getInputClass("password")} pr-10`}
+                      placeholder="Min. 6 characters"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-500 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Country & Gender */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Country *
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MapPin className={getIconClass("country")} />
+                      </div>
+                      <input
+                        type="text"
+                        name="country"
+                        value={formData.country}
+                        onChange={onInputChange}
+                        onFocus={() => setFocusedField("country")}
+                        onBlur={() => setFocusedField("")}
+                        className={getInputClass("country")}
+                        placeholder="e.g., Egypt, USA"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Gender *
+                    </label>
+                    <Select
+                      value={formData.gender}
+                      onChange={(value) => onSelectChange("gender", value)}
+                      placeholder="Select Gender"
+                      options={genderOptions}
+                      className="w-full register-select"
+                      size="large"
+                      showSearch
+                      filterOption={filterOption}
                     />
                   </div>
                 </div>
 
-                {/* Password & Confirm */}
-                <div
-                  className={`
-                    gap-4
-                    transform transition-all duration-700 delay-800
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
-                >
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Lock
-                          className={`w-5 h-5 transition-colors duration-300 ${
-                            focusedField === "password"
-                              ? "text-teal-500"
-                              : "text-gray-400"
-                          }`}
-                        />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        value={formData.password}
-                        onChange={onInputChange}
-                        onFocus={() => setFocusedField("password")}
-                        onBlur={() => setFocusedField("")}
-                        className={`
-                          w-full pl-12 pr-10 py-3 bg-white border-2 rounded-xl
-                          text-gray-800 placeholder-gray-400 text-sm
-                          transition-all duration-300 focus:outline-none
-                          ${
-                            focusedField === "password"
-                              ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                              : "border-gray-200 hover:border-gray-300"
-                          }
-                        `}
-                        placeholder="••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-500 transition-colors"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Confirm
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Lock
-                          className={`w-5 h-5 transition-colors duration-300 ${
-                            focusedField === "confirmPassword"
-                              ? "text-teal-500"
-                              : "text-gray-400"
-                          }`}
-                        />
-                      </div>
-                      <input
-                        type={showConfirm ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={onInputChange}
-                        onFocus={() => setFocusedField("confirmPassword")}
-                        onBlur={() => setFocusedField("")}
-                        className={`
-                          w-full pl-12 pr-10 py-3 bg-white border-2 rounded-xl
-                          text-gray-800 placeholder-gray-400 text-sm
-                          transition-all duration-300 focus:outline-none
-                          ${
-                            focusedField === "confirmPassword"
-                              ? "border-teal-500 shadow-lg shadow-teal-500/20 bg-teal-50/30"
-                              : "border-gray-200 hover:border-gray-300"
-                          }
-                        `}
-                        placeholder="••••••"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirm(!showConfirm)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-500 transition-colors"
-                      >
-                        {showConfirm ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div> */}
+                {/* Timezone */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Timezone *
+                  </label>
+                  <Select
+                    value={formData.time_zone}
+                    onChange={(value) => onSelectChange("time_zone", value)}
+                    placeholder="Search and select timezone..."
+                    options={timezoneOptions}
+                    className="w-full register-select"
+                    size="large"
+                    showSearch
+                    filterOption={filterOption}
+                  />
                 </div>
 
-                {/* Terms Checkbox */}
-                {/* <div
-                  className={`
-                    transform transition-all duration-700 delay-900
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
-                >
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <div className="relative flex items-center justify-center mt-0.5">
-                      <input
-                        type="checkbox"
-                        name="agree"
-                        checked={formData.agree}
-                        onChange={onInputChange}
-                        className="w-5 h-5 text-teal-600 border-2 border-gray-300 rounded focus:ring-teal-500 cursor-pointer transition-all"
-                      />
-                    </div>
-                    <span className="text-sm text-gray-600 leading-relaxed">
-                      I agree to the{" "}
-                      <span
-                        // href="/terms"
-                        className="text-teal-600 hover:text-teal-700 font-semibold hover:underline"
-                      >
-                        Terms & Conditions
-                      </span>{" "}
-                      and{" "}
-                      <span
-                        // href="/privacy"
-                        className="text-teal-600 hover:text-teal-700 font-semibold hover:underline"
-                      >
-                        Privacy Policy
-                      </span>
-                    </span>
+                {/* Arabic Level */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Your Arabic Level *
                   </label>
-                </div> */}
+                  <Select
+                    value={formData.expectation_level}
+                    onChange={(value) =>
+                      onSelectChange("expectation_level", value)
+                    }
+                    placeholder="Select your current level..."
+                    options={arabicLevelOptions}
+                    className="w-full register-select"
+                    size="large"
+                    showSearch
+                    filterOption={filterOption}
+                  />
+                </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={register_loading}
-                  className={`
-                    group relative w-full bg-gradient-to-r from-teal-600 to-cyan-600 
-                    text-white px-6 py-3 rounded-xl font-bold text-lg
-                    shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40
-                    transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
-                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                    overflow-hidden
-                    transform transition-all duration-700 delay-1000
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
+                  disabled={isLoading || imageUploading}
+                  className="group relative w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden mt-6"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {register_loading ? (
+                    {isLoading || imageUploading ? (
                       <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span>Creating Account...</span>
+                        <LoadingOutlined className="text-xl" />
+                        <span>
+                          {imageUploading
+                            ? "Uploading Image..."
+                            : "Creating Account..."}
+                        </span>
                       </>
                     ) : (
                       <>
@@ -674,23 +704,10 @@ const Register = () => {
                       </>
                     )}
                   </span>
-
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 </button>
 
                 {/* Login Link */}
-                <div
-                  className={`
-                    text-center
-                    transform transition-all duration-700 delay-1100
-                    ${
-                      isVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-8 opacity-0"
-                    }
-                  `}
-                >
+                <div className="text-center">
                   <p className="text-gray-600">
                     Already have an account?{" "}
                     <Link
@@ -706,36 +723,6 @@ const Register = () => {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
-          25% {
-            transform: translate(20px, -50px) scale(1.1);
-          }
-          50% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          75% {
-            transform: translate(50px, 50px) scale(1.05);
-          }
-        }
-
-        .animate-blob {
-          animation: blob 15s infinite;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 };

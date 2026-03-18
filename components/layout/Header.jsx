@@ -24,11 +24,124 @@ import { configs } from "../../libs/configs";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
+// ✅ Separate UserDropdown Component with its own state and ref
+const UserDropdownComponent = ({
+  isCompact = false,
+  isLoggedIn,
+  userData,
+  onLogout,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    onLogout();
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`group flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow duration-200 ${
+          isCompact ? "px-2 sm:px-3 py-1.5 text-sm" : "px-2 sm:px-4 py-2"
+        }`}
+      >
+        <div
+          className={`bg-white/20 rounded-full flex items-center justify-center ${
+            isCompact ? "w-6 h-6" : "w-7 h-7 sm:w-8 sm:h-8"
+          }`}
+        >
+          <User
+            className={`${isCompact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"}`}
+          />
+        </div>
+        <span className="hidden sm:inline text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px]">
+          {isLoggedIn ? userData?.student_name : "Account"}
+        </span>
+        <ChevronDownIcon
+          className={`transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          } ${isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-48 sm:w-52 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+          {isLoggedIn ? (
+            <>
+              <Link
+                href={
+                  userData?.student_id
+                    ? `/profile/${userData.student_id}`
+                    : "/profile"
+                }
+                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <User2 className="w-4 h-4 text-gray-600" />
+                <span className="text-gray-700">Profile</span>
+              </Link>
+              <hr className="my-2" />
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
+              >
+                <LogIn className="w-4 h-4 rotate-180" />
+                <span>Logout</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <UserPlus className="w-4 h-4 text-gray-600" />
+                <span className="text-gray-700">Login</span>
+              </Link>
+              <Link
+                href="/register"
+                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <LogIn className="w-4 h-4 text-gray-600" />
+                <span className="text-gray-700">Register</span>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Header = () => {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openCart, setOpenCart] = useState(false);
@@ -75,41 +188,23 @@ const Header = () => {
         </Link>
       ),
     },
-    // {
-    //   key: "2",
-    //   label: (
-    //     <Link
-    //       href="/live-courses"
-    //       className="flex items-center py-2 px-1 hover:text-teal-600 transition-colors text-[13px]"
-    //     >
-    //       <span>Live Courses</span>
-    //     </Link>
-    //   ),
-    // },
   ];
 
   const logout = () => {
-    // اقفل الـdropdown فورًا
-    setShowDropdown(false);
-
-    // امسح من الاثنين (لأن login ممكن يكون اختار واحد فيهم)
     localStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
     sessionStorage.removeItem(configs.localstorageEgyIntstituteTokenName);
 
     localStorage.removeItem("eg_user_data");
     sessionStorage.removeItem("eg_user_data");
 
-    // امسح refresh token cookie
     Cookies.remove(configs.localstorageEgyIntstituteRefreshTokenName, {
       path: "/",
     });
 
-    // لو عندك state محلي ممكن تخليه false، بس الأفضل تعتمد على token existence
     setIsLoggedIn(false);
 
-    // Next navigation أفضل من window.location
-    router.replace("/login"); // أو "/"
-    router.refresh(); // يحدث server components لو بتستخدمها
+    router.replace("/login");
+    router.refresh();
   };
 
   const getAccessToken = () =>
@@ -144,83 +239,6 @@ const Header = () => {
       document.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const UserDropdown = ({ isCompact = false }) => (
-    <div className="relative">
-      <button
-        onClick={() => setShowDropdown(!showDropdown)}
-        className={`group flex items-center space-x-1 sm:space-x-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow duration-200 ${
-          isCompact ? "px-2 sm:px-3 py-1.5 text-sm" : "px-2 sm:px-4 py-2"
-        }`}
-      >
-        <div
-          className={`bg-white/20 rounded-full flex items-center justify-center ${
-            isCompact ? "w-6 h-6" : "w-7 h-7 sm:w-8 sm:h-8"
-          }`}
-        >
-          <User
-            className={`${isCompact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"}`}
-          />
-        </div>
-        <span className="hidden sm:inline text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px]">
-          {isLoggedIn ? userData?.student_name : "Account"}
-        </span>
-        <ChevronDownIcon
-          className={`transition-transform duration-200 ${
-            showDropdown ? "rotate-180" : ""
-          } ${isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"}`}
-        />
-      </button>
-
-      {showDropdown && (
-        <div className="absolute right-0 top-full mt-2 w-48 sm:w-52 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-          {isLoggedIn ? (
-            <>
-              <Link
-                href={
-                  userData?.student_id
-                    ? `/profile/${userData.student_id}`
-                    : "/profile"
-                }
-                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                onClick={() => setShowDropdown(false)}
-              >
-                <User2 className="w-4 h-4 text-gray-600" />
-                <span className="text-gray-700">Profile</span>
-              </Link>
-              <hr className="my-2" />
-              <button
-                onClick={logout}
-                className="w-full text-left flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
-              >
-                <LogIn className="w-4 h-4 rotate-180" />
-                <span>Logout</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                onClick={() => setShowDropdown(false)}
-              >
-                <UserPlus className="w-4 h-4 text-gray-600" />
-                <span className="text-gray-700">Login</span>
-              </Link>
-              <Link
-                href="/register"
-                className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                onClick={() => setShowDropdown(false)}
-              >
-                <LogIn className="w-4 h-4 text-gray-600" />
-                <span className="text-gray-700">Register</span>
-              </Link>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
 
   const CartButton = ({ isCompact = false }) => (
     <div
@@ -285,20 +303,6 @@ const Header = () => {
       )}
     </div>
   );
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showDropdown && !event.target.closest(".relative")) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showDropdown]);
 
   return (
     <>
@@ -372,7 +376,13 @@ const Header = () => {
 
             {/* Actions */}
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <UserDropdown />
+              {/* ✅ Static Header Dropdown */}
+              <UserDropdownComponent
+                isCompact={false}
+                isLoggedIn={isLoggedIn}
+                userData={userData}
+                onLogout={logout}
+              />
               {/* <CartButton /> */}
               <Menu
                 onClick={() => setIsOpen(true)}
@@ -402,7 +412,13 @@ const Header = () => {
 
           {/* Compact Actions */}
           <div className="flex items-center space-x-1.5 sm:space-x-2">
-            <UserDropdown isCompact={true} />
+            {/* ✅ Compact Header Dropdown */}
+            <UserDropdownComponent
+              isCompact={true}
+              isLoggedIn={isLoggedIn}
+              userData={userData}
+              onLogout={logout}
+            />
             {/* <CartButton isCompact={true} /> */}
             <Menu
               onClick={() => setIsOpen(true)}
