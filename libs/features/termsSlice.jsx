@@ -4,7 +4,7 @@ import { apiRoutes } from "../shared/routes";
 
 const initialState = {
   terms_loading: false,
-  terms_data: [],
+  terms_data: null,
   terms_error: null,
 };
 
@@ -32,7 +32,7 @@ export const termsSlice = createSlice({
       })
       .addCase(handleGetTerms.fulfilled, (state, action) => {
         state.terms_loading = false;
-        state.terms_data = action.payload?.message ?? action.payload ?? [];
+        state.terms_data = action.payload?.message ?? null;
       })
       .addCase(handleGetTerms.rejected, (state, action) => {
         state.terms_loading = false;
