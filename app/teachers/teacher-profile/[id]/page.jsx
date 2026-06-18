@@ -15,13 +15,13 @@ const TeacherProfile = ({}) => {
 
   const teacher_id = useParams();
 
-  // Get token from localStorage
+  // Get token from localStorage (optional - page is public)
   const getAuthToken = () => {
     if (typeof window !== "undefined") {
       return (
         localStorage.getItem("EGYPTIANINTITUTETOKENNAME") ||
-        localStorage.getItem("AccessToken") ||
-        localStorage.getItem("token")
+        sessionStorage.getItem("EGYPTIANINTITUTETOKENNAME") ||
+        null
       );
     }
     return null;
@@ -196,22 +196,13 @@ const TeacherProfile = ({}) => {
 
         const token = getAuthToken();
 
-        if (!token) {
-          throw new Error("Authentication token not found. Please login.");
-        }
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
 
         const response = await axios.post(
           `${base_url}/teachers/select_teacher_profile.php`,
-          {
-            teacher_id: teacher_id?.id,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            timeout: 10000,
-          }
+          { teacher_id: teacher_id?.id },
+          { headers, timeout: 10000 }
         );
 
         console.log("API Response:", response.data);
