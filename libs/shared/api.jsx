@@ -1,4 +1,3 @@
-import toast from "react-hot-toast";
 import { getToken } from "../../utils/token";
 import { configs } from "../configs";
 const axios = require("axios");
@@ -35,14 +34,7 @@ apiInstance.interceptors.request.use(
 apiInstance.interceptors.response.use(
   (res) => res,
   (error) => {
-    // optional: handle 401 globally
-    // if (error?.response?.status === 401) { ...logout... }
-    console.log("error",error);
-    if(error?.status == 401) {
-      toast.error("Must login first!");
-      window.location.href = "/login";
-      // window.location.reload();
-    }
+    console.log("error", error);
     return Promise.reject(error);
   }
 );
